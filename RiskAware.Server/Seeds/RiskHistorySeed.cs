@@ -7,12 +7,12 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var RiskHistoryToBeAdded = new RiskHistory[]
+            var riskHistoryToBeAdded = new RiskHistory[]
             {
 
             };
 
-            foreach(var riskHistory in RiskHistoryToBeAdded)
+            foreach(var riskHistory in riskHistoryToBeAdded)
             {
                 if(!context.RiskHistory.Any(h => h.Id == riskHistory.Id))
                 {

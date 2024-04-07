@@ -7,12 +7,12 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var CategoriesToBeAdded = new RiskCategory[]
+            var categoriesToBeAdded = new RiskCategory[]
             {
                 
             };
 
-            foreach (var category in CategoriesToBeAdded)
+            foreach (var category in categoriesToBeAdded)
             {
                 if(!context.RiskCategories.Any(c => c.Id == category.Id))
                 {

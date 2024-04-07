@@ -7,7 +7,7 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var RolesToSeed = new ProjectRole[]
+            var rolesToSeed = new ProjectRole[]
             {
                 new()
                 {
@@ -40,7 +40,7 @@ namespace RiskAware.Server.Seeds
                 }
             };
 
-            foreach (var role in RolesToSeed)
+            foreach (var role in rolesToSeed)
             {
                 if(!context.ProjectRoles.Any(u => u.UserId == role.UserId && u.RiskProjectId == role.RiskProjectId))
                 {

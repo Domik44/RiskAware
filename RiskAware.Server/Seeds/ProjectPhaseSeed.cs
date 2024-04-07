@@ -7,7 +7,7 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var ProjectPhasesToBeAdded = new ProjectPhase[]
+            var projectPhasesToBeAdded = new ProjectPhase[]
             {
                 new()
                 {
@@ -47,11 +47,11 @@ namespace RiskAware.Server.Seeds
                 }
             };
 
-            foreach (var Phase in ProjectPhasesToBeAdded)
+            foreach (var phase in projectPhasesToBeAdded)
             {
-                if(!context.ProjectPhases.Any(p => p.Id == Phase.Id))
+                if(!context.ProjectPhases.Any(p => p.Id == phase.Id))
                 {
-                    context.ProjectPhases.Add(Phase);
+                    context.ProjectPhases.Add(phase);
                 }
             }
             context.SaveChanges();

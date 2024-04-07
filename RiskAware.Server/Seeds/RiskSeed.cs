@@ -7,7 +7,7 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var RisksToBeAdded = new Risk[]
+            var risksToBeAdded = new Risk[]
             {
                 new()
                 {
@@ -51,7 +51,7 @@ namespace RiskAware.Server.Seeds
                 }
             };
 
-            foreach(var risk in RisksToBeAdded)
+            foreach(var risk in risksToBeAdded)
             {
                 if(!context.Risks.Any(p =>  p.Id == risk.Id))
                 {
