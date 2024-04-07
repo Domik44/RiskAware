@@ -17,14 +17,14 @@ namespace RiskAware.Server.Seeds
 
             // Asynchronous seeding
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-            await UserSeed.Seed(userManager);
+            await UserSeed.Seed(userManager, context);
 
-            RiskProjectSeed.Seed(context);
-            ProjectRoleSeed.Seed(context);
-            ProjectPhaseSeed.Seed(context);
-            RiskSeed.Seed(context);
-            RiskHistorySeed.Seed(context);
-            CommentSeed.Seed(context);
+            // RiskProjectSeed.Seed(context);
+            // ProjectRoleSeed.Seed(context);
+            // ProjectPhaseSeed.Seed(context);
+            // RiskSeed.Seed(context);
+            // RiskHistorySeed.Seed(context);
+            // CommentSeed.Seed(context);
         }
     }
 }
