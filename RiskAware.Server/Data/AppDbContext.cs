@@ -25,6 +25,11 @@ namespace RiskAware.Server.Data
             {
                 entity.ToTable("Users");
             });
+            
+            // TODO -> tohle by melo nastavit eager loading
+            // modelBuilder.Entity<User>()
+            //     .Navigation(u => u.SystemRole)
+            //     .AutoInclude();
 
             // Defining composite primary key for ProjectRole
             modelBuilder.Entity<ProjectRole>()
