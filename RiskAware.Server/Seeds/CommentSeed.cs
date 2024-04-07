@@ -7,18 +7,18 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var CommentsToBeAdded = new Comment[]
+            var commentsToBeAdded = new Comment[]
             {
                 new()
                 {
                     Id = Guid.Parse("0adb54cb-4efc-4d84-b138-db7d3da5510c"),
                     Text = "Tenhle projekt je Bomba!!!",
                     UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
-                    ProjectId = Guid.Parse("6a45e6b5-f5db-458e-a26e-4d5ad85fbcea")
+                    RiskProjectId = Guid.Parse("6a45e6b5-f5db-458e-a26e-4d5ad85fbcea")
                 }
             };
 
-            foreach (var comment in CommentsToBeAdded)
+            foreach (var comment in commentsToBeAdded)
             {
                 if(!context.Comments.Any(c => c.Id == comment.Id))
                 {
