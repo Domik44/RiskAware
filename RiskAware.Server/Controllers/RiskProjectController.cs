@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,7 +12,7 @@ namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RiskProjectController : ControllerBase
+    public class RiskProjectController : ControllerBase // TODO -> switch na DTO!!
     {
         private readonly AppDbContext _context;
 
@@ -21,14 +21,43 @@ namespace RiskAware.Server.Controllers
             _context = context;
         }
 
-        // GET: api/RiskProject
+        // GET: api/RiskProjects
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RiskProject>>> GetRiskProjects()
         {
             return await _context.RiskProjects.ToListAsync();
         }
 
-        // GET: api/RiskProject/5
+        // GET: api/UserRiskProjects
+        [HttpGet("UserRiskProjects")]
+        public async Task<ActionResult<IEnumerable<RiskProject>>> GetUserRiskProjects()
+        {
+            // TODO -> poresit logiku s logged userem
+            //var user = User.Identity;
+            var user = await _context.Users.FindAsync("d6f46418-2c21-43f8-b167-162fb5e3a999"); // TODO -> for swagger testing purposes
+
+            if(user == null)
+            {
+                //TODO
+                return NoContent();
+            }
+
+            // TODO -> logika pro admina
+            //if(user.SystemRole.IsAdministrator == true)
+            //{
+
+            //}
+            //else
+            //{
+
+            // TODO -> slozita logika, kde budeme muset delat joiny pomoci projectRole
+            //var projects = _context.RiskProjects.Where(u => u.Use)
+
+            //}
+            return await _context.RiskProjects.ToListAsync();
+        }
+
+        // GET: api/RiskProjects/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskProject>> GetRiskProject(Guid id)
         {
@@ -42,7 +71,7 @@ namespace RiskAware.Server.Controllers
             return riskProject;
         }
 
-        // PUT: api/RiskProject/5
+        // PUT: api/RiskProjects/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRiskProject(Guid id, RiskProject riskProject)
@@ -73,18 +102,29 @@ namespace RiskAware.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/RiskProject
+        // POST: api/RiskProjects
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<RiskProject>> PostRiskProject(RiskProject riskProject)
         {
+            //User user = (User)User.Identity;
+            //if (user.SystemRole.IsAdministrator)
+            //{
+            //    _context.RiskProjects.Add(riskProject);
+            //    await _context.SaveChangesAsync();
+
+            //}
+            //else
+            //{
+            //    //TODO -> not authorized
+            //}
+
             _context.RiskProjects.Add(riskProject);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetRiskProject", new { id = riskProject.Id }, riskProject);
         }
 
-        // DELETE: api/RiskProject/5
+        // DELETE: api/RiskProjects/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRiskProject(Guid id)
         {

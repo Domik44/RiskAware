@@ -47,9 +47,10 @@ namespace RiskAware.Server.Controllers
         }
 
         [HttpGet("{id}/systemRole")]
-        public async Task<ActionResult<SystemRoleDto>> GetUserSystemRole(string id)
+        public async Task<ActionResult<SystemRole>> GetUserSystemRole(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.AsNoTracking().Include(p => p.SystemRole).FirstOrDefaultAsync(p => p.Id == id);
+            //var user = await _context.Users.FindAsync(id);
             // var user = await _userManager.FindByIdAsync(id);
 
             if (user == null)
@@ -58,15 +59,16 @@ namespace RiskAware.Server.Controllers
             }
 
             // This way its used when lazy loading
-            var systemRole = await _context.SystemRoles.FindAsync(user.SystemRoleId);
-            
+            //var systemRole = await _context.SystemRoles.FindAsync(user.SystemRoleId);
+
             // This way its used when eager loading is set
-            // var systemRole = user.SystemRole;
-            
+            //var systemRole = user.SystemRole;
+
             // DTO needed, if we would try to send just SystemRole there could be cyclic reference and we would get error
             // System role would have a list of users which would have a system role etc..
             // DTO should be used for sending Entities serialized
-            return new SystemRoleDto(systemRole);
+            return user.SystemRole;
+            //return new SystemRoleDto(systemRole);
         }
 
         // PUT: api/User/5
