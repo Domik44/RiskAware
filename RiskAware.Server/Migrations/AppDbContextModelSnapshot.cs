@@ -161,7 +161,7 @@ namespace RiskAware.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProjectId")
+                    b.Property<Guid>("RiskProjectId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Text")
@@ -172,7 +172,7 @@ namespace RiskAware.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ProjectId");
+                    b.HasIndex("RiskProjectId");
 
                     b.HasIndex("UserId");
 
@@ -194,6 +194,9 @@ namespace RiskAware.Server.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("ProjectRoleId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("RiskProjectId")
                         .HasColumnType("uniqueidentifier");
 
@@ -202,6 +205,8 @@ namespace RiskAware.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ProjectRoleId");
+
                     b.HasIndex("RiskProjectId");
 
                     b.ToTable("ProjectPhases");
@@ -209,21 +214,27 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.ProjectRole", b =>
                 {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<Guid>("RiskProjectId")
+                    b.Property<Guid>("ProjectRoleId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsReqApproved")
                         .HasColumnType("bit");
 
+                    b.Property<Guid>("RiskProjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("RoleType")
                         .HasColumnType("int");
 
-                    b.HasKey("UserId", "RiskProjectId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("ProjectRoleId");
 
                     b.HasIndex("RiskProjectId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ProjectRoles");
                 });
@@ -240,6 +251,9 @@ namespace RiskAware.Server.Migrations
                     b.Property<Guid>("ProjectPhaseId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("RiskCathegoryId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("RiskProjectId")
                         .HasColumnType("uniqueidentifier");
 
@@ -249,6 +263,8 @@ namespace RiskAware.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ProjectPhaseId");
+
+                    b.HasIndex("RiskCathegoryId");
 
                     b.HasIndex("RiskProjectId");
 
@@ -269,7 +285,12 @@ namespace RiskAware.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("RiskProjectId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RiskProjectId");
 
                     b.ToTable("RiskCategories");
                 });
@@ -355,6 +376,9 @@ namespace RiskAware.Server.Migrations
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
 
+                    b.Property<bool>("IsBlank")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsValid")
                         .HasColumnType("bit");
 
@@ -421,6 +445,9 @@ namespace RiskAware.Server.Migrations
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsValid")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
@@ -552,9 +579,9 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.Comment", b =>
                 {
-                    b.HasOne("RiskAware.Server.Models.RiskProject", "Project")
+                    b.HasOne("RiskAware.Server.Models.RiskProject", "RiskProject")
                         .WithMany("Comments")
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("RiskProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -563,18 +590,24 @@ namespace RiskAware.Server.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Project");
+                    b.Navigation("RiskProject");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("RiskAware.Server.Models.ProjectPhase", b =>
                 {
+                    b.HasOne("RiskAware.Server.Models.ProjectRole", "ProjectRole")
+                        .WithMany()
+                        .HasForeignKey("ProjectRoleId");
+
                     b.HasOne("RiskAware.Server.Models.RiskProject", "RiskProject")
                         .WithMany("ProjectPhases")
                         .HasForeignKey("RiskProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("ProjectRole");
 
                     b.Navigation("RiskProject");
                 });
@@ -590,8 +623,7 @@ namespace RiskAware.Server.Migrations
                     b.HasOne("RiskAware.Server.Models.User", "User")
                         .WithMany("ProjectRoles")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("RiskProject");
 
@@ -604,6 +636,12 @@ namespace RiskAware.Server.Migrations
                         .WithMany("Risks")
                         .HasForeignKey("ProjectPhaseId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RiskAware.Server.Models.RiskCategory", "RiskCategory")
+                        .WithMany("Risks")
+                        .HasForeignKey("RiskCathegoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RiskAware.Server.Models.RiskProject", "RiskProject")
@@ -619,9 +657,22 @@ namespace RiskAware.Server.Migrations
 
                     b.Navigation("ProjectPhase");
 
+                    b.Navigation("RiskCategory");
+
                     b.Navigation("RiskProject");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RiskAware.Server.Models.RiskCategory", b =>
+                {
+                    b.HasOne("RiskAware.Server.Models.RiskProject", "RiskProject")
+                        .WithMany("RiskCategories")
+                        .HasForeignKey("RiskProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RiskProject");
                 });
 
             modelBuilder.Entity("RiskAware.Server.Models.RiskHistory", b =>
@@ -673,6 +724,11 @@ namespace RiskAware.Server.Migrations
                     b.Navigation("RiskHistory");
                 });
 
+            modelBuilder.Entity("RiskAware.Server.Models.RiskCategory", b =>
+                {
+                    b.Navigation("Risks");
+                });
+
             modelBuilder.Entity("RiskAware.Server.Models.RiskProject", b =>
                 {
                     b.Navigation("Comments");
@@ -680,6 +736,8 @@ namespace RiskAware.Server.Migrations
                     b.Navigation("ProjectPhases");
 
                     b.Navigation("ProjectRoles");
+
+                    b.Navigation("RiskCategories");
 
                     b.Navigation("Risks");
                 });

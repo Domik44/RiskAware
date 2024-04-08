@@ -26,19 +26,6 @@ namespace RiskAware.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RiskCategories",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_RiskCategories", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "SystemRoles",
                 columns: table => new
                 {
@@ -96,6 +83,7 @@ namespace RiskAware.Server.Migrations
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AccountState = table.Column<int>(type: "int", nullable: false),
+                    IsValid = table.Column<bool>(type: "bit", nullable: false),
                     SystemRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -219,6 +207,7 @@ namespace RiskAware.Server.Migrations
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsValid = table.Column<bool>(type: "bit", nullable: false),
                     Scale = table.Column<int>(type: "int", nullable: false),
+                    IsBlank = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -239,14 +228,14 @@ namespace RiskAware.Server.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Comments_RiskProjects_ProjectId",
-                        column: x => x.ProjectId,
+                        name: "FK_Comments_RiskProjects_RiskProjectId",
+                        column: x => x.RiskProjectId,
                         principalTable: "RiskProjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -259,39 +248,18 @@ namespace RiskAware.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ProjectPhases",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    End = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ProjectPhases", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ProjectPhases_RiskProjects_RiskProjectId",
-                        column: x => x.RiskProjectId,
-                        principalTable: "RiskProjects",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "ProjectRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProjectRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     RoleType = table.Column<int>(type: "int", nullable: false),
                     IsReqApproved = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectRoles", x => new { x.UserId, x.RiskProjectId });
+                    table.PrimaryKey("PK_ProjectRoles", x => x.ProjectRoleId);
                     table.ForeignKey(
                         name: "FK_ProjectRoles_RiskProjects_RiskProjectId",
                         column: x => x.RiskProjectId,
@@ -307,6 +275,54 @@ namespace RiskAware.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RiskCategories",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RiskCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RiskCategories_RiskProjects_RiskProjectId",
+                        column: x => x.RiskProjectId,
+                        principalTable: "RiskProjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ProjectPhases",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Order = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Start = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    End = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProjectRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProjectPhases", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectPhases_ProjectRoles_ProjectRoleId",
+                        column: x => x.ProjectRoleId,
+                        principalTable: "ProjectRoles",
+                        principalColumn: "ProjectRoleId");
+                    table.ForeignKey(
+                        name: "FK_ProjectPhases_RiskProjects_RiskProjectId",
+                        column: x => x.RiskProjectId,
+                        principalTable: "RiskProjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Risks",
                 columns: table => new
                 {
@@ -314,7 +330,8 @@ namespace RiskAware.Server.Migrations
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProjectPhaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    ProjectPhaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RiskCathegoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -325,6 +342,12 @@ namespace RiskAware.Server.Migrations
                         principalTable: "ProjectPhases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Risks_RiskCategories_RiskCathegoryId",
+                        column: x => x.RiskCathegoryId,
+                        principalTable: "RiskCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Risks_RiskProjects_RiskProjectId",
                         column: x => x.RiskProjectId,
@@ -408,14 +431,19 @@ namespace RiskAware.Server.Migrations
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Comments_ProjectId",
+                name: "IX_Comments_RiskProjectId",
                 table: "Comments",
-                column: "ProjectId");
+                column: "RiskProjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_UserId",
                 table: "Comments",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectPhases_ProjectRoleId",
+                table: "ProjectPhases",
+                column: "ProjectRoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectPhases_RiskProjectId",
@@ -425,6 +453,16 @@ namespace RiskAware.Server.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_ProjectRoles_RiskProjectId",
                 table: "ProjectRoles",
+                column: "RiskProjectId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ProjectRoles_UserId",
+                table: "ProjectRoles",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RiskCategories_RiskProjectId",
+                table: "RiskCategories",
                 column: "RiskProjectId");
 
             migrationBuilder.CreateIndex(
@@ -446,6 +484,11 @@ namespace RiskAware.Server.Migrations
                 name: "IX_Risks_ProjectPhaseId",
                 table: "Risks",
                 column: "ProjectPhaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Risks_RiskCathegoryId",
+                table: "Risks",
+                column: "RiskCathegoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Risks_RiskProjectId",
@@ -497,12 +540,6 @@ namespace RiskAware.Server.Migrations
                 name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "ProjectRoles");
-
-            migrationBuilder.DropTable(
-                name: "RiskCategories");
-
-            migrationBuilder.DropTable(
                 name: "RiskHistory");
 
             migrationBuilder.DropTable(
@@ -516,6 +553,12 @@ namespace RiskAware.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "ProjectPhases");
+
+            migrationBuilder.DropTable(
+                name: "RiskCategories");
+
+            migrationBuilder.DropTable(
+                name: "ProjectRoles");
 
             migrationBuilder.DropTable(
                 name: "RiskProjects");
