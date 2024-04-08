@@ -23,8 +23,6 @@ namespace RiskAware.Server.Models
         public Guid RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
         public RiskProject RiskProject { get; set; }
-
-        //public int RoleType { get; set; } // TODO -> mozna udelat nejaky ciselnik s rolemi?
         public RoleType RoleType { get; set; }
         public bool IsReqApproved { get; set; }
 

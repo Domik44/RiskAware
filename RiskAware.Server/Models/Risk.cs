@@ -2,7 +2,7 @@
 
 namespace RiskAware.Server.Models
 {
-    public class Risk // TODO -> nemeli by atributy title, description, atd.. byt i tady???
+    public class Risk
     {
         public Guid Id { get; set; }
         public DateTime Created { get; set; }

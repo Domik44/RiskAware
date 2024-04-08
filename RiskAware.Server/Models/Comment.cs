@@ -20,10 +20,5 @@ namespace RiskAware.Server.Models
         public Guid RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
         public virtual RiskProject RiskProject { get; set; }
-
-        // TODO -> v navrhu s otaznikem?
-        //public Guid RiskId { get; set; }
-        //[ForeignKey(nameof(RiskId))]
-        //public virtual Risk Risk { get; set; }
     }
 }
