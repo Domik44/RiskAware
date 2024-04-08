@@ -12,7 +12,7 @@ namespace RiskAware.Server.Seeds
             if (await userManager.FindByIdAsync(adminId) == null)
             {
                 const string adminEmail = "admin@google.com";
-                var systemRoleId = Guid.Parse("e4499f9c-a59c-4b25-a86e-81ca032dc313");
+                var systemRoleId = 1;
                 var systemRole = await context.SystemRoles.FindAsync(systemRoleId);
                 var adminUser = new User()
                 {
@@ -28,7 +28,7 @@ namespace RiskAware.Server.Seeds
                 await userManager.CreateAsync(adminUser, "Admin123");
             }
 
-            var systemRoleIdBase = Guid.Parse("8e37b798-5b2f-4ea9-9130-d86ce37c78d6");
+            var systemRoleIdBase = 2;
             var systemRoleBase = await context.SystemRoles.FindAsync(systemRoleIdBase);
             const string baseId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8";
             if (await userManager.FindByIdAsync(baseId) == null)

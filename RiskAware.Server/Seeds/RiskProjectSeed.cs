@@ -11,7 +11,6 @@ namespace RiskAware.Server.Seeds
             {
                 new RiskProject()
                 {
-                    Id = Guid.Parse("6a45e6b5-f5db-458e-a26e-4d5ad85fbcea"),
                     Title = "PokusProj",
                     Description = "Popis tohoto projektu muze byt velice zajimavy, ale ja nejsem kreativni :)",
                     Start = DateTime.Now,

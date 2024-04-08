@@ -11,10 +11,9 @@ namespace RiskAware.Server.Seeds
             {
                 new()
                 {
-                    Id = Guid.Parse("0adb54cb-4efc-4d84-b138-db7d3da5510c"),
                     Text = "Tenhle projekt je Bomba!!!",
                     UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
-                    RiskProjectId = Guid.Parse("6a45e6b5-f5db-458e-a26e-4d5ad85fbcea")
+                    RiskProjectId = 1
                 }
             };
 

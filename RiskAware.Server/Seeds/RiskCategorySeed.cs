@@ -9,7 +9,18 @@ namespace RiskAware.Server.Seeds
         {
             var categoriesToBeAdded = new RiskCategory[]
             {
-                
+                new()
+                {
+                    Name = "Kategorie rizika 1",
+                    Description = "Popis kategorie rizika 1",
+                    RiskProjectId = 1
+                },
+                new()
+                {
+                    Name = "Kategorie rizika 2",
+                    Description = "Popis kategorie rizika 2",
+                    RiskProjectId = 1
+                }
             };
 
             foreach (var category in categoriesToBeAdded)
