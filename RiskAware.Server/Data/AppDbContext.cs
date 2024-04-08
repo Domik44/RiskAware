@@ -25,15 +25,11 @@ namespace RiskAware.Server.Data
             {
                 entity.ToTable("Users");
             });
-            
-            // TODO -> tohle by melo nastavit eager loading
-            // modelBuilder.Entity<User>()
-            //     .Navigation(u => u.SystemRole)
-            //     .AutoInclude();
 
-            // Defining composite primary key for ProjectRole
-            modelBuilder.Entity<ProjectRole>()
-                .HasKey(pr => new { pr.UserId, pr.RiskProjectId });
+            // TODO -> tohle by melo nastavit eager loading -> tohle ale vyvola errory v controllerech a muselo by se pouzivat DTO
+            //modelBuilder.Entity<User>()
+            //    .Navigation(u => u.SystemRole)
+            //    .AutoInclude();
 
             // This ensures that SystemRole cannot be deleted while there are users having this role.
             modelBuilder.Entity<User>()
@@ -85,7 +81,11 @@ namespace RiskAware.Server.Data
                 .HasForeignKey (h => h.UserId)
                 .OnDelete (DeleteBehavior.Restrict);
 
-            // TODO -> az bude namapovana phase na role, tak zajistit aby se po smazani role nemazala faze a naopak -> pouze pokud faze bude mit vic clenu nez jednoho
-        }
+            // This ensures that RiskCategory cannot be deleted while it has some risks under it.
+            modelBuilder.Entity<Risk>()
+                .HasOne(c => c.RiskCategory)
+                .WithMany(r => r.Risks)
+                .HasForeignKey(r => r.RiskCathegoryId)
+                .OnDelete(DeleteBehavior.Restrict);        }
     }
 }
