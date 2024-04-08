@@ -28,6 +28,8 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        //public ICollection<ProjectRole> ProjectRoles { get; set; } // TODO -> probrat s Dejvem
+        public Guid? ProjectRoleId { get; set; }
+        [ForeignKey(nameof(ProjectRoleId))]
+        public virtual ProjectRole ProjectRole { get; set; }
     }
 }

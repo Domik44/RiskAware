@@ -11,13 +11,13 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        //public Guid RiskProjectId { get; set; }
-        //[ForeignKey(nameof(RiskProjectId))]
-        //public virtual RiskProject RiskProject { get; set; }
+        public Guid RiskProjectId { get; set; }
+        [ForeignKey(nameof(RiskProjectId))]
+        public virtual RiskProject RiskProject { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        //public ICollection<Risk> Risks { get; set; }
+        public ICollection<Risk> Risks { get; set; }
     }
 }

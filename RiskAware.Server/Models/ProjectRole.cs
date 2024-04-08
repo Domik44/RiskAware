@@ -4,8 +4,18 @@ using System.Runtime.InteropServices;
 
 namespace RiskAware.Server.Models
 {
+    public enum RoleType
+    {
+        ProjectManager = 0,
+        RiskManager = 1,
+        TeamMember = 2,
+        ExternalMember = 3,
+        CommonUser = 4
+    }
+
     public class ProjectRole
     {
+        public Guid ProjectRoleId { get; set; }
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
@@ -14,13 +24,14 @@ namespace RiskAware.Server.Models
         [ForeignKey(nameof(RiskProjectId))]
         public RiskProject RiskProject { get; set; }
 
-        public int RoleType { get; set; } // TODO -> mozna udelat nejaky ciselnik s rolemi?
+        //public int RoleType { get; set; } // TODO -> mozna udelat nejaky ciselnik s rolemi?
+        public RoleType RoleType { get; set; }
         public bool IsReqApproved { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        //public Guid ProjectPhaseId { get; set; } // TODO -> probrat s Dejvem
+        //public Guid ProjectPhaseId { get; set; }
         //[ForeignKey(nameof(ProjectPhaseId))]
         //public virtual ProjectPhase ProjectPhase { get; set; }
     }

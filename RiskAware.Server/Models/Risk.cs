@@ -31,9 +31,9 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        //public Guid RiskCathegoryId { get; set; } // TODO -> pobavit se s dejvem
-        //[ForeignKey("RiskCathegoryId")]
-        //public virtual RiskCategory RiskCategory { get; set; }
+        public Guid RiskCathegoryId { get; set; }
+        [ForeignKey("RiskCathegoryId")]
+        public virtual RiskCategory RiskCategory { get; set; }
 
         /// <summary>
         /// 

@@ -8,7 +8,7 @@ namespace RiskAware.Server.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public int AccountState { get; set; }
-        // TODO -> mozna pridat taky nejaky IsValid atribut pro "mazani" ?
+        public bool IsValid { get; set; }
 
         /// <summary>
         /// Many to one relationship, where one user is given one role.

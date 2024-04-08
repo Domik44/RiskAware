@@ -7,7 +7,7 @@ namespace RiskAware.Server.Models
         public Guid Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int Probability { get; set; } // TODO -> vazne jako int??
+        public int Probability { get; set; } 
         public int Impact { get; set; }
         public string Threat { get; set; }
         public string Indicators { get; set; }
@@ -25,7 +25,7 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        public Guid RiskId { get; set; } // TODO -> doopravdy chci mazat kdyz se smaze riziko, nechci tam tu historii ponechat -> bylo by potreba ukladat vsechny atributy rizika
+        public Guid RiskId { get; set; }
         [ForeignKey(nameof(RiskId))]
         public virtual Risk Risk { get; set; }
 
