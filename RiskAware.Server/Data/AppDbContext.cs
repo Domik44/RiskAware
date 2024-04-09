@@ -16,25 +16,26 @@ namespace RiskAware.Server.Data
         public DbSet<ProjectRole> ProjectRoles { get; set; }
         public DbSet<Risk> Risks { get; set; }
 
+        // This would enable Lazy loading when using "virtual" property
+        // Microsoft.EntityFrameworkCore.Proxies package has to be included
+        // All models would have to use virtual for their navigation properties/collections
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //    => optionsBuilder
+        //        .UseLazyLoadingProxies();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // This ensures that "Users" table will be created.
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.ToTable("Users");
-            });
-
-            // TODO -> tohle by melo nastavit eager loading -> tohle ale vyvola errory v controllerech a muselo by se pouzivat DTO
-            //modelBuilder.Entity<User>()
-            //    .Navigation(u => u.SystemRole)
-            //    .AutoInclude();
+            // This ensures that SystemRole is always included when querying Users, no need to use .Include() for eager loading
+            modelBuilder.Entity<User>()
+                .Navigation(u => u.SystemRole)
+                .AutoInclude();
 
             // This ensures that SystemRole cannot be deleted while there are users having this role.
             modelBuilder.Entity<User>()
                 .HasOne(r => r.SystemRole)
-                .WithMany(u => u.Users)
+                .WithMany()
                 .HasForeignKey(u => u.SystemRoleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -57,7 +58,7 @@ namespace RiskAware.Server.Data
             modelBuilder.Entity<Risk>()
                 .HasOne(u => u.User)
                 .WithMany(r => r.Risks)
-                .HasForeignKey(r =>  r.UserId)
+                .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // This ensures that Project cannot be deleted while there are risks associated to it.
@@ -78,14 +79,15 @@ namespace RiskAware.Server.Data
             modelBuilder.Entity<Comment>()
                 .HasOne(u => u.User)
                 .WithMany(h => h.Comments)
-                .HasForeignKey (h => h.UserId)
-                .OnDelete (DeleteBehavior.Restrict);
+                .HasForeignKey(h => h.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             // This ensures that RiskCategory cannot be deleted while it has some risks under it.
             modelBuilder.Entity<Risk>()
                 .HasOne(c => c.RiskCategory)
                 .WithMany(r => r.Risks)
-                .HasForeignKey(r => r.RiskCathegoryId)
-                .OnDelete(DeleteBehavior.Restrict);        }
+                .HasForeignKey(r => r.RiskCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+        }
     }
 }
