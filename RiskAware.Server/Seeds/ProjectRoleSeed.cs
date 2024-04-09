@@ -41,7 +41,7 @@ namespace RiskAware.Server.Seeds
 
             foreach (var role in rolesToSeed)
             {
-                if(!context.ProjectRoles.Any(u => u.UserId == role.UserId && u.RiskProjectId == role.RiskProjectId))
+                if(!context.ProjectRoles.Any(p => p.Id == role.Id))
                 {
                     context.ProjectRoles.Add(role);
                 }

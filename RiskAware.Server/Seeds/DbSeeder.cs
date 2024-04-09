@@ -24,7 +24,7 @@ namespace RiskAware.Server.Seeds
             ProjectPhaseSeed.Seed(context);
             RiskCategorySeed.Seed(context);
             RiskSeed.Seed(context);
-            RiskHistorySeed.Seed(context); 
+            RiskHistorySeed.Seed(context);
             CommentSeed.Seed(context);
         }
     }
