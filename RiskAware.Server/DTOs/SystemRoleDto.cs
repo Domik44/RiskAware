@@ -4,7 +4,7 @@ namespace RiskAware.Server.DTOs
 {
     public class SystemRoleDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public bool IsAdministrator { get; set; }
         public string Description { get; set; }
