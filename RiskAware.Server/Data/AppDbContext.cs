@@ -57,7 +57,7 @@ namespace RiskAware.Server.Data
             // This ensures that User cannot be deleted while he has a risks created by him.
             modelBuilder.Entity<Risk>()
                 .HasOne(u => u.User)
-                .WithMany(r => r.Risks)
+                .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -71,14 +71,14 @@ namespace RiskAware.Server.Data
             // This ensures that User cannot be deleted while he is contributor to history of some risks.
             modelBuilder.Entity<RiskHistory>()
                 .HasOne(u => u.User)
-                .WithMany(h => h.RiskHistory)
+                .WithMany()
                 .HasForeignKey(r => r.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             // This ensures that User cannot be deleted while he has some comments.
             modelBuilder.Entity<Comment>()
                 .HasOne(u => u.User)
-                .WithMany(h => h.Comments)
+                .WithMany()
                 .HasForeignKey(h => h.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 

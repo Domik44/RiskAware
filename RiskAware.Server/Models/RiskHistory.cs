@@ -34,6 +34,7 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
+        [Required]
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }

@@ -170,6 +170,7 @@ namespace RiskAware.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -269,6 +270,7 @@ namespace RiskAware.Server.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -368,6 +370,7 @@ namespace RiskAware.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -608,9 +611,10 @@ namespace RiskAware.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("RiskAware.Server.Models.User", "User")
-                        .WithMany("Comments")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("RiskProject");
 
@@ -673,9 +677,10 @@ namespace RiskAware.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("RiskAware.Server.Models.User", "User")
-                        .WithMany("Risks")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("ProjectPhase");
 
@@ -706,9 +711,10 @@ namespace RiskAware.Server.Migrations
                         .IsRequired();
 
                     b.HasOne("RiskAware.Server.Models.User", "User")
-                        .WithMany("RiskHistory")
+                        .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Risk");
 
@@ -766,15 +772,9 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.User", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("ProjectRoles");
 
-                    b.Navigation("RiskHistory");
-
                     b.Navigation("RiskProjects");
-
-                    b.Navigation("Risks");
                 });
 #pragma warning restore 612, 618
         }

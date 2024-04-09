@@ -33,7 +33,8 @@ namespace RiskAware.Server.Models
         ///// <summary>
         ///// One to many relationship, where one user is creator of many comments.
         ///// </summary>
-        public ICollection<Comment> Comments { get; set; }
+        // TODO -> deleted collection check
+        //public ICollection<Comment> Comments { get; set; }
 
         ///// <summary>
         ///// 
@@ -43,11 +44,13 @@ namespace RiskAware.Server.Models
         ///// <summary>
         ///// 
         ///// </summary>
-        public ICollection<Risk> Risks { get; set; }
+        // TODO -> deleted collection check
+        //public ICollection<Risk> Risks { get; set; }
 
         ///// <summary>
         ///// 
         ///// </summary>
-        public ICollection<RiskHistory> RiskHistory { get; set; }
+        // TODO -> deleted collection check
+        //public ICollection<RiskHistory> RiskHistory { get; set; }
     }
 }

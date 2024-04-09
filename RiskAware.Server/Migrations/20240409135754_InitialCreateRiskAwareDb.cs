@@ -230,7 +230,7 @@ namespace RiskAware.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RiskProjectId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -335,7 +335,7 @@ namespace RiskAware.Server.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     RiskProjectId = table.Column<int>(type: "int", nullable: false),
                     ProjectPhaseId = table.Column<int>(type: "int", nullable: false),
                     RiskCategoryId = table.Column<int>(type: "int", nullable: false),
@@ -393,7 +393,7 @@ namespace RiskAware.Server.Migrations
                     StatusLastModif = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RiskId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
