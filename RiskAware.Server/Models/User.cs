@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
-    [Table("Users")]
+    //[Table("Users")]
     public class User : IdentityUser // TODO -> ted je Id jako string
     {
         [Required]

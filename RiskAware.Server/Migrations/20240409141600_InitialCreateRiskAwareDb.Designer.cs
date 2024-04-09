@@ -12,7 +12,7 @@ using RiskAware.Server.Data;
 namespace RiskAware.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240409135754_InitialCreateRiskAwareDb")]
+    [Migration("20240409141600_InitialCreateRiskAwareDb")]
     partial class InitialCreateRiskAwareDb
     {
         /// <inheritdoc />
@@ -528,7 +528,7 @@ namespace RiskAware.Server.Migrations
 
                     b.HasIndex("SystemRoleId");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("RiskAware.Server.Models.Vehicle", b =>

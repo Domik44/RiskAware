@@ -525,7 +525,7 @@ namespace RiskAware.Server.Migrations
 
                     b.HasIndex("SystemRoleId");
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("RiskAware.Server.Models.Vehicle", b =>
