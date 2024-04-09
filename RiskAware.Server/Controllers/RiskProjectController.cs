@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs;
 using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Controllers
@@ -28,13 +29,45 @@ namespace RiskAware.Server.Controllers
             return await _context.RiskProjects.ToListAsync();
         }
 
-        // GET: api/UserRiskProjects
+        /// <summary>
+        /// This controller method returns all projects that were created by admin only if logged user is admin.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("AdminRiskProjects")]
+        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetAdminRiskProjects()
+        {
+            //var user = User.Identity; // TODO -> switch na tohle
+            var user = await _context.Users.Include(u => u.RiskProjects).FirstOrDefaultAsync(u => u.Id == "d6f46418-2c21-43f8-b167-162fb5e3a999");
+
+            if(user == null)
+            {
+                return NoContent();
+            }
+            else if (!user.SystemRole.IsAdministrator)
+            {
+                return Unauthorized();
+            }
+
+            var riskProjects = user.RiskProjects.Select(u => 
+                new RiskProjectDto
+                {
+                    Id = u.Id,
+                    Title = u.Title
+                }).ToList();
+
+            return riskProjects;
+        }
+
+        /// <summary>
+        /// This controller method serves for getting all projects where user takes part of in some role.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("UserRiskProjects")]
-        public async Task<ActionResult<IEnumerable<RiskProject>>> GetUserRiskProjects()
+        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
             // TODO -> poresit logiku s logged userem
-            //var user = User.Identity;
-            var user = await _context.Users.FindAsync("d6f46418-2c21-43f8-b167-162fb5e3a999"); // TODO -> for swagger testing purposes
+            //var user = User.Identity; // TODO -> switch na tohle
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == "5862be25-6467-450e-81fa-1cac9578650b");
 
             if (user == null)
             {
@@ -42,19 +75,17 @@ namespace RiskAware.Server.Controllers
                 return NoContent();
             }
 
-            // TODO -> logika pro admina
-            //if(user.SystemRole.IsAdministrator == true)
-            //{
+            var query = from projectRole in _context.ProjectRoles 
+                        where projectRole.UserId == user.Id 
+                        join riskProject in _context.RiskProjects on projectRole.RiskProjectId equals riskProject.Id 
+                        select new RiskProjectDto
+                        {
+                            Id = riskProject.Id,
+                            Title = riskProject.Title
+                        };
+            var riskProjects = query.ToList();
 
-            //}
-            //else
-            //{
-
-            // TODO -> slozita logika, kde budeme muset delat joiny pomoci projectRole
-            //var projects = _context.RiskProjects.Where(u => u.Use)
-
-            //}
-            return await _context.RiskProjects.ToListAsync();
+            return Ok(riskProjects);
         }
 
         // GET: api/RiskProjects/5
