@@ -30,7 +30,7 @@ namespace RiskAware.Server.Controllers
 
         // GET: api/RiskCategory/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RiskCategory>> GetRiskCategory(Guid id)
+        public async Task<ActionResult<RiskCategory>> GetRiskCategory(int id)
         {
             var riskCategory = await _context.RiskCategories.FindAsync(id);
 
@@ -45,7 +45,7 @@ namespace RiskAware.Server.Controllers
         // PUT: api/RiskCategory/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRiskCategory(Guid id, RiskCategory riskCategory)
+        public async Task<IActionResult> PutRiskCategory(int id, RiskCategory riskCategory)
         {
             if (id != riskCategory.Id)
             {
@@ -86,7 +86,7 @@ namespace RiskAware.Server.Controllers
 
         // DELETE: api/RiskCategory/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRiskCategory(Guid id)
+        public async Task<IActionResult> DeleteRiskCategory(int id)
         {
             var riskCategory = await _context.RiskCategories.FindAsync(id);
             if (riskCategory == null)
@@ -100,7 +100,7 @@ namespace RiskAware.Server.Controllers
             return NoContent();
         }
 
-        private bool RiskCategoryExists(Guid id)
+        private bool RiskCategoryExists(int id)
         {
             return _context.RiskCategories.Any(e => e.Id == id);
         }

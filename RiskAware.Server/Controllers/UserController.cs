@@ -36,7 +36,8 @@ namespace RiskAware.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
+            //var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user == null)
             {
@@ -49,20 +50,13 @@ namespace RiskAware.Server.Controllers
         [HttpGet("{id}/systemRole")]
         public async Task<ActionResult<SystemRole>> GetUserSystemRole(string id)
         {
-            var user = await _context.Users.AsNoTracking().Include(p => p.SystemRole).FirstOrDefaultAsync(p => p.Id == id);
-            //var user = await _context.Users.FindAsync(id);
-            // var user = await _userManager.FindByIdAsync(id);
+            //var user = await _context.Users.AsNoTracking().Include(p => p.SystemRole).FirstOrDefaultAsync(p => p.Id == id);
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
 
             if (user == null)
             {
                 return NotFound();
             }
-
-            // This way its used when lazy loading
-            //var systemRole = await _context.SystemRoles.FindAsync(user.SystemRoleId);
-
-            // This way its used when eager loading is set
-            //var systemRole = user.SystemRole;
 
             // DTO needed, if we would try to send just SystemRole there could be cyclic reference and we would get error
             // System role would have a list of users which would have a system role etc..
@@ -70,6 +64,21 @@ namespace RiskAware.Server.Controllers
             return user.SystemRole;
             //return new SystemRoleDto(systemRole);
         }
+
+        //[HttpGet("{id}/systemRole")]
+        //public async Task<ActionResult<SystemRole>> GetUserSystemRole(string id)
+        //{
+        //    var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id);
+
+        //    if (user == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    // Using lazy loading
+        //    return user.SystemRole;
+        //    //return new SystemRoleDto(systemRole);
+        //}
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

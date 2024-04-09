@@ -30,7 +30,7 @@ namespace RiskAware.Server.Controllers
 
         // GET: api/ProjectPhases/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProjectPhase>> GetProjectPhase(Guid id)
+        public async Task<ActionResult<ProjectPhase>> GetProjectPhase(int id)
         {
             var projectPhase = await _context.ProjectPhases.FindAsync(id);
 
@@ -45,7 +45,7 @@ namespace RiskAware.Server.Controllers
         // PUT: api/ProjectPhases/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutProjectPhase(Guid id, ProjectPhase projectPhase)
+        public async Task<IActionResult> PutProjectPhase(int id, ProjectPhase projectPhase)
         {
             if (id != projectPhase.Id)
             {
@@ -86,7 +86,7 @@ namespace RiskAware.Server.Controllers
 
         // DELETE: api/ProjectPhases/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProjectPhase(Guid id)
+        public async Task<IActionResult> DeleteProjectPhase(int id)
         {
             var projectPhase = await _context.ProjectPhases.FindAsync(id);
             if (projectPhase == null)
@@ -100,7 +100,7 @@ namespace RiskAware.Server.Controllers
             return NoContent();
         }
 
-        private bool ProjectPhaseExists(Guid id)
+        private bool ProjectPhaseExists(int id)
         {
             return _context.ProjectPhases.Any(e => e.Id == id);
         }

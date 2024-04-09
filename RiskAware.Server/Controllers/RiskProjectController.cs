@@ -36,7 +36,7 @@ namespace RiskAware.Server.Controllers
             //var user = User.Identity;
             var user = await _context.Users.FindAsync("d6f46418-2c21-43f8-b167-162fb5e3a999"); // TODO -> for swagger testing purposes
 
-            if(user == null)
+            if (user == null)
             {
                 //TODO
                 return NoContent();
@@ -59,7 +59,7 @@ namespace RiskAware.Server.Controllers
 
         // GET: api/RiskProjects/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<RiskProject>> GetRiskProject(Guid id)
+        public async Task<ActionResult<RiskProject>> GetRiskProject(int id)
         {
             var riskProject = await _context.RiskProjects.FindAsync(id);
 
@@ -74,7 +74,7 @@ namespace RiskAware.Server.Controllers
         // PUT: api/RiskProjects/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRiskProject(Guid id, RiskProject riskProject)
+        public async Task<IActionResult> PutRiskProject(int id, RiskProject riskProject)
         {
             if (id != riskProject.Id)
             {
@@ -126,7 +126,7 @@ namespace RiskAware.Server.Controllers
 
         // DELETE: api/RiskProjects/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRiskProject(Guid id)
+        public async Task<IActionResult> DeleteRiskProject(int id)
         {
             var riskProject = await _context.RiskProjects.FindAsync(id);
             if (riskProject == null)
@@ -140,7 +140,7 @@ namespace RiskAware.Server.Controllers
             return NoContent();
         }
 
-        private bool RiskProjectExists(Guid id)
+        private bool RiskProjectExists(int id)
         {
             return _context.RiskProjects.Any(e => e.Id == id);
         }

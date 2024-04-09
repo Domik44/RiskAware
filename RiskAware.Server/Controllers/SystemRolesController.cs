@@ -12,47 +12,47 @@ namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RiskController : ControllerBase
+    public class SystemRolesController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public RiskController(AppDbContext context)
+        public SystemRolesController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Risk
+        // GET: api/SystemRoles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Risk>>> GetRisks()
+        public async Task<ActionResult<IEnumerable<SystemRole>>> GetSystemRoles()
         {
-            return await _context.Risks.ToListAsync();
+            return await _context.SystemRoles.ToListAsync();
         }
 
-        // GET: api/Risk/5
+        // GET: api/SystemRoles/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Risk>> GetRisk(int id)
+        public async Task<ActionResult<SystemRole>> GetSystemRole(int id)
         {
-            var risk = await _context.Risks.FindAsync(id);
+            var systemRole = await _context.SystemRoles.FindAsync(id);
 
-            if (risk == null)
+            if (systemRole == null)
             {
                 return NotFound();
             }
 
-            return risk;
+            return systemRole;
         }
 
-        // PUT: api/Risk/5
+        // PUT: api/SystemRoles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRisk(int id, Risk risk)
+        public async Task<IActionResult> PutSystemRole(int id, SystemRole systemRole)
         {
-            if (id != risk.Id)
+            if (id != systemRole.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(risk).State = EntityState.Modified;
+            _context.Entry(systemRole).State = EntityState.Modified;
 
             try
             {
@@ -60,7 +60,7 @@ namespace RiskAware.Server.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!RiskExists(id))
+                if (!SystemRoleExists(id))
                 {
                     return NotFound();
                 }
@@ -73,36 +73,36 @@ namespace RiskAware.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Risk
+        // POST: api/SystemRoles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Risk>> PostRisk(Risk risk)
+        public async Task<ActionResult<SystemRole>> PostSystemRole(SystemRole systemRole)
         {
-            _context.Risks.Add(risk);
+            _context.SystemRoles.Add(systemRole);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRisk", new { id = risk.Id }, risk);
+            return CreatedAtAction("GetSystemRole", new { id = systemRole.Id }, systemRole);
         }
 
-        // DELETE: api/Risk/5
+        // DELETE: api/SystemRoles/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRisk(int id)
+        public async Task<IActionResult> DeleteSystemRole(int id)
         {
-            var risk = await _context.Risks.FindAsync(id);
-            if (risk == null)
+            var systemRole = await _context.SystemRoles.FindAsync(id);
+            if (systemRole == null)
             {
                 return NotFound();
             }
 
-            _context.Risks.Remove(risk);
+            _context.SystemRoles.Remove(systemRole);
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        private bool RiskExists(int id)
+        private bool SystemRoleExists(int id)
         {
-            return _context.Risks.Any(e => e.Id == id);
+            return _context.SystemRoles.Any(e => e.Id == id);
         }
     }
 }
