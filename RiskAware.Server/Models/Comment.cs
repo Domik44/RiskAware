@@ -4,7 +4,7 @@ namespace RiskAware.Server.Models
 {
     public class Comment
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Text { get; set; }
 
         /// <summary>
@@ -12,13 +12,13 @@ namespace RiskAware.Server.Models
         /// </summary>
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
+        public User User { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public Guid RiskProjectId { get; set; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        public int RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
-        public virtual RiskProject RiskProject { get; set; }
+        public RiskProject RiskProject { get; set; }
     }
 }

@@ -15,12 +15,12 @@ namespace RiskAware.Server.Models
 
     public class ProjectRole
     {
-        public Guid ProjectRoleId { get; set; }
+        public int Id { get; set; }
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
 
-        public Guid RiskProjectId { get; set; }
+        public int RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
         public RiskProject RiskProject { get; set; }
         public RoleType RoleType { get; set; }
@@ -29,8 +29,8 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        //public Guid ProjectPhaseId { get; set; }
+        //public int ProjectPhaseId { get; set; }
         //[ForeignKey(nameof(ProjectPhaseId))]
-        //public virtual ProjectPhase ProjectPhase { get; set; }
+        //public ProjectPhase ProjectPhase { get; set; }
     }
 }

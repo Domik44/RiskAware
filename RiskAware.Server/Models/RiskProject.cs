@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
     public class RiskProject 
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
+        [Required]
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime Start {  get; set; }
@@ -15,7 +17,7 @@ namespace RiskAware.Server.Models
 
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
+        public User User { get; set; }
 
         /// <summary>
         /// 

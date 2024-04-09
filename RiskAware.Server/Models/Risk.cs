@@ -4,7 +4,7 @@ namespace RiskAware.Server.Models
 {
     public class Risk
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public DateTime Created { get; set; }
 
         /// <summary>
@@ -12,28 +12,28 @@ namespace RiskAware.Server.Models
         /// </summary>
         public string UserId { get; set; }
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public User User { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public Guid RiskProjectId { get; set; }
+        public int RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
-        public virtual RiskProject RiskProject { get; set; }
+        public RiskProject RiskProject { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public Guid ProjectPhaseId { get; set; }
+        public int ProjectPhaseId { get; set; }
         [ForeignKey("ProjectPhaseId")]
-        public virtual ProjectPhase ProjectPhase { get; set; }
+        public ProjectPhase ProjectPhase { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public Guid RiskCathegoryId { get; set; }
+        public int RiskCategoryId { get; set; }
         [ForeignKey("RiskCathegoryId")]
-        public virtual RiskCategory RiskCategory { get; set; }
+        public RiskCategory RiskCategory { get; set; }
 
         /// <summary>
         /// 

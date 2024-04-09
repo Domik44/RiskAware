@@ -4,16 +4,16 @@ namespace RiskAware.Server.Models
 {
     public class RiskCategory
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
-        public Guid RiskProjectId { get; set; }
+        public int RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
-        public virtual RiskProject RiskProject { get; set; }
+        public RiskProject RiskProject { get; set; }
 
         /// <summary>
         /// 

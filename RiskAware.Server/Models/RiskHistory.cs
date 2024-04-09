@@ -1,12 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
     public class RiskHistory
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        [Range(1,5)]
         public int Probability { get; set; } 
         public int Impact { get; set; }
         public string Threat { get; set; }
@@ -25,15 +27,15 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        public Guid RiskId { get; set; }
+        public int RiskId { get; set; }
         [ForeignKey(nameof(RiskId))]
-        public virtual Risk Risk { get; set; }
+        public Risk Risk { get; set; }
 
         /// <summary>
         /// 
         /// </summary>
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
-        public virtual User User { get; set; }
+        public User User { get; set; }
     }
 }

@@ -7,7 +7,7 @@ namespace RiskAware.Server.Models
     /// </summary>
     public class ProjectPhase
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public int Order { get; set; }
         public string Name { get; set; }
         public DateTime Start { get; set; }
@@ -16,20 +16,20 @@ namespace RiskAware.Server.Models
         /// <summary>
         /// 
         /// </summary>
-        public Guid RiskProjectId { get; set; }
+        public int RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
-        public virtual RiskProject RiskProject { get; set; }
+        public RiskProject RiskProject { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
+        ///// <summary>
+        ///// 
+        ///// </summary>
         public ICollection<Risk> Risks { get; set; }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public Guid? ProjectRoleId { get; set; }
+        ///// <summary>
+        ///// 
+        ///// </summary>
+        public int? ProjectRoleId { get; set; }
         [ForeignKey(nameof(ProjectRoleId))]
-        public virtual ProjectRole ProjectRole { get; set; }
+        public ProjectRole ProjectRole { get; set; }
     }
 }
