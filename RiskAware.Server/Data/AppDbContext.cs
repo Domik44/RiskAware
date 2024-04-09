@@ -27,6 +27,9 @@ namespace RiskAware.Server.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // This maps User model to Users table in Database, needed because User is inheriting from Identity.
+            modelBuilder.Entity<User>().ToTable("Users");
+
             // This ensures that SystemRole is always included when querying Users, no need to use .Include() for eager loading
             modelBuilder.Entity<User>()
                 .Navigation(u => u.SystemRole)
