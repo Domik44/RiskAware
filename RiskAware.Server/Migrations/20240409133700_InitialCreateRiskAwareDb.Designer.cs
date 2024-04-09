@@ -12,7 +12,7 @@ using RiskAware.Server.Data;
 namespace RiskAware.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240408093207_InitialCreateRiskAwareDb")]
+    [Migration("20240409133700_InitialCreateRiskAwareDb")]
     partial class InitialCreateRiskAwareDb
     {
         /// <inheritdoc />
@@ -160,12 +160,14 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.Comment", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RiskProjectId")
-                        .HasColumnType("uniqueidentifier");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("RiskProjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
@@ -184,9 +186,11 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.ProjectPhase", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("End")
                         .HasColumnType("datetime2");
@@ -197,11 +201,11 @@ namespace RiskAware.Server.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
-                    b.Property<Guid?>("ProjectRoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("ProjectRoleId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RiskProjectId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RiskProjectId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Start")
                         .HasColumnType("datetime2");
@@ -217,15 +221,17 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.ProjectRole", b =>
                 {
-                    b.Property<Guid>("ProjectRoleId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<bool>("IsReqApproved")
                         .HasColumnType("bit");
 
-                    b.Property<Guid>("RiskProjectId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RiskProjectId")
+                        .HasColumnType("int");
 
                     b.Property<int>("RoleType")
                         .HasColumnType("int");
@@ -233,7 +239,7 @@ namespace RiskAware.Server.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ProjectRoleId");
+                    b.HasKey("Id");
 
                     b.HasIndex("RiskProjectId");
 
@@ -244,21 +250,26 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.Risk", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("ProjectPhaseId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("ProjectPhaseId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RiskCathegoryId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RiskCategoryId")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("RiskProjectId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int?>("RiskCathegoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RiskProjectId")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
@@ -267,7 +278,7 @@ namespace RiskAware.Server.Migrations
 
                     b.HasIndex("ProjectPhaseId");
 
-                    b.HasIndex("RiskCathegoryId");
+                    b.HasIndex("RiskCategoryId");
 
                     b.HasIndex("RiskProjectId");
 
@@ -278,9 +289,11 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.RiskCategory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -288,8 +301,8 @@ namespace RiskAware.Server.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("RiskProjectId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RiskProjectId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -300,9 +313,11 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.RiskHistory", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -340,8 +355,8 @@ namespace RiskAware.Server.Migrations
                     b.Property<DateTime>("RiskEventOccured")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("RiskId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("RiskId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .HasColumnType("nvarchar(max)");
@@ -369,9 +384,11 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.RiskProject", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -392,6 +409,7 @@ namespace RiskAware.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
@@ -406,9 +424,11 @@ namespace RiskAware.Server.Migrations
 
             modelBuilder.Entity("RiskAware.Server.Models.SystemRole", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -447,12 +467,14 @@ namespace RiskAware.Server.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsValid")
                         .HasColumnType("bit");
 
                     b.Property<string>("LastName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("LockoutEnabled")
@@ -481,8 +503,8 @@ namespace RiskAware.Server.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("SystemRoleId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<int>("SystemRoleId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
@@ -503,7 +525,7 @@ namespace RiskAware.Server.Migrations
 
                     b.HasIndex("SystemRoleId");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
                 });
 
             modelBuilder.Entity("RiskAware.Server.Models.Vehicle", b =>
@@ -643,7 +665,7 @@ namespace RiskAware.Server.Migrations
 
                     b.HasOne("RiskAware.Server.Models.RiskCategory", "RiskCategory")
                         .WithMany("Risks")
-                        .HasForeignKey("RiskCathegoryId")
+                        .HasForeignKey("RiskCategoryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -709,7 +731,7 @@ namespace RiskAware.Server.Migrations
             modelBuilder.Entity("RiskAware.Server.Models.User", b =>
                 {
                     b.HasOne("RiskAware.Server.Models.SystemRole", "SystemRole")
-                        .WithMany("Users")
+                        .WithMany()
                         .HasForeignKey("SystemRoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -743,11 +765,6 @@ namespace RiskAware.Server.Migrations
                     b.Navigation("RiskCategories");
 
                     b.Navigation("Risks");
-                });
-
-            modelBuilder.Entity("RiskAware.Server.Models.SystemRole", b =>
-                {
-                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("RiskAware.Server.Models.User", b =>

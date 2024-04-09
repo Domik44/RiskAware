@@ -29,7 +29,8 @@ namespace RiskAware.Server.Migrations
                 name: "SystemRoles",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsAdministrator = table.Column<bool>(type: "bit", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -76,15 +77,15 @@ namespace RiskAware.Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Users",
+                name: "AspNetUsers",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AccountState = table.Column<int>(type: "int", nullable: false),
                     IsValid = table.Column<bool>(type: "bit", nullable: false),
-                    SystemRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    SystemRoleId = table.Column<int>(type: "int", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -102,9 +103,9 @@ namespace RiskAware.Server.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Users", x => x.Id);
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Users_SystemRoles_SystemRoleId",
+                        name: "FK_AspNetUsers_SystemRoles_SystemRoleId",
                         column: x => x.SystemRoleId,
                         principalTable: "SystemRoles",
                         principalColumn: "Id",
@@ -125,9 +126,9 @@ namespace RiskAware.Server.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_AspNetUserClaims_Users_UserId",
+                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -145,9 +146,9 @@ namespace RiskAware.Server.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_AspNetUserLogins_Users_UserId",
+                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -169,9 +170,9 @@ namespace RiskAware.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_AspNetUserRoles_Users_UserId",
+                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -189,9 +190,9 @@ namespace RiskAware.Server.Migrations
                 {
                     table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_AspNetUserTokens_Users_UserId",
+                        name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -200,8 +201,9 @@ namespace RiskAware.Server.Migrations
                 name: "RiskProjects",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -214,9 +216,9 @@ namespace RiskAware.Server.Migrations
                 {
                     table.PrimaryKey("PK_RiskProjects", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RiskProjects_Users_UserId",
+                        name: "FK_RiskProjects_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalTable: "Users",
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -225,63 +227,66 @@ namespace RiskAware.Server.Migrations
                 name: "Comments",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RiskProjectId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Comments_RiskProjects_RiskProjectId",
                         column: x => x.RiskProjectId,
                         principalTable: "RiskProjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Comments_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "ProjectRoles",
                 columns: table => new
                 {
-                    ProjectRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RiskProjectId = table.Column<int>(type: "int", nullable: false),
                     RoleType = table.Column<int>(type: "int", nullable: false),
                     IsReqApproved = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ProjectRoles", x => x.ProjectRoleId);
+                    table.PrimaryKey("PK_ProjectRoles", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ProjectRoles_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ProjectRoles_RiskProjects_RiskProjectId",
                         column: x => x.RiskProjectId,
                         principalTable: "RiskProjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_ProjectRoles_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "RiskCategories",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RiskProjectId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -298,13 +303,14 @@ namespace RiskAware.Server.Migrations
                 name: "ProjectPhases",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Order = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Start = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProjectRoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: true)
+                    RiskProjectId = table.Column<int>(type: "int", nullable: false),
+                    ProjectRoleId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -313,7 +319,7 @@ namespace RiskAware.Server.Migrations
                         name: "FK_ProjectPhases_ProjectRoles_ProjectRoleId",
                         column: x => x.ProjectRoleId,
                         principalTable: "ProjectRoles",
-                        principalColumn: "ProjectRoleId");
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_ProjectPhases_RiskProjects_RiskProjectId",
                         column: x => x.RiskProjectId,
@@ -326,16 +332,24 @@ namespace RiskAware.Server.Migrations
                 name: "Risks",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    RiskProjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    ProjectPhaseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RiskCathegoryId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    RiskProjectId = table.Column<int>(type: "int", nullable: false),
+                    ProjectPhaseId = table.Column<int>(type: "int", nullable: false),
+                    RiskCategoryId = table.Column<int>(type: "int", nullable: false),
+                    RiskCathegoryId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Risks", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Risks_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Risks_ProjectPhases_ProjectPhaseId",
                         column: x => x.ProjectPhaseId,
@@ -343,8 +357,8 @@ namespace RiskAware.Server.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Risks_RiskCategories_RiskCathegoryId",
-                        column: x => x.RiskCathegoryId,
+                        name: "FK_Risks_RiskCategories_RiskCategoryId",
+                        column: x => x.RiskCategoryId,
                         principalTable: "RiskCategories",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -354,19 +368,14 @@ namespace RiskAware.Server.Migrations
                         principalTable: "RiskProjects",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Risks_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
                 name: "RiskHistory",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Probability = table.Column<int>(type: "int", nullable: false),
@@ -383,24 +392,24 @@ namespace RiskAware.Server.Migrations
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     StatusLastModif = table.Column<DateTime>(type: "datetime2", nullable: false),
                     End = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RiskId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RiskId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RiskHistory", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_RiskHistory_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_RiskHistory_Risks_RiskId",
                         column: x => x.RiskId,
                         principalTable: "Risks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_RiskHistory_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -429,6 +438,23 @@ namespace RiskAware.Server.Migrations
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "EmailIndex",
+                table: "AspNetUsers",
+                column: "NormalizedEmail");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_SystemRoleId",
+                table: "AspNetUsers",
+                column: "SystemRoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "UserNameIndex",
+                table: "AspNetUsers",
+                column: "NormalizedUserName",
+                unique: true,
+                filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Comments_RiskProjectId",
@@ -486,9 +512,9 @@ namespace RiskAware.Server.Migrations
                 column: "ProjectPhaseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Risks_RiskCathegoryId",
+                name: "IX_Risks_RiskCategoryId",
                 table: "Risks",
-                column: "RiskCathegoryId");
+                column: "RiskCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Risks_RiskProjectId",
@@ -499,23 +525,6 @@ namespace RiskAware.Server.Migrations
                 name: "IX_Risks_UserId",
                 table: "Risks",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "EmailIndex",
-                table: "Users",
-                column: "NormalizedEmail");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Users_SystemRoleId",
-                table: "Users",
-                column: "SystemRoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "UserNameIndex",
-                table: "Users",
-                column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
         }
 
         /// <inheritdoc />
@@ -564,7 +573,7 @@ namespace RiskAware.Server.Migrations
                 name: "RiskProjects");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "AspNetUsers");
 
             migrationBuilder.DropTable(
                 name: "SystemRoles");
