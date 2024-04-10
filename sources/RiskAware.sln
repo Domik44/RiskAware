@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34723.18
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskAware.Server", "RiskAware.Server\RiskAware.Server.csproj", "{7A4F8826-FFCF-45CB-95C5-6525009FE6F6}"
 EndProject
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "riskaware.client", "riskaware.client\riskaware.client.esproj", "{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "riskaware.client", "riskaware.client\riskaware.client.esproj", "{8925C2BC-AE46-479E-A99B-7CBE575300A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,12 +17,10 @@ Global
 		{7A4F8826-FFCF-45CB-95C5-6525009FE6F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7A4F8826-FFCF-45CB-95C5-6525009FE6F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7A4F8826-FFCF-45CB-95C5-6525009FE6F6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{8925C2BC-AE46-479E-A99B-7CBE575300A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8925C2BC-AE46-479E-A99B-7CBE575300A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8925C2BC-AE46-479E-A99B-7CBE575300A0}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{8925C2BC-AE46-479E-A99B-7CBE575300A0}.Release|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
