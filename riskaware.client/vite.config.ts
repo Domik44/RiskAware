@@ -43,7 +43,7 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      '^/weatherforecast': {
+      '^/riskproject': {    // todo /api/? /riskproject?
         target,
         secure: false
       }

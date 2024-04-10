@@ -41,10 +41,7 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
                   <NavLink tag={Link} className="text-dark" to="/">Všechny projekty</NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/MyProjects">Vlastní projekty</NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/forecast">Forecast</NavLink>
+                  <NavLink tag={Link} className="text-dark" to="/myProjects">Vlastní projekty</NavLink>
                 </NavItem>
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/login" onClick={logout}>Odhlásit se</NavLink>

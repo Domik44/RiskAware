@@ -1,5 +1,5 @@
 ﻿import { ProjectList } from "./components/ProjectList";
-import { Forecast } from "./components/Forecast";
+import { MyProjectList } from "./components/MyProjectList";
 import Login from './components/Login';
 
 const AppRoutes = [
@@ -9,8 +9,8 @@ const AppRoutes = [
     isProtected: true
   },
   {
-    path: '/forecast',
-    element: <Forecast />,
+    path: '/myProjects',
+    element: <MyProjectList />,
     isProtected: true
   },
   {
