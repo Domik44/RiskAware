@@ -12,11 +12,20 @@ namespace RiskAware.Server.Seeds
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Synchronous seeding
-            VehicleSeed.Seed(context);
+            VehicleSeed.Seed(context); // TODO SMAZAT
+            SystemRoleSeed.Seed(context);
 
             // Asynchronous seeding
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-            await UserSeed.Seed(userManager);
+            await UserSeed.Seed(userManager, context);
+
+            RiskProjectSeed.Seed(context);
+            ProjectRoleSeed.Seed(context);
+            ProjectPhaseSeed.Seed(context);
+            RiskCategorySeed.Seed(context);
+            RiskSeed.Seed(context);
+            RiskHistorySeed.Seed(context);
+            CommentSeed.Seed(context);
         }
     }
 }
