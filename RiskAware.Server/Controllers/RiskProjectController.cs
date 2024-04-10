@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskProject;
@@ -11,10 +12,12 @@ namespace RiskAware.Server.Controllers
     public class RiskProjectController : ControllerBase // TODO -> switch na DTO!!
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public RiskProjectController(AppDbContext context)
+        public RiskProjectController(AppDbContext context, UserManager<IdentityUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         ////////////////// GET METHODS //////////////////
@@ -94,9 +97,10 @@ namespace RiskAware.Server.Controllers
         [HttpGet("UserRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
-            var userIdentity = User.Identity;
+            var userIdentity = await _userManager.GetUserAsync(User);
+            //var userIdentity = User.Identity;
             var user = await _context.Users
-                .Where(u => u.Id == userIdentity.Name).FirstOrDefaultAsync();
+                .Where(u => u.Id == userIdentity.Id).FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -122,7 +126,8 @@ namespace RiskAware.Server.Controllers
                         };
             var riskProjects = query.ToList();
 
-            return Ok(riskProjects);
+            return riskProjects;
+            //return Ok(riskProjects);
         }
 
         /// <summary>
