@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
@@ -9,12 +10,13 @@ namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RiskProjectController : ControllerBase // TODO -> switch na DTO!!
     {
         private readonly AppDbContext _context;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<User> _userManager;
 
-        public RiskProjectController(AppDbContext context, UserManager<IdentityUser> userManager)
+        public RiskProjectController(AppDbContext context, UserManager<User> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -94,6 +96,7 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        [Authorize]
         [HttpGet("UserRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
