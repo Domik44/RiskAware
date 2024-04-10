@@ -6,6 +6,10 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskAware.Server", "RiskAware.Server\RiskAware.Server.csproj", "{7A4F8826-FFCF-45CB-95C5-6525009FE6F6}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "riskaware.client", "riskaware.client\riskaware.client.esproj", "{86E3CF4E-D0CB-4273-8CC2-E8E58FD04C5D}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AAC21DBB-8904-4B59-9513-101D68188944}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
