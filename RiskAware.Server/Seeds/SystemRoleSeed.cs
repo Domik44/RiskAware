@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RiskAware.Server.Data;
+﻿using RiskAware.Server.Data;
 using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Seeds
@@ -26,7 +25,7 @@ namespace RiskAware.Server.Seeds
 
             foreach (var systemRole in systemRolesToSeed)
             {
-                if(!context.SystemRoles.Any(s => s.Id == systemRole.Id))
+                if (!context.SystemRoles.Any(s => s.Id == systemRole.Id))
                 {
                     context.SystemRoles.Add(systemRole);
                 }

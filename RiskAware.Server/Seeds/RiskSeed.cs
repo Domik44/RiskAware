@@ -51,9 +51,9 @@ namespace RiskAware.Server.Seeds
                 }
             };
 
-            foreach(var risk in risksToBeAdded)
+            foreach (var risk in risksToBeAdded)
             {
-                if(!context.Risks.Any(p =>  p.Id == risk.Id))
+                if (!context.Risks.Any(p => p.Id == risk.Id))
                 {
                     context.Risks.Add(risk);
                 }

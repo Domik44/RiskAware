@@ -8,8 +8,8 @@ namespace RiskAware.Server.Models
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        [Range(1,5)]
-        public int Probability { get; set; } 
+        [Range(1, 5)]
+        public int Probability { get; set; }
         public int Impact { get; set; }
         public string Threat { get; set; }
         public string Indicators { get; set; }

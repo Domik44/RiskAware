@@ -33,7 +33,8 @@ namespace RiskAware.Server
                 .AddDefaultTokenProviders();
 
             // Cookies settings
-            builder.Services.ConfigureApplicationCookie(options => {
+            builder.Services.ConfigureApplicationCookie(options =>
+            {
                 options.LoginPath = "/login";
                 options.Cookie.HttpOnly = true;
                 options.Cookie.SameSite = SameSiteMode.None;

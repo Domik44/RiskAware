@@ -23,7 +23,7 @@ namespace RiskAware.Server.Seeds
 
             foreach (var project in projectsToSeed)
             {
-                if(!context.RiskProjects.Any(p => p.Id == project.Id))
+                if (!context.RiskProjects.Any(p => p.Id == project.Id))
                 {
                     context.RiskProjects.Add(project);
                 }

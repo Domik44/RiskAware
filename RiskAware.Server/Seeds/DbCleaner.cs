@@ -23,15 +23,15 @@ namespace RiskAware.Server.Seeds
             {
                 await userManager.DeleteAsync(user);
             }
-             // var user = userManager.Users.First(p => p.FirstName == "Pepa");
-             // await userManager.DeleteAsync(user);
+            // var user = userManager.Users.First(p => p.FirstName == "Pepa");
+            // await userManager.DeleteAsync(user);
 
             var systemRoles = context.SystemRoles.ToList();
             context.SystemRoles.RemoveRange(systemRoles);
 
             // var projectPhases = context.ProjectPhases.ToList();
             // context.ProjectPhases.RemoveRange(projectPhases);
-            
+
             // var comments = context.Comments.ToList();
             // context.Comments.RemoveRange(comments);
             //

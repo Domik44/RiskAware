@@ -116,9 +116,9 @@ namespace RiskAware.Server.Seeds
                 }
             };
 
-            foreach(var riskHistory in riskHistoryToBeAdded)
+            foreach (var riskHistory in riskHistoryToBeAdded)
             {
-                if(!context.RiskHistory.Any(h => h.Id == riskHistory.Id))
+                if (!context.RiskHistory.Any(h => h.Id == riskHistory.Id))
                 {
                     context.RiskHistory.Add(riskHistory);
                 }

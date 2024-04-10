@@ -19,7 +19,7 @@ namespace RiskAware.Server.Seeds
 
             foreach (var comment in commentsToBeAdded)
             {
-                if(!context.Comments.Any(c => c.Id == comment.Id))
+                if (!context.Comments.Any(c => c.Id == comment.Id))
                 {
                     context.Comments.Add(comment);
                 }

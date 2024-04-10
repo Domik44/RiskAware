@@ -25,7 +25,7 @@ namespace RiskAware.Server.Seeds
 
             foreach (var category in categoriesToBeAdded)
             {
-                if(!context.RiskCategories.Any(c => c.Id == category.Id))
+                if (!context.RiskCategories.Any(c => c.Id == category.Id))
                 {
                     context.RiskCategories.Add(category);
                 }

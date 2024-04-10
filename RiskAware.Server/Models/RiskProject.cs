@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
-    public class RiskProject 
+    public class RiskProject
     {
         public int Id { get; set; }
         [Required]
         public string Title { get; set; }
         public string Description { get; set; }
-        public DateTime Start {  get; set; }
+        public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public bool IsValid { get; set; } // TODO -> nezapomenout, ze mazani se resi pomoci IsValid
         public int Scale { get; set; }

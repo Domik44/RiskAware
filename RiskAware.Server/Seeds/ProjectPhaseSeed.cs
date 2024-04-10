@@ -45,7 +45,7 @@ namespace RiskAware.Server.Seeds
 
             foreach (var phase in projectPhasesToBeAdded)
             {
-                if(!context.ProjectPhases.Any(p => p.Id == phase.Id))
+                if (!context.ProjectPhases.Any(p => p.Id == phase.Id))
                 {
                     context.ProjectPhases.Add(phase);
                 }
