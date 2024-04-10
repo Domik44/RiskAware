@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Validations;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs;
 using RiskAware.Server.Models;
@@ -22,24 +23,47 @@ namespace RiskAware.Server.Controllers
             _context = context;
         }
 
-        // GET: api/RiskProjects
+        ////////////////// GET METHODS //////////////////
+
+        /// <summary>
+        /// This controller method return all projects that are stored in database.
+        /// </summary>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RiskProject>>> GetRiskProjects()
+        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
         {
-            return await _context.RiskProjects.ToListAsync();
+            return await _context.RiskProjects
+                .Select(u =>
+                    new RiskProjectDto
+                    {
+                        Id = u.Id,
+                        Title = u.Title,
+                        Start = u.Start,
+                        End = u.End,
+                        NumOfMembers = u.ProjectRoles.Count,
+                        ProjectManagerName = u.ProjectRoles
+                            .Where(pr => pr.RoleType == RoleType.ProjectManager)
+                            .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+                            .FirstOrDefault()
+
+                    }
+                )
+                .ToListAsync();
         }
 
         /// <summary>
         /// This controller method returns all projects that were created by admin only if logged user is admin.
         /// </summary>
-        /// <returns></returns>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
         [HttpGet("AdminRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetAdminRiskProjects()
         {
             //var user = User.Identity; // TODO -> switch na tohle
-            var user = await _context.Users.Include(u => u.RiskProjects).FirstOrDefaultAsync(u => u.Id == "d6f46418-2c21-43f8-b167-162fb5e3a999");
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == "d6f46418-2c21-43f8-b167-162fb5e3a999");
 
-            if(user == null)
+            if (user == null)
             {
                 return NoContent();
             }
@@ -48,47 +72,70 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized();
             }
 
-            var riskProjects = user.RiskProjects.Select(u => 
-                new RiskProjectDto
-                {
-                    Id = u.Id,
-                    Title = u.Title
-                }).ToList();
+            var query = from riskProject in _context.RiskProjects
+                        where riskProject.UserId == user.Id
+                        select new RiskProjectDto
+                        {
+                            Id = riskProject.Id,
+                            Title = riskProject.Title,
+                            Start = riskProject.Start,
+                            End = riskProject.End,
+                            NumOfMembers = riskProject.ProjectRoles.Count,
+                            ProjectManagerName = riskProject.ProjectRoles
+                                .Where(pr => pr.RoleType == RoleType.ProjectManager)
+                                .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+                                .FirstOrDefault()
+                        };
+
+            var riskProjects = query.ToList();
 
             return riskProjects;
         }
 
         /// <summary>
-        /// This controller method serves for getting all projects where user takes part of in some role.
+        /// This controller method serves for getting all projects where user has a role.
         /// </summary>
-        /// <returns></returns>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
         [HttpGet("UserRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
-            // TODO -> poresit logiku s logged userem
             //var user = User.Identity; // TODO -> switch na tohle
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == "5862be25-6467-450e-81fa-1cac9578650b");
 
             if (user == null)
             {
-                //TODO
+                //TODO -> user is not logged in
                 return NoContent();
             }
 
-            var query = from projectRole in _context.ProjectRoles 
-                        where projectRole.UserId == user.Id 
-                        join riskProject in _context.RiskProjects on projectRole.RiskProjectId equals riskProject.Id 
+
+            var query = from projectRole in _context.ProjectRoles
+                        where projectRole.UserId == user.Id
+                        join riskProject in _context.RiskProjects on projectRole.RiskProjectId equals riskProject.Id
                         select new RiskProjectDto
                         {
                             Id = riskProject.Id,
-                            Title = riskProject.Title
+                            Title = riskProject.Title,
+                            Start = riskProject.Start,
+                            End = riskProject.End,
+                            NumOfMembers = riskProject.ProjectRoles.Count,
+                            ProjectManagerName = riskProject.ProjectRoles
+                                .Where(pr => pr.RoleType == RoleType.ProjectManager)
+                                .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+                                .FirstOrDefault()
                         };
             var riskProjects = query.ToList();
 
             return Ok(riskProjects);
         }
 
-        // GET: api/RiskProjects/5
+        /// <summary>
+        /// This controller method returns a detail of a project with specific id.
+        /// </summary>
+        /// 
+        /// <param name="id"> Id of a project. </param>
+        /// <returns> Returns DTO used for risk project detail. </returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskProject>> GetRiskProject(int id)
         {
@@ -102,6 +149,32 @@ namespace RiskAware.Server.Controllers
             return riskProject;
         }
 
+        ////////////////// POST METHODS //////////////////
+
+        // POST: api/RiskProjects
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<RiskProject>> PostRiskProject(RiskProject riskProject)
+        {
+            //User user = (User)User.Identity;
+            //if (user.SystemRole.IsAdministrator)
+            //{
+            //    _context.RiskProjects.Add(riskProject);
+            //    await _context.SaveChangesAsync();
+
+            //}
+            //else
+            //{
+            //    //TODO -> not authorized
+            //}
+
+            _context.RiskProjects.Add(riskProject);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction("GetRiskProject", new { id = riskProject.Id }, riskProject);
+        }
+
+        ////////////////// PUT METHODS //////////////////
+        
         // PUT: api/RiskProjects/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -133,28 +206,8 @@ namespace RiskAware.Server.Controllers
             return NoContent();
         }
 
-        // POST: api/RiskProjects
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<RiskProject>> PostRiskProject(RiskProject riskProject)
-        {
-            //User user = (User)User.Identity;
-            //if (user.SystemRole.IsAdministrator)
-            //{
-            //    _context.RiskProjects.Add(riskProject);
-            //    await _context.SaveChangesAsync();
-
-            //}
-            //else
-            //{
-            //    //TODO -> not authorized
-            //}
-
-            _context.RiskProjects.Add(riskProject);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetRiskProject", new { id = riskProject.Id }, riskProject);
-        }
-
+        ////////////////// DELETE METHODS //////////////////
+        
         // DELETE: api/RiskProjects/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRiskProject(int id)
