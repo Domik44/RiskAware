@@ -13,32 +13,32 @@ namespace RiskAware.Server.Seeds
                 {
                     Order = 1,
                     Name = "Úvodní studie, analýza a specifikace požadavků",
-                    Start = DateTime.Parse("20/05/2024"),
-                    End = DateTime.Parse("24/05/2024"),
+                    Start = DateTime.Parse("2024-05-20"),
+                    End = DateTime.Parse("2024-05-24"),
                     RiskProjectId = 1
                 },
                 new()
                 {
                     Order = 2,
                     Name = "Návrh a jeho oponentura",
-                    Start = DateTime.Parse("24/05/2024"),
-                    End = DateTime.Parse("30/05/2024"),
+                    Start = DateTime.Parse("2024-05-24"),
+                    End = DateTime.Parse("2024-05-30"),
                     RiskProjectId = 1
                 },
                 new()
                 {
                     Order = 3,
                     Name = "Plán projektu, plán etapy",
-                    Start = DateTime.Parse("30/05/2024"),
-                    End = DateTime.Parse("03/06/2024"),
+                    Start = DateTime.Parse("2024-05-30"),
+                    End = DateTime.Parse("2024-06-03"),
                     RiskProjectId = 1
                 },
                 new()
                 {
                     Order = 4,
                     Name = "Konfigurační řízení, prezentace projektu",
-                    Start = DateTime.Parse("03/06/2024"),
-                    End = DateTime.Parse("05/06/2024"),
+                    Start = DateTime.Parse("2024-06-03"),
+                    End = DateTime.Parse("2024-06-05"),
                     RiskProjectId = 1
                 }
             };

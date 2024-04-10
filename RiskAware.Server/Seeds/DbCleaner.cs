@@ -6,6 +6,7 @@ namespace RiskAware.Server.Seeds
 {
     public static class DbCleaner
     {
+        // todo drop all tables or whole db
         public static async Task ClearAllData(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
             //var vehicles = context.Vehicles.ToList(); // TODO SMAZAT

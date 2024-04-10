@@ -14,7 +14,7 @@ namespace RiskAware.Server.Seeds
                     Title = "PokusProj",
                     Description = "Popis tohoto projektu muze byt velice zajimavy, ale ja nejsem kreativni :)",
                     Start = DateTime.Now,
-                    End = DateTime.Parse("24/08/2024"),
+                    End = DateTime.Parse("2024-01-08"),
                     IsValid = true,
                     Scale = 5,
                     UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
