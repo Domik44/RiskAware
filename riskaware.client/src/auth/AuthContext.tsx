@@ -29,10 +29,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         });
         const data = await response.json();
         setIsLoggedIn(data.isLoggedIn);
-      } catch (error) {
+      }
+      catch (error) {
         console.error("Failed to check login status", error);
         setIsLoggedIn(false);
-      } finally {
+      }
+      finally {
         setIsLoading(false);
       }
     };
@@ -60,8 +62,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (response.ok) {
       setIsLoggedIn(true);
       navigate('/');
-    } else {
-      console.error('Login failed');
+    }
+    else {
+      throw new Error('Login failed');
     }
     setIsLoading(false);
   };
@@ -78,12 +81,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       if (response.ok) {
         setIsLoggedIn(false);
         navigate('/login');
-      } else {
+      }
+      else {
         console.error('Logout failed');
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Failed to logout', error);
-    } finally {
+    }
+    finally {
       setIsLoading(false);
     }
   };

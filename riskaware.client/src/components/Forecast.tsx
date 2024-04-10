@@ -1,5 +1,4 @@
 ﻿import { Component } from 'react';
-import './styles/Forecast.css';
 
 interface IForecast {
   date: string;
