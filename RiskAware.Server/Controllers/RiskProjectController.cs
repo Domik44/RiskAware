@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
-using RiskAware.Server.DTOs;
+using RiskAware.Server.DTOs.RiskProject;
 using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Controllers
@@ -94,8 +94,9 @@ namespace RiskAware.Server.Controllers
         [HttpGet("UserRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
-            //var user = User.Identity; // TODO -> switch na tohle
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == "5862be25-6467-450e-81fa-1cac9578650b");
+            var userIdentity = User.Identity;
+            var user = await _context.Users
+                .Where(u => u.Id == userIdentity.Name).FirstOrDefaultAsync();
 
             if (user == null)
             {

@@ -1,5 +1,9 @@
-﻿namespace RiskAware.Server.DTOs
+﻿namespace RiskAware.Server.DTOs.RiskProject
 {
+    /// <summary>
+    /// Data transfer object for collections of RiskProject entities.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     public class RiskProjectDto
     {
         public int Id { get; set; }
