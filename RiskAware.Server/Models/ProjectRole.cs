@@ -23,6 +23,7 @@ namespace RiskAware.Server.Models
         public RiskProject RiskProject { get; set; }
         public RoleType RoleType { get; set; }
         public bool IsReqApproved { get; set; }
+        // TODO -> maybe add name of role which would be set by user
 
         /// <summary>
         /// 
