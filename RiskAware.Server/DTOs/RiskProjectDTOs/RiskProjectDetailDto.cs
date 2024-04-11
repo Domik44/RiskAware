@@ -1,4 +1,6 @@
-﻿namespace RiskAware.Server.DTOs.RiskProject
+﻿using RiskAware.Server.Models;
+
+namespace RiskAware.Server.DTOs.RiskProjectDTOs
 {
     /// <summary>
     /// Data trasnfer object for detail tab of a RiskProject entity.
@@ -12,5 +14,14 @@
         public DateTime Start { get; set; }
         public DateTime End { get; set; }
         public ICollection<CommentDto> Comments { get; set; }
+
+        public RiskProjectDetailDto(RiskProject riskProject)
+        {
+            Title = riskProject.Title;
+            Description = riskProject.Description;
+            Start = riskProject.Start;
+            End = riskProject.End;
+            Comments = riskProject.Comments.Select(c => new CommentDto(c)).ToList();
+        }
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace RiskAware.Server.DTOs.RiskProject
+﻿namespace RiskAware.Server.DTOs.RiskProjectDTOs
 {
     /// <summary>
     /// Data transfer object for collections of RiskProject entities.

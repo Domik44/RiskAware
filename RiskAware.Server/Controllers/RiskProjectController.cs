@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
-using RiskAware.Server.DTOs.RiskProject;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
+using RiskAware.Server.DTOs;
 using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Controllers
@@ -29,6 +30,7 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : api/RiskProjects
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
         {
@@ -56,11 +58,11 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : api/RiskProjects/AdminRiskProjects
         [HttpGet("AdminRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetAdminRiskProjects()
         {
-            //var user = User.Identity; // TODO -> switch na tohle
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == "d6f46418-2c21-43f8-b167-162fb5e3a999");
+            var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
@@ -96,14 +98,12 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : api/RiskProjects/UserRiskProjects
         [Authorize]
         [HttpGet("UserRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
-            var userIdentity = await _userManager.GetUserAsync(User);
-            //var userIdentity = User.Identity;
-            var user = await _context.Users
-                .Where(u => u.Id == userIdentity.Id).FirstOrDefaultAsync();
+            var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
             {
@@ -139,18 +139,116 @@ namespace RiskAware.Server.Controllers
         /// 
         /// <param name="id"> Id of a project. </param>
         /// <returns> Returns DTO used for risk project detail. </returns>
+        /// url: api/RiskProjects/{id}
         [HttpGet("{id}")]
-        public async Task<ActionResult<RiskProject>> GetRiskProject(int id)
+        public async Task<ActionResult<RiskProjectPageDto>> GetRiskProject(int id)
         {
-            var riskProject = await _context.RiskProjects.FindAsync(id);
+            var riskProject = await _context.RiskProjects
+                .AsNoTracking()
+                .Where(pr => pr.Id == id)
+                .Include(pr => pr.Comments)
+                .ThenInclude(c => c.User)
+                .FirstOrDefaultAsync();
 
             if (riskProject == null)
             {
                 return NotFound();
             }
 
-            return riskProject;
+            var projectRoles = await _context.ProjectRoles
+                .AsNoTracking()
+                .Where(pr => pr.RiskProjectId == id)
+                .Include(pr => pr.User)
+                .Select(pr => new ProjectRoleDto
+                {
+                    Id = pr.Id,
+                    RoleName = pr.RoleType.ToString(),
+                    IsReqApproved = pr.IsReqApproved,
+                    User = new UserDto
+                    {
+                        Email = pr.User.Email,
+                        FullName = pr.User.FirstName + " " + pr.User.LastName
+                    }
+                })
+                .ToListAsync();
+
+            var riskProjectPage = new RiskProjectPageDto
+            {
+                Detail = new RiskProjectDetailDto(riskProject),
+                Members = projectRoles
+            };
+
+            return riskProjectPage;
         }
+
+        [HttpGet("{id}/Detail")]
+        public async Task<ActionResult<RiskProjectDetailDto>> GetRiskProjectDetail(int id)
+        {
+            var riskProject = await _context.RiskProjects
+                .AsNoTracking()
+                .Where(pr => pr.Id == id)
+                .Include(pr => pr.Comments)
+                .ThenInclude(c => c.User)
+                .FirstOrDefaultAsync();
+
+            if (riskProject == null)
+            {
+                return NotFound();
+            }
+
+            var riskProjectDetail = new RiskProjectDetailDto(riskProject);
+
+            return riskProjectDetail;
+        }
+
+        //[HttpGet("{id}/Phases")]
+        //public async Task<ActionResult<IEnumerable<ProjectPhaseDto>>> GetRiskProjectPhases(int id)
+        //{
+        //    var projectPhases = await _context.ProjectPhases
+        //        .Where(pp => pp.RiskProjectId == id)
+        //        .Select(pp => new ProjectPhaseDto(pp))
+        //        .ToListAsync();
+
+        //return projectPhases;
+        //}
+
+        //[HttpGet("{id}/Risks")]
+        //public async Task<ActionResult<IEnumerable<RiskDto>>> GetRiskProjectRisks(int id)
+        //{
+        //    var risks = await _context.Risks
+        //        .Where(r => r.RiskProjectId == id)
+        //        .Select(r => new RiskDto(r))
+        //        .ToListAsync();
+
+        //    return risks;
+        //}
+
+        [HttpGet("{id}/Members")]
+        public async Task<ActionResult<IEnumerable<ProjectRoleDto>>> GetRiskProjectMembers(int id)
+        {
+            // i need to get all project roles for a certain risk project and then get all users from that project roles and then get phases for each project role
+            // TODO -> add navigation property to ProjectRole for ProjectPhase so I can include it as well
+
+            var projectRoles = await _context.ProjectRoles
+                .AsNoTracking()
+                .Where(pr => pr.RiskProjectId == id)
+                .Include(pr => pr.User)
+                .Select(pr => new ProjectRoleDto
+                {
+                    Id = pr.Id,
+                    RoleName = pr.RoleType.ToString(),
+                    IsReqApproved = pr.IsReqApproved,
+                    User = new UserDto
+                    {
+                        Email = pr.User.Email,
+                        FullName = pr.User.FirstName + " " + pr.User.LastName
+                    }
+                })
+                .ToListAsync();
+
+            return projectRoles;
+        }
+
 
         ////////////////// POST METHODS //////////////////
 
