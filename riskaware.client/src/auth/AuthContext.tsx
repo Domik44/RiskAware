@@ -1,5 +1,4 @@
 ﻿import { createContext, useState, useEffect, ReactNode } from 'react';
-import { API_URL } from "./constants.tsx";
 import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
@@ -24,9 +23,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setIsLoading(true);
     const checkIsLoggedIn = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/Account/IsLoggedIn`, {
-          credentials: 'include',
-        });
+        const response = await fetch("/api/Account/IsLoggedIn");
         const data = await response.json();
         setIsLoggedIn(data.isLoggedIn);
       }
@@ -50,7 +47,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       rememberMe
     };
 
-    const response = await fetch(`${API_URL}/api/Account/login`, {
+    const response = await fetch("/api/Account/login", {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +68,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/Account/logout`, {
+      const response = await fetch("/api/Account/logout", {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
