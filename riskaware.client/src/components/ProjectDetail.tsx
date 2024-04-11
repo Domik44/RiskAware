@@ -1,8 +1,8 @@
 ﻿import { Component } from 'react';
 //import { Link } from 'react-router-dom';
-//import { formatDate } from "../helpers/DateFormatter";
+import { formatDate } from "../helpers/DateFormatter";
 //import { Button } from 'react-bootstrap';
-import { Button } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
 
 interface IComments {
   id: number;
@@ -36,11 +36,12 @@ interface IProjectDetail {
   members: IMembers[];
 }
 
-export class ProjectDetail extends Component<object, { projectDetail: IProjectDetail | undefined }> {
+export class ProjectDetail extends Component<object, { projectDetail: IProjectDetail | undefined, activeTab: string }> {
   constructor(props: object) {
     super(props);
     this.state = {
-      projectDetail: undefined
+      projectDetail: undefined,
+      activeTab: 'detail'
     };
   }
 
@@ -49,7 +50,7 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
   }
 
   render() {
-    const { projectDetail } = this.state;
+    const { projectDetail, activeTab } = this.state;
 
     const contents = projectDetail === undefined
         ? <p>Projekt nebyl nalezen.</p>
@@ -61,32 +62,56 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
             <p>"Panel"</p>
           </div>
           <div className="col-9">
-            {/*<p>"Navtaby"</p>*/}
-            {/*<p>{projectDetail.members.pop()?.user.email}</p>*/}
-            {/*<p>{projectDetail.detail.description}</p>*/}
-            <ul className="nav nav-pills" id="myTab" role="tablist">
-              <li className="nav-item" role="presentation">
-                <Button className="nav-link active" id="detail-tab" data-bs-toggle="tab" data-bs-target="#detail" role="tab" aria-controls="detail" aria-selected="true">Detail</Button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <Button className="nav-link" id="phases-tab" data-bs-toggle="tab" data-bs-target="#phases" role="tab" aria-controls="phases" aria-selected="false">Fáze</Button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <Button className="nav-link" id="risks-tab" data-bs-toggle="tab" data-bs-target="#risks" role="tab" aria-controls="risks" aria-selected="false">Rizika</Button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <Button className="nav-link" id="members-tab" data-bs-toggle="tab" data-bs-target="#members" role="tab" aria-controls="members" aria-selected="false">Členové</Button>
-              </li>
-            </ul>
-            <div className="tab-content" id="myTabContent">
-              <div className="tab-pane fade show active" id="detail" role="tabpanel" aria-labelledby="detail-tab">Popisek</div>
-              <div className="tab-pane fade" id="phases" role="tabpanel" aria-labelledby="phases-tab">Faze</div>
-              <div className="tab-pane fade" id="risks" role="tabpanel" aria-labelledby="risks-tab">rizika</div>
-              <div className="tab-pane fade" id="members" role="tabpanel" aria-labelledby="members-tab">clenove</div>
-            </div>
+            <Nav pills>
+              <NavItem>
+                <NavLink active={activeTab === 'detail'} onClick={() => this.toggleTab('detail')}> Detail </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink active={activeTab === 'phases'} onClick={() => this.toggleTab('phases')}> Fáze </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink active={activeTab === 'risks'} onClick={() => this.toggleTab('risks')}> Rizika </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink active={activeTab === 'members'} onClick={() => this.toggleTab('members')}> Členové </NavLink>
+              </NavItem>
+            </Nav>
+            <TabContent activeTab={activeTab}>
+              <TabPane tabId="detail">
+                <p>{projectDetail.detail.title}</p>
+                <p>{projectDetail.detail.description}</p>
+                <p>{formatDate(projectDetail.detail.start)} - {formatDate(projectDetail.detail.end)}</p>
+                <ul>
+                  {projectDetail.detail.comments.map((comment) => (
+                    <li key={comment.id}>
+                      <p>{comment.text}</p>
+                      <p>Created: {formatDate(comment.created)}</p>
+                      <p>Author: {comment.author}</p>
+                    </li>
+                  ))}
+                </ul>
+              </TabPane>
+              <TabPane tabId="phases">
+                ggdg
+              </TabPane>
+              <TabPane tabId="risks">
+               fsafsa
+              </TabPane>
+              <TabPane tabId="members">
+                <ul>
+                  {projectDetail.members.map((member) => (
+                    <li key={member.id}>
+                      <p>{member.user.fullName}</p>
+                      <p>{member.roleName}</p>
+                      <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
+                    </li>
+                  ))}
+                </ul>
+              </TabPane>
+            </TabContent>
           </div>
         </div>
-       </div>;
+      </div>;
 
     return (
       <div>
@@ -101,4 +126,11 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
     const data: IProjectDetail = await response.json();
     this.setState({ projectDetail: data });
   }
+
+  toggleTab(tab: string) {
+    if (this.state.activeTab !== tab) {
+      this.setState({ activeTab: tab });
+    }
+  }
+
 }
