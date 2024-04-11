@@ -1,5 +1,6 @@
 ﻿import { ProjectList } from "./components/ProjectList";
 import { MyProjectList } from "./components/MyProjectList";
+import { ProjectDetail } from "./components/ProjectDetail";
 import Login from './components/Login';
 
 const AppRoutes = [
@@ -11,6 +12,11 @@ const AppRoutes = [
   {
     path: '/myProjects',
     element: <MyProjectList />,
+    isProtected: true
+  },
+  {
+    path: '/project/:id',
+    element: <ProjectDetail />,
     isProtected: true
   },
   {
