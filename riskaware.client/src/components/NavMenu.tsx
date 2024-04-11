@@ -35,7 +35,7 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
           <NavbarBrand tag={Link} to="/">RiskAware</NavbarBrand>
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
           {isLoggedIn && (
-            <Collapse className="d-sm-inline-flex flex-sm-row-reverse" isOpen={!this.state.collapsed} navbar>
+            <Collapse className="d-sm-inline-flex flex-sm-row" isOpen={!this.state.collapsed} navbar>
               <ul className="navbar-nav flex-grow">
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/">Všechny projekty</NavLink>
@@ -43,6 +43,8 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/myProjects">Vlastní projekty</NavLink>
                 </NavItem>
+              </ul>
+              <ul className="navbar-nav ms-auto">
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/login" onClick={logout}>Odhlásit se</NavLink>
                 </NavItem>
