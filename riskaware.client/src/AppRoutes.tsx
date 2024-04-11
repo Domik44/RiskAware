@@ -1,4 +1,4 @@
-﻿import { ProjectList } from "./components/ProjectList";
+﻿import { AllProjectList } from "./components/AllProjectList";
 import { MyProjectList } from "./components/MyProjectList";
 import { ProjectDetail } from "./components/ProjectDetail";
 import Login from './components/Login';
@@ -6,7 +6,7 @@ import Login from './components/Login';
 const AppRoutes = [
   {
     path: '/',
-    element: <ProjectList />,
+    element: <AllProjectList />,
     isProtected: true
   },
   {

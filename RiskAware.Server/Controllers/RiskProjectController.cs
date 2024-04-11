@@ -30,7 +30,8 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : api/RiskProjects
+        /// url : /api/RiskProjects
+        [Route("/api/RiskProjects")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
         {
@@ -47,7 +48,6 @@ namespace RiskAware.Server.Controllers
                             .Where(pr => pr.RoleType == RoleType.ProjectManager)
                             .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
                             .FirstOrDefault()
-
                     }
                 )
                 .ToListAsync();
@@ -58,7 +58,7 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : api/RiskProjects/AdminRiskProjects
+        /// url : /api/RiskProject/AdminRiskProjects
         [HttpGet("AdminRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetAdminRiskProjects()
         {
@@ -98,8 +98,7 @@ namespace RiskAware.Server.Controllers
         /// </summary>
         /// 
         /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : api/RiskProjects/UserRiskProjects
-        [Authorize]
+        /// url : /api/RiskProject/UserRiskProjects
         [HttpGet("UserRiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
         {
@@ -110,7 +109,6 @@ namespace RiskAware.Server.Controllers
                 //TODO -> user is not logged in
                 return NoContent();
             }
-
 
             var query = from projectRole in _context.ProjectRoles
                         where projectRole.UserId == user.Id
