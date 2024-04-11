@@ -1,6 +1,7 @@
 ﻿import { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { API_URL } from "../auth/constants";
+//import { API_URL } from "../auth/constants";
+import { formatDate } from "../helpers/DateFormatter";
 
 interface IMyProjectList {
   id: number;
@@ -45,11 +46,10 @@ export class MyProjectList extends Component<object, { projects: IMyProjectList[
               <td>{project.id}</td>
               <td>{project.title}</td>
               <td>{project.projectManagerName}</td>
-              <td>{project.start.toString()}</td>   {/* todo .toLocaleDateString('cs-CZ')*/}
-              <td>{project.end.toString()}</td>
+              <td>{formatDate(project.start)}</td>
+              <td>{formatDate(project.end)}</td>
               <td>{project.numOfMembers}</td>
               <td>
-
                 <Link
                   className="btn btn-primary"
                   title="Zobrazit projekt"
@@ -72,11 +72,19 @@ export class MyProjectList extends Component<object, { projects: IMyProjectList[
   }
 
   async populateProjectListData() {
+    const response = await fetch("/api/RiskProject/UserRiskProjects");
+    //const response = await fetch("/api/RiskProject/UserRiskProjects", { credentials: 'include'});
+
     // todo try to fetch without using ${API_URL} as in weatherforecast
-    const response = await fetch(`${API_URL}/api/RiskProject/UserRiskProjects`,
-      {
-        credentials: 'include',
-      });
+    //const response = await fetch(`${API_URL}/api/RiskProject/UserRiskProjects`,
+    //  {
+    //    credentials: 'include',
+    //  });
+
+    //const response = await fetch("https://localhost:7239/api/RiskProject/UserRiskProjects",
+    //  {
+    //    credentials: 'include',
+    //  });
     const data: IMyProjectList[] = await response.json();
     this.setState({ projects: data });
   }

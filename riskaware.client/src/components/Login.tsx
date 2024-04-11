@@ -26,8 +26,6 @@ const Login = () => {
     }
   };
 
-  // todo handle error - invalid credentials
-
   // todo split to Login a LoginForm
   return (
     <div className="container mt-5">

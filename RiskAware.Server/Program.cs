@@ -72,8 +72,9 @@ namespace RiskAware.Server
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
-
             });
+            app.UseCors("AllowSpecificOrigin");
+
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
@@ -89,7 +90,6 @@ namespace RiskAware.Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors("AllowSpecificOrigin");
 
             app.MapControllers();
 
