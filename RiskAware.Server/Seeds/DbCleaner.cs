@@ -1,42 +1,38 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
-using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Seeds
 {
     public static class DbCleaner
     {
-        // todo drop all tables or whole db
-        public static async Task ClearAllData(AppDbContext context, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        /// <summary>
+        /// Deletes the entire database
+        /// </summary>
+        /// <param name="context">DbContext</param>
+        public static void DeleteEntireDb(AppDbContext context)
         {
-            //var vehicles = context.Vehicles.ToList(); // TODO SMAZAT
-            //context.Vehicles.RemoveRange(vehicles); // TODO SMAZAT
+            context.Database.EnsureDeleted();
+        }
 
-            // TODO -> predelat pak do finalni verze -> ted je to urceno pro pokusy
-            //var roles = roleManager.Roles.ToList();
-            //foreach (var role in roles)
-            //{
-            //    await roleManager.DeleteAsync(role);
-            //}
+        /// <summary>
+        /// This method truncates all tables in the database
+        /// </summary>
+        /// <param name="context">DbContext</param>
+        public static void TruncateAllTablesData(AppDbContext context)
+        {
+            // todo fix specific order with foreign keys constraints
+            var entities = typeof(AppDbContext).GetProperties()
+                .Where(p => p.PropertyType.IsGenericType && p.PropertyType.GetGenericTypeDefinition() == typeof(DbSet<>))
+                .Select(p => p.PropertyType.GetGenericArguments().First());
 
-            var users = userManager.Users.ToList();
-            foreach (var user in users)
+            foreach (var entity in entities)
             {
-                await userManager.DeleteAsync(user);
+                string tableName = context.Model.FindEntityType(entity).GetTableName();
+                //Console.WriteLine(tableName);
+                context.Database.ExecuteSqlRaw("EXEC sp_MSforeachtable 'ALTER TABLE [{0}] NOCHECK CONSTRAINT ALL';", tableName);
+                context.Database.ExecuteSqlRaw("TRUNCATE TABLE [{0}];", tableName);
+                context.Database.ExecuteSqlRaw("EXEC sp_MSforeachtable 'ALTER TABLE [{0}] WITH CHECK CHECK CONSTRAINT ALL';", tableName);
             }
-            // var user = userManager.Users.First(p => p.FirstName == "Pepa");
-            // await userManager.DeleteAsync(user);
-
-            var systemRoles = context.SystemRoles.ToList();
-            context.SystemRoles.RemoveRange(systemRoles);
-
-            // var projectPhases = context.ProjectPhases.ToList();
-            // context.ProjectPhases.RemoveRange(projectPhases);
-
-            // var comments = context.Comments.ToList();
-            // context.Comments.RemoveRange(comments);
-            //
-            await context.SaveChangesAsync();
         }
     }
 }
