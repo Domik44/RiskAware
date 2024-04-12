@@ -6,7 +6,6 @@ namespace RiskAware.Server.Data
 {
     public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<User>(options)
     {
-        public DbSet<Vehicle> Vehicles { get; set; } // TODO -> smazat
         public DbSet<SystemRole> SystemRoles { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<RiskProject> RiskProjects { get; set; }
