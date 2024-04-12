@@ -1,4 +1,5 @@
-﻿using RiskAware.Server.DTOs.ProjectPhase;
+﻿using RiskAware.Server.DTOs.ProjectPhaseDTOs;
+using RiskAware.Server.DTOs.RiskDTOs;
 
 namespace RiskAware.Server.DTOs.RiskProjectDTOs
 {
@@ -9,8 +10,8 @@ namespace RiskAware.Server.DTOs.RiskProjectDTOs
     {
         public RiskProjectDetailDto Detail { get; set; }
         //public IEnumerable<ProjectPhasesPanelDto> PhasesPanel { get; set; }
-        //public IEnumerable<ProjectPhaseDto> PhasesTable { get; set; }
-        //public IEnumerable<RiskDto> RisksTable { get; set; }
+        public IEnumerable<ProjectPhaseDto> Phases { get; set; }
+        public IEnumerable<RiskDto> Risks { get; set; }
         public IEnumerable<ProjectRoleDto> Members { get; set; }
 
         public RiskProjectPageDto()
