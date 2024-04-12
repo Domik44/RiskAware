@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
@@ -14,6 +15,13 @@ namespace RiskAware.Server.Models
     public class ProjectRole
     {
         public int Id { get; set; }
+        [Required]
+        [MinLength(1), MaxLength(255)]
+        public string Name { get; set; }
+        [Required]
+        public RoleType RoleType { get; set; }
+        public bool IsReqApproved { get; set; }
+
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]
         public User User { get; set; }
@@ -21,15 +29,7 @@ namespace RiskAware.Server.Models
         public int RiskProjectId { get; set; }
         [ForeignKey(nameof(RiskProjectId))]
         public RiskProject RiskProject { get; set; }
-        public RoleType RoleType { get; set; }
-        public bool IsReqApproved { get; set; }
-        // TODO -> maybe add name of role which would be set by user
 
-        /// <summary>
-        /// 
-        /// </summary>
-        //public int ProjectPhaseId { get; set; }
-        //[ForeignKey(nameof(ProjectPhaseId))]
-        //public ProjectPhase ProjectPhase { get; set; }
+        public ProjectPhase ProjectPhase { get; set; }
     }
 }

@@ -6,6 +6,7 @@ namespace RiskAware.Server.Models
     public class Risk
     {
         public int Id { get; set; }
+        [Required]
         public DateTime Created { get; set; }
 
         /// <summary>

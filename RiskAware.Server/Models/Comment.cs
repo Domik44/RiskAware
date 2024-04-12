@@ -6,8 +6,10 @@ namespace RiskAware.Server.Models
     public class Comment
     {
         public int Id { get; set; }
+        [MinLength(1), MaxLength(1000)]
         public string Text { get; set; }
-        //public DateTime Created { get; set; } // TODO -> pridat do migraci
+        [Required]
+        public DateTime Created { get; set; } // TODO -> pridat do migraci
 
         /// <summary>
         /// 

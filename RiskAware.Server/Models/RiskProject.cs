@@ -7,13 +7,16 @@ namespace RiskAware.Server.Models
     {
         public int Id { get; set; }
         [Required]
+        [MinLength(1), MaxLength(255)]
         public string Title { get; set; }
         public string Description { get; set; }
+        [Required]
         public DateTime Start { get; set; }
+        [Required]
         public DateTime End { get; set; }
-        public bool IsValid { get; set; } // TODO -> nezapomenout, ze mazani se resi pomoci IsValid
-        public int Scale { get; set; }
-        public bool IsBlank { get; set; }
+        public bool IsValid { get; set; } // Used for soft deleting projects
+        public int Scale { get; set; } // Is set by ProjectManager
+        public bool IsBlank { get; set; } // Is set to false when admin creates project, then to true when ProjectManager starts it
 
         public string UserId { get; set; }
         [ForeignKey(nameof(UserId))]

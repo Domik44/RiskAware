@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
-    //[Table("Users")]
-    public class User : IdentityUser // TODO -> ted je Id jako string
+    public class User : IdentityUser
     {
         [Required]
         public string FirstName { get; set; }
@@ -22,8 +21,6 @@ namespace RiskAware.Server.Models
         public int SystemRoleId { get; set; }
         [ForeignKey(nameof(SystemRoleId))]
         public SystemRole SystemRole { get; set; }
-        // This would be used for lazy loading -> we dont use it
-        //public virtual SystemRole SystemRole { get; set; }
 
         ///// <summary>
         ///// One to many relationship, where one user (admin) created this project.
@@ -31,26 +28,8 @@ namespace RiskAware.Server.Models
         public ICollection<RiskProject> RiskProjects { get; set; }
 
         ///// <summary>
-        ///// One to many relationship, where one user is creator of many comments.
-        ///// </summary>
-        // TODO -> deleted collection check
-        //public ICollection<Comment> Comments { get; set; }
-
-        ///// <summary>
         ///// 
         ///// </summary>
         public ICollection<ProjectRole> ProjectRoles { get; set; }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        // TODO -> deleted collection check
-        //public ICollection<Risk> Risks { get; set; }
-
-        ///// <summary>
-        ///// 
-        ///// </summary>
-        // TODO -> deleted collection check
-        //public ICollection<RiskHistory> RiskHistory { get; set; }
     }
 }

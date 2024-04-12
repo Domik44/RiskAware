@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
     public class RiskCategory
     {
         public int Id { get; set; }
+        [Required]
+        [MinLength(1), MaxLength(255)]
         public string Name { get; set; }
         public string Description { get; set; }
 
