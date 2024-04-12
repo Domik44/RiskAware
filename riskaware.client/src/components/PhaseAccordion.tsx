@@ -4,6 +4,8 @@ import {
   AccordionBody,
   AccordionHeader,
   AccordionItem,
+  ListGroup,
+  ListGroupItem
 } from 'reactstrap';
 import IProjectDetail from './interfaces/IProjectDetail';
 
@@ -34,14 +36,14 @@ function PhaseAccordion(props: IPhaseAccordionProps) {
         <AccordionHeader targetId={phase.id.toString()} onClick={() => toggle(phase.id.toString())}>
           {phase.name}
         </AccordionHeader>
-        <AccordionBody accordionId={phase.id.toString()}>
-          <ul>
+        <AccordionBody accordionId={phase.id.toString()} style={{padding: 0}}>
+          <ListGroup>
             {phase.risks.map((risk) => (
-              <li key={risk.id}>
-                <p>{risk.title}</p>
-              </li>
+              <ListGroupItem key={risk.id}>
+                {risk.title}
+              </ListGroupItem>
             ))}
-          </ul>
+          </ListGroup>
         </AccordionBody>
        </AccordionItem>
     ));
