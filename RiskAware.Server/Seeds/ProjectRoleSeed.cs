@@ -13,6 +13,7 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8",
                     RiskProjectId = 1,
+                    Name = RoleType.ProjectManager.ToString(),
                     RoleType = RoleType.ProjectManager,
                     IsReqApproved = true
                 },
@@ -20,6 +21,7 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
                     RiskProjectId = 1,
+                    Name = RoleType.RiskManager.ToString(),
                     RoleType = RoleType.RiskManager,
                     IsReqApproved = true
                 },
@@ -27,6 +29,7 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "84c8b270-14e5-4158-bcde-a76c6edc4cf7",
                     RiskProjectId = 1,
+                    Name = "Analytik",
                     RoleType = RoleType.TeamMember,
                     IsReqApproved = true
                 },
@@ -34,6 +37,7 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "5862be25-6467-450e-81fa-1cac9578650b",
                     RiskProjectId = 1,
+                    Name = "Analytik",
                     RoleType = RoleType.TeamMember,
                     IsReqApproved = true
                 }

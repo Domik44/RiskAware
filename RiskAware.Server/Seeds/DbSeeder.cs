@@ -12,7 +12,6 @@ namespace RiskAware.Server.Seeds
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
             // Synchronous seeding
-            VehicleSeed.Seed(context); // TODO SMAZAT
             SystemRoleSeed.Seed(context);
 
             // Asynchronous seeding
