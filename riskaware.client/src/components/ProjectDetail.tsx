@@ -3,38 +3,8 @@
 import { formatDate } from "../helpers/DateFormatter";
 //import { Button } from 'react-bootstrap';
 import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
-
-interface IComments {
-  id: number;
-  text: string;
-  created: Date;
-  author: string;
-}
-
-interface IUser {
-  //id: number;
-  fullName: string;
-  email: string;
-}
-
-interface IMembers {
-  id: number;
-  roleName: string;
-  isReqApproved: boolean;
-  user: IUser;
-}
-interface IDetail {
-  title: string;
-  description: string;
-  start: Date;
-  end: Date;
-  comments: IComments[];
-}
-
-interface IProjectDetail {
-  detail: IDetail;
-  members: IMembers[];
-}
+import PhaseAccordition from './PhaseAccordion';
+import IProjectDetail from './interfaces/IProjectDetail';
 
 export class ProjectDetail extends Component<object, { projectDetail: IProjectDetail | undefined, activeTab: string }> {
   constructor(props: object) {
@@ -59,7 +29,8 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
         <h1>{projectDetail.detail.title}</h1>
         <div className="row">
           <div className="col-3">
-            <p>"Panel"</p>
+            {/*Place accordion here*/}
+            <PhaseAccordition projectDetail={projectDetail} />
           </div>
           <div className="col-9">
             <Nav pills>
@@ -92,10 +63,27 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
                 </ul>
               </TabPane>
               <TabPane tabId="phases">
-                ggdg
+                <ul>
+                  {projectDetail.phases.map((phase) => (
+                    <li key={phase.id}>
+                        <p>{phase.order}</p>
+                        <p>{phase.name}</p>
+                        <p>{formatDate(phase.start)} - {formatDate(phase.end)}</p>
+                      </li>
+                    ))}
+                </ul>
               </TabPane>
               <TabPane tabId="risks">
-               fsafsa
+                <ul>
+                  {projectDetail.risks.map((risk) => ( 
+                    <li key={risk.id}>
+                      <p>{risk.title}</p>
+                      <p>{risk.categoryName}</p>
+                      <p>{risk.severity}</p>
+                      <p>{risk.state}</p>
+                    </li>
+                  ))}
+                </ul>
               </TabPane>
               <TabPane tabId="members">
                 <ul>
