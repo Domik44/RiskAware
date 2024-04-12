@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
+using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.DTOs;
 using RiskAware.Server.Models;
+using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 
 namespace RiskAware.Server.Controllers
 {
@@ -141,6 +143,7 @@ namespace RiskAware.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskProjectPageDto>> GetRiskProject(int id)
         {
+            // TODO -> define queries so they dont repeat in here
             var riskProject = await _context.RiskProjects
                 .AsNoTracking()
                 .Where(pr => pr.Id == id)
@@ -170,10 +173,54 @@ namespace RiskAware.Server.Controllers
                 })
                 .ToListAsync();
 
+            var risks = _context.Risks
+                .AsNoTracking()
+                .Where(r => r.RiskProjectId == id)
+                .Include(r => r.RiskCategory)
+                .Select(r => new
+                {
+                    Risk = r,
+                    LatestRiskHistory = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .FirstOrDefault()
+                })
+                .AsEnumerable() // Switch to client-side execution for the DTO projection ??
+                .Select(r => new RiskDto
+                {
+                    Id = r.Risk.Id,
+                    Title = r.LatestRiskHistory?.Title,
+                    CategoryName = r.Risk.RiskCategory.Name,
+                    Severity = r.LatestRiskHistory?.Probability * r.LatestRiskHistory?.Impact ?? 0,
+                    State = r.LatestRiskHistory?.Status
+                })
+                .ToList();
+
+            var projectPhases = await _context.ProjectPhases
+                .AsNoTracking()
+                .Where(pp => pp.RiskProjectId == id)
+                .Include(pp => pp.Risks)
+                .Select(pp => new ProjectPhaseDto // TODO -> mby put this in DTO constructor
+                {
+                    Id = pp.Id,
+                    Order = pp.Order,
+                    Name = pp.Name,
+                    Start = pp.Start,
+                    End = pp.End,
+                    Risks = pp.Risks.Select(r => new RiskUnderPhaseDto
+                    {
+                        Id = r.Id,
+                        Title = r.RiskHistory.OrderByDescending(h => h.Created).FirstOrDefault().Title, // TODO -> mby add Title to Risk entity, in this case the redudancy will be minimal and it will be easier to get the title
+                    })
+
+                })
+                .ToListAsync();
+
             var riskProjectPage = new RiskProjectPageDto
             {
                 Detail = new RiskProjectDetailDto(riskProject),
-                Members = projectRoles
+                Members = projectRoles,
+                Risks = risks,
+                Phases = projectPhases
             };
 
             return riskProjectPage;
@@ -199,27 +246,60 @@ namespace RiskAware.Server.Controllers
             return riskProjectDetail;
         }
 
-        //[HttpGet("{id}/Phases")]
-        //public async Task<ActionResult<IEnumerable<ProjectPhaseDto>>> GetRiskProjectPhases(int id)
-        //{
-        //    var projectPhases = await _context.ProjectPhases
-        //        .Where(pp => pp.RiskProjectId == id)
-        //        .Select(pp => new ProjectPhaseDto(pp))
-        //        .ToListAsync();
+        [HttpGet("{id}/Phases")]
+        public async Task<ActionResult<IEnumerable<ProjectPhaseDto>>> GetRiskProjectPhases(int id)
+        {
+            var projectPhases = await _context.ProjectPhases
+                .AsNoTracking()
+                .Where(pp => pp.RiskProjectId == id)
+                .Include(pp => pp.Risks)
+                .OrderBy(pp => pp.Order)
+                .Select(pp => new ProjectPhaseDto // TODO -> mby put this in DTO constructor
+                {
+                    Id = pp.Id,
+                    Order = pp.Order,
+                    Name = pp.Name,
+                    Start = pp.Start,
+                    End = pp.End,
+                    Risks = pp.Risks.Select(r => new RiskUnderPhaseDto
+                    {
+                        Id = r.Id,
+                        Title = r.RiskHistory.OrderByDescending(h => h.Created).FirstOrDefault().Title, // TODO -> mby add Title to Risk entity, in this case the redudancy will be minimal and it will be easier to get the title
+                    })
 
-        //return projectPhases;
-        //}
+                })
+                .ToListAsync();
 
-        //[HttpGet("{id}/Risks")]
-        //public async Task<ActionResult<IEnumerable<RiskDto>>> GetRiskProjectRisks(int id)
-        //{
-        //    var risks = await _context.Risks
-        //        .Where(r => r.RiskProjectId == id)
-        //        .Select(r => new RiskDto(r))
-        //        .ToListAsync();
+            return projectPhases;
+        }
 
-        //    return risks;
-        //}
+        [HttpGet("{id}/Risks")]
+        public async Task<ActionResult<IEnumerable<RiskDto>>> GetRiskProjectRisks(int id)
+        {
+            var risks =  _context.Risks // TODO -> do it better
+                .AsNoTracking()
+                .Where(r => r.RiskProjectId == id)
+                .Include(r => r.RiskCategory)
+                .Select(r => new
+                {
+                    Risk = r,
+                    LatestRiskHistory = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .FirstOrDefault()
+                })
+                .AsEnumerable() // Switch to client-side execution for the DTO projection ??
+                .Select(r => new RiskDto // TODO -> mby put this in DTO constructor
+                {
+                    Id = r.Risk.Id,
+                    Title = r.LatestRiskHistory?.Title,
+                    CategoryName = r.Risk.RiskCategory.Name,
+                    Severity = r.LatestRiskHistory?.Probability * r.LatestRiskHistory?.Impact ?? 0,
+                    State = r.LatestRiskHistory?.Status
+                })
+                .ToList();
+
+            return risks;
+        }
 
         [HttpGet("{id}/Members")]
         public async Task<ActionResult<IEnumerable<ProjectRoleDto>>> GetRiskProjectMembers(int id)
@@ -231,7 +311,7 @@ namespace RiskAware.Server.Controllers
                 .AsNoTracking()
                 .Where(pr => pr.RiskProjectId == id)
                 .Include(pr => pr.User)
-                .Select(pr => new ProjectRoleDto
+                .Select(pr => new ProjectRoleDto // TODO -> mby put this in DTO constructor
                 {
                     Id = pr.Id,
                     RoleName = pr.RoleType.ToString(),
