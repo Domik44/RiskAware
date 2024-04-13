@@ -30,7 +30,6 @@ namespace RiskAware.Server.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUser(string id)
         {
-            //var user = await _context.Users.FindAsync(id);
             var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user == null)
@@ -41,109 +40,99 @@ namespace RiskAware.Server.Controllers
             return user;
         }
 
-        [HttpGet("{id}/systemRole")]
-        public async Task<ActionResult<SystemRole>> GetUserSystemRole(string id)
+        // POST: api/User
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost]
+        public async Task<ActionResult<User>> PostUser(User user)
         {
-            //var user = await _context.Users.AsNoTracking().Include(p => p.SystemRole).FirstOrDefaultAsync(p => p.Id == id);
-            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id);
+            // TODO -> implement this method
+            //_context.Users.Add(user);
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateException)
+            //{
+            //    if (UserExists(user.Id))
+            //    {
+            //        return Conflict();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            // DTO needed, if we would try to send just SystemRole there could be cyclic reference and we would get error
-            // System role would have a list of users which would have a system role etc..
-            // DTO should be used for sending Entities serialized
-            return user.SystemRole;
-            //return new SystemRoleDto(systemRole);
+            //return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            return null;
         }
-
-        //[HttpGet("{id}/systemRole")]
-        //public async Task<ActionResult<SystemRole>> GetUserSystemRole(string id)
-        //{
-        //    var user = await _context.Users.FirstOrDefaultAsync(p => p.Id == id);
-
-        //    if (user == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    // Using lazy loading
-        //    return user.SystemRole;
-        //    //return new SystemRoleDto(systemRole);
-        //}
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutUser(string id, User user)
         {
-            if (id != user.Id)
-            {
-                return BadRequest();
-            }
+            // TODO -> implement this method
+            //if (id != user.Id)
+            //{
+            //    return BadRequest();
+            //}
 
-            _context.Entry(user).State = EntityState.Modified;
+            //_context.Entry(user).State = EntityState.Modified;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!UserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!UserExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
 
-            return NoContent();
+            //return NoContent();
+            return null;
         }
 
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        [HttpPut("{id}/Restore")]
+        public async Task<IActionResult> RestoreUser(string id)
         {
-            _context.Users.Add(user);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (UserExists(user.Id))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            // TODO -> implement this method
+            //var user = await _context.Users.FindAsync(id);
+            //if (user == null)
+            //{
+            //    return NotFound();
+            //}
 
-            return CreatedAtAction("GetUser", new { id = user.Id }, user);
+            //user.IsDeleted = false;
+            //await _context.SaveChangesAsync();
+
+            //return NoContent();
+            return null;
         }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            var user = await _context.Users.FindAsync(id);
-            if (user == null)
-            {
-                return NotFound();
-            }
+            // TODO -> implement this method
+            //var user = await _context.Users.FindAsync(id);
+            //if (user == null)
+            //{
+            //    return NotFound();
+            //}
 
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
+            //_context.Users.Remove(user);
+            //await _context.SaveChangesAsync();
 
-            return NoContent();
+            //return NoContent();
+            return null;
         }
 
         private bool UserExists(string id)

@@ -17,82 +17,92 @@ namespace RiskAware.Server.Controllers
         }
 
         // GET: api/RiskCategory
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<RiskCategory>>> GetRiskCategories()
+        [HttpGet("/api/RiskProject/{riskId}/RiskCategories")]
+        public async Task<ActionResult<IEnumerable<RiskCategory>>> GetRiskCategories(int riskId)
         {
-            return await _context.RiskCategories.ToListAsync();
+            // TODO -> implement this method
+            //return await _context.RiskCategories.ToListAsync();
+            return null;
         }
 
         // GET: api/RiskCategory/5
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskCategory>> GetRiskCategory(int id)
         {
-            var riskCategory = await _context.RiskCategories.FindAsync(id);
+            // TODO -> implement this method
+            //var riskCategory = await _context.RiskCategories.FindAsync(id);
 
-            if (riskCategory == null)
-            {
-                return NotFound();
-            }
+            //if (riskCategory == null)
+            //{
+            //    return NotFound();
+            //}
 
-            return riskCategory;
-        }
-
-        // PUT: api/RiskCategory/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRiskCategory(int id, RiskCategory riskCategory)
-        {
-            if (id != riskCategory.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(riskCategory).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RiskCategoryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            //return riskCategory;
+            return null;
         }
 
         // POST: api/RiskCategory
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<RiskCategory>> PostRiskCategory(RiskCategory riskCategory)
+        public async Task<ActionResult<RiskCategory>> CreateRiskCategory(RiskCategory riskCategory)
         {
-            _context.RiskCategories.Add(riskCategory);
-            await _context.SaveChangesAsync();
+            // TODO -> implement this method
+            //_context.RiskCategories.Add(riskCategory);
+            //await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRiskCategory", new { id = riskCategory.Id }, riskCategory);
+            //return CreatedAtAction("GetRiskCategory", new { id = riskCategory.Id }, riskCategory);
+            return null;
+        }
+
+        // PUT: api/RiskCategory/5
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateRiskCategory(int id, RiskCategory riskCategory)
+        {
+            // TODO -> implement this method
+            //if (id != riskCategory.Id)
+            //{
+            //    return BadRequest();
+            //}
+
+            //_context.Entry(riskCategory).State = EntityState.Modified;
+
+            //try
+            //{
+            //    await _context.SaveChangesAsync();
+            //}
+            //catch (DbUpdateConcurrencyException)
+            //{
+            //    if (!RiskCategoryExists(id))
+            //    {
+            //        return NotFound();
+            //    }
+            //    else
+            //    {
+            //        throw;
+            //    }
+            //}
+
+            //return NoContent();
+            return null;
         }
 
         // DELETE: api/RiskCategory/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRiskCategory(int id)
         {
-            var riskCategory = await _context.RiskCategories.FindAsync(id);
-            if (riskCategory == null)
-            {
-                return NotFound();
-            }
+            // TODO -> implement this method
+            //var riskCategory = await _context.RiskCategories.FindAsync(id);
+            //if (riskCategory == null)
+            //{
+            //    return NotFound();
+            //}
 
-            _context.RiskCategories.Remove(riskCategory);
-            await _context.SaveChangesAsync();
+            //_context.RiskCategories.Remove(riskCategory);
+            //await _context.SaveChangesAsync();
 
-            return NoContent();
+            //return NoContent();
+            return null;
         }
 
         private bool RiskCategoryExists(int id)
