@@ -15,7 +15,7 @@ namespace RiskAware.Server.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class RiskProjectController : ControllerBase // TODO -> switch na DTO!!
+    public class RiskProjectController : ControllerBase
     {
         private readonly AppDbContext _context;
         private readonly UserManager<User> _userManager;
@@ -128,6 +128,36 @@ namespace RiskAware.Server.Controllers
             return Ok(riskProject);
         }
 
+        [HttpGet("{id}/GetComments")]
+        public async Task<ActionResult<IEnumerable<CommentDto>>> GetComments(int id)
+        {
+            // TODO -> move query to queries
+            // TODO -> think about moving CommentDto out of RiskProjectDetailDto and add as separate part for page
+            // I could load them separatly when update is needed which would be faster
+            // But then when loading page it would need to do one more query -> think about it
+            // As it is rn when I edit description or title, it will load comments as well
+            var riskProject = await _context.RiskProjects.FindAsync(id);
+            if (riskProject == null)
+            {
+                return NotFound();
+            }
+
+            var comments = await _context.Comments
+                .AsNoTracking()
+                .Where(c => c.RiskProjectId == id)
+                .Include(c => c.User)
+                .Select(c => new CommentDto
+                {
+                    Id = c.Id,
+                    Text = c.Text,
+                    Created = c.Created,
+                    Author = c.User.FirstName + " " + c.User.LastName
+                })
+                .ToListAsync();
+
+            return Ok(comments);
+        }
+
         ////////////////// POST METHODS //////////////////
 
         // POST: api/RiskProjects
@@ -169,6 +199,30 @@ namespace RiskAware.Server.Controllers
         }
 
         // TODO -> AddComment and GetComments
+
+        [HttpPost("AddComment")]
+        public async Task<IActionResult> AddComment(int riskProjectId, string text)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
+            if (riskProject == null)
+            {
+                return NotFound();
+            }
+
+            var newComment = new Comment
+            {
+                RiskProjectId = riskProjectId,
+                UserId = user.Id,
+                Text = text,
+                Created = DateTime.Now
+            };
+
+            _context.Comments.Add(newComment);
+            _context.SaveChanges();
+
+            return Ok();
+        }
 
         ////////////////// PUT METHODS //////////////////
         
