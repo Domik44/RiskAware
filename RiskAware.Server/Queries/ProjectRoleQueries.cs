@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
-using RiskAware.Server.DTOs;
+using RiskAware.Server.DTOs.ProjectRoleDTOs;
+using RiskAware.Server.DTOs.UserDTOs;
 
 namespace RiskAware.Server.Queries
 {
