@@ -2,7 +2,7 @@
 //import { Link } from 'react-router-dom';
 import { formatDate } from "../helpers/DateFormatter";
 //import { Button } from 'react-bootstrap';
-import { TabContent, TabPane, Nav, NavItem, NavLink } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Alert } from 'reactstrap';
 import PhaseAccordition from './PhaseAccordion';
 import IProjectDetail from './interfaces/IProjectDetail';
 
@@ -23,7 +23,10 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
     const { projectDetail, activeTab } = this.state;
 
     const contents = projectDetail === undefined
-        ? <p>Projekt nebyl nalezen.</p>
+      ?
+      <Alert color="danger">
+        Projekt nebyl nalezen.
+      </Alert>
       :
       <div className="container">
         <h1>{projectDetail.detail.title}</h1>
@@ -110,7 +113,7 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
   async populateProjectDetail() {
     const id = window.location.pathname.split('/').pop();
     const apiUrl = `/api/RiskProject/${id}`;
-    const response = await fetch(apiUrl); // TODO: handle when no project is found
+    const response = await fetch(apiUrl);
     const data: IProjectDetail = await response.json();
     this.setState({ projectDetail: data });
   }
