@@ -9,7 +9,7 @@ namespace RiskAware.Server.Models
         [MinLength(1), MaxLength(1000)]
         public string Text { get; set; }
         [Required]
-        public DateTime Created { get; set; } // TODO -> pridat do migraci
+        public DateTime Created { get; set; }
 
         /// <summary>
         /// 
