@@ -44,7 +44,7 @@ namespace RiskAware.Server.Controllers
         /// 
         /// <param name="id">Id of a RiskProject</param>
         /// <returns> Returns DTO for risk project risks tab. </returns>
-        [HttpGet("/api/RiskProject/{id}/Risks")] // TODO -> mby specify route so it makes more sense -> like api/RiskProject/5/Risks ??
+        [HttpGet("/api/RiskProject/{id}/Risks")]
         public async Task<ActionResult<IEnumerable<RiskDto>>> GetAllRiskProjectRisks(int id)
         {
             var risks = await _riskQueries.GetRiskProjectRisksAsync(id);
