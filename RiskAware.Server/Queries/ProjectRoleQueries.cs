@@ -15,10 +15,11 @@ namespace RiskAware.Server.Queries
 
         public async Task<IEnumerable<ProjectRoleDto>> GetRiskProjectMembersAsync(int id)
         {
-            var projectRoles = await _context.ProjectRoles // TODO -> fix missing projectRoles
+            var projectRoles = await _context.ProjectRoles
                 .AsNoTracking()
                 .Where(pr => pr.RiskProjectId == id)
                 .Include(pr => pr.User)
+                .Include(pr => pr.ProjectPhase)
                 .Select(pr => new ProjectRoleDto
                 {
                     Id = pr.Id,
@@ -28,7 +29,8 @@ namespace RiskAware.Server.Queries
                     {
                         Email = pr.User.Email,
                         FullName = pr.User.FirstName + " " + pr.User.LastName
-                    }
+                    },
+                    ProjectPhaseName = pr.ProjectPhase.Name
                 })
                 .ToListAsync();
 
