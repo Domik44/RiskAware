@@ -95,6 +95,7 @@ export class ProjectDetail extends Component<object, { projectDetail: IProjectDe
                       <p>{member.user.fullName}</p>
                       <p>{member.roleName}</p>
                       <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
+                      <p>{member.projectPhaseName}</p>
                     </li>
                   ))}
                 </ul>

@@ -5,6 +5,7 @@ interface IMembers {
   roleName: string;
   isReqApproved: boolean;
   user: IUser;
+  projectPhaseName: string;
 }
 
 export default IMembers;
