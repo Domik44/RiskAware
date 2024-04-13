@@ -1,4 +1,4 @@
-﻿namespace RiskAware.Server.DTOs
+﻿namespace RiskAware.Server.DTOs.UserDTOs
 {
     public class UserDto
     {

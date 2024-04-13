@@ -1,6 +1,6 @@
-﻿using RiskAware.Server.Models;
+﻿using RiskAware.Server.DTOs.UserDTOs;
 
-namespace RiskAware.Server.DTOs
+namespace RiskAware.Server.DTOs.ProjectRoleDTOs
 {
     public class ProjectRoleDto
     {
