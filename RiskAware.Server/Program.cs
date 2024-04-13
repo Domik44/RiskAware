@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Configurations;
 using RiskAware.Server.Data;
 using RiskAware.Server.Models;
+using RiskAware.Server.Queries;
 using RiskAware.Server.Seeds;
 
 namespace RiskAware.Server
@@ -18,6 +19,10 @@ namespace RiskAware.Server
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<RiskProjectQueries>();
+            builder.Services.AddScoped<ProjectPhaseQueries>();
+            builder.Services.AddScoped<RiskQueries>();
+            builder.Services.AddScoped<ProjectRoleQueries>();
 
             // Add in-memory database
             //builder.Services.AddDbContext<AppDbContext>(options => 
