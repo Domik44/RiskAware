@@ -1,13 +1,16 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -21,16 +24,38 @@ namespace RiskAware.Server.Controllers
 
         // GET: api/User
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<User>>> GetUsers()
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            var user = await _userManager.GetUserAsync(User);
+
+            if (!user.SystemRole.IsAdministrator)
+            {
+                Unauthorized();
+            }
+
+            var users = await _context.Users.Select(u => new UserDto
+            {
+                Id = u.Id,
+                FullName = u.FirstName + " " + u.LastName,
+                Email = u.Email
+            }).ToListAsync();
+
+            return users;
         }
 
         // GET: api/User/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(string id)
+        public async Task<ActionResult<UserDetailDto>> GetUser(string id)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _context.Users.Where(u => u.Id == id)
+                .Select(u => new UserDetailDto
+                {
+                    Id = u.Id,
+                    FirstName = u.FirstName,
+                    LastName = u.LastName,
+                    Email = u.Email
+                })
+                .FirstOrDefaultAsync();
 
             if (user == null)
             {
@@ -43,96 +68,86 @@ namespace RiskAware.Server.Controllers
         // POST: api/User
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<User>> PostUser(User user)
+        public async Task<ActionResult<User>> CreateUser(UserDetailDto userDto)
         {
-            // TODO -> implement this method
-            //_context.Users.Add(user);
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateException)
-            //{
-            //    if (UserExists(user.Id))
-            //    {
-            //        return Conflict();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
+            var activeUser = await _userManager.GetUserAsync(User);
+            if(!activeUser.SystemRole.IsAdministrator)
+            {
+                return Unauthorized();
+            }
 
-            //return CreatedAtAction("GetUser", new { id = user.Id }, user);
-            return null;
+            var user = new User
+            {
+                FirstName = userDto.FirstName,
+                LastName = userDto.LastName,
+                Email = userDto.Email,
+            };
+
+            await _userManager.CreateAsync(user, "Basic123"); // TODO -> prolly cahnge this so admin can set random passwords
+
+            return Ok();
         }
 
         // PUT: api/User/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutUser(string id, User user)
+        public async Task<IActionResult> UpdateUser(string id, UserDetailDto userDto)
+        {
+            if (id != userDto.Id)
+            {
+                return BadRequest();
+            }
+
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FirstName = userDto.FirstName;
+            user.LastName = userDto.LastName;
+            user.Email = userDto.Email;
+            await _userManager.UpdateAsync(user);
+
+            return Ok();
+        }
+
+        [HttpPut("{id}/ChangePassword")]
+        public async Task<IActionResult> ChangePassword(string id)
         {
             // TODO -> implement this method
-            //if (id != user.Id)
-            //{
-            //    return BadRequest();
-            //}
-
-            //_context.Entry(user).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!UserExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            //return NoContent();
-            return null;
+            return BadRequest();
         }
 
         [HttpPut("{id}/Restore")]
         public async Task<IActionResult> RestoreUser(string id)
         {
-            // TODO -> implement this method
-            //var user = await _context.Users.FindAsync(id);
-            //if (user == null)
-            //{
-            //    return NotFound();
-            //}
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-            //user.IsDeleted = false;
-            //await _context.SaveChangesAsync();
+            user.IsValid = true;
+            await _context.SaveChangesAsync();
 
-            //return NoContent();
-            return null;
+            return Ok();
         }
 
         // DELETE: api/User/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
-            // TODO -> implement this method
-            //var user = await _context.Users.FindAsync(id);
-            //if (user == null)
-            //{
-            //    return NotFound();
-            //}
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
 
-            //_context.Users.Remove(user);
-            //await _context.SaveChangesAsync();
+            user.IsValid = false;
+            await _context.SaveChangesAsync();
 
-            //return NoContent();
-            return null;
+            return Ok();
         }
 
         private bool UserExists(string id)

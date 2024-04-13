@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.Models;
@@ -7,6 +8,7 @@ namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RiskCategoryController : ControllerBase
     {
         private readonly AppDbContext _context;

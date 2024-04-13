@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
@@ -9,6 +10,7 @@ namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ProjectPhaseController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -24,18 +26,16 @@ namespace RiskAware.Server.Controllers
         
         // GET: api/ProjectPhases/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ProjectPhase>> GetProjectPhase(int id)
+        public async Task<ActionResult<ProjectPhaseDetailDto>> GetProjectPhase(int id)
         {
-            // TODO -> implement this method
-            //var projectPhase = await _context.ProjectPhases.FindAsync(id);
+            var projectPhase = await _projectPhaseQueries.GetProjectPhaseDetailAsync(id);
 
-            //if (projectPhase == null)
-            //{
-            //    return NotFound();
-            //}
+            if (projectPhase == null)
+            {
+                return NotFound();
+            }
 
-            //return projectPhase;
-            return null;
+            return Ok(projectPhase);
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace RiskAware.Server.Controllers
         /// 
         /// <param name="id"> Id of a RiskProject </param>
         /// <returns>Returns DTO for risk project phases tab.</returns>
-        [HttpGet("/api/RiskProject/{id}/Phases")] // TODO -> mby specify route so it makes more sense -> like api/RiskProject/5/Pahses ??
+        [HttpGet("/api/RiskProject/{id}/Phases")]
         public async Task<ActionResult<IEnumerable<ProjectPhaseDto>>> GetAllRiskProjectPhases(int id)
         {
             var projectPhases = await _projectPhaseQueries.GetRiskProjectPhasesAsync(id);

@@ -4,10 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
-using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.DTOs;
 using RiskAware.Server.Models;
-using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.Queries;
 
 namespace RiskAware.Server.Controllers

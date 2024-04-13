@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskDTOs;
@@ -9,6 +10,7 @@ namespace RiskAware.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RiskController : ControllerBase
     {
         private readonly AppDbContext _context;
@@ -24,18 +26,16 @@ namespace RiskAware.Server.Controllers
 
         // GET: api/Risk/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Risk>> GetRisk(int id)
+        public async Task<ActionResult<RiskDetailDto>> GetRisk(int id)
         {
-            // TODO -> implement this method
-            //var risk = await _context.Risks.FindAsync(id);
+            var risk = await _riskQueries.GetRiskDetailAsync(id);
 
-            //if (risk == null)
-            //{
-            //    return NotFound();
-            //}
+            if (risk == null)
+            {
+                return NotFound();
+            }
 
-            //return risk;
-            return null;
+            return Ok(risk);
         }
 
         /// <summary>
@@ -55,11 +55,9 @@ namespace RiskAware.Server.Controllers
         [HttpGet("/api/ProjectPhase/{id}/Risks")]
         public async Task<ActionResult<IEnumerable<RiskDto>>> GetAllProjectPhaseRisks(int id)
         {
-            // TODO -> implement this method
-            //var risks = await _riskQueries.GetRiskProjectRisksAsync(id);
+            var risks = await _riskQueries.GetProjectPhaseRisksAsync(id);
 
-            //return Ok(risks);
-            return null;
+            return Ok(risks);
         }
 
         ////////////////// POST METHODS //////////////////
@@ -67,9 +65,13 @@ namespace RiskAware.Server.Controllers
         // POST: api/Risk
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Risk>> CreateRisk(Risk risk)
+        public async Task<ActionResult<Risk>> CreateRisk(RiskDetailDto riskDto) // TODO ->return risk or just action result?
         {
-            // TODO -> implement this method
+            // User call this, adds risk to db, then it would call fetch for getRisk and set active tab to display it
+                // instead i can pass it directly here and leave one fetch? 
+                // need to update RiskPageDto to include RiskDetailDto
+
+            // here not only RiskDetailDto is needed, but also chosen ProjecPhasedId and RiskCategoryId
             //_context.Risks.Add(risk);
             //await _context.SaveChangesAsync();
 
@@ -116,7 +118,17 @@ namespace RiskAware.Server.Controllers
         public async Task<IActionResult> RestoreRisk(int id)
         {
             // TODO -> implement this method
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound();
+            }
+
+            //risk.IsValid = true; // TODO -> rn is in RiskHistory, maybe I will move it so I can do it like this
+            //await _context.SaveChangesAsync();
+
             return null;
+            //return Ok();
         }
 
         [HttpPut("{id}/Approve")]
@@ -140,16 +152,16 @@ namespace RiskAware.Server.Controllers
         public async Task<IActionResult> DeleteRisk(int id)
         {
             // TODO -> implement this method
-            //var risk = await _context.Risks.FindAsync(id);
-            //if (risk == null)
-            //{
-            //    return NotFound();
-            //}
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound();
+            }
 
-            //_context.Risks.Remove(risk);
+            //risk.IsValid = false;
             //await _context.SaveChangesAsync();
 
-            //return NoContent();
+            //return Ok();
             return null;
         }
 
