@@ -15,7 +15,8 @@ namespace RiskAware.Server.Seeds
                     Name = "Úvodní studie, analýza a specifikace požadavků",
                     Start = DateTime.Parse("2024-05-20"),
                     End = DateTime.Parse("2024-05-24"),
-                    RiskProjectId = 1
+                    RiskProjectId = 1,
+                    ProjectRoleId = 3
                 },
                 new()
                 {
@@ -23,7 +24,8 @@ namespace RiskAware.Server.Seeds
                     Name = "Návrh a jeho oponentura",
                     Start = DateTime.Parse("2024-05-24"),
                     End = DateTime.Parse("2024-05-30"),
-                    RiskProjectId = 1
+                    RiskProjectId = 1,
+                    ProjectRoleId = 4
                 },
                 new()
                 {
