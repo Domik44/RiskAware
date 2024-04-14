@@ -5,12 +5,15 @@ import {
   AccordionHeader,
   AccordionItem,
   ListGroup,
-  ListGroupItem
+  ListGroupItem,
+  NavLink
 } from 'reactstrap';
 import IProjectDetail from './interfaces/IProjectDetail';
 
 interface IPhaseAccordionProps {
   projectDetail: IProjectDetail;
+  toggleTab: (tab: string) => void;
+  chooseRisk: (id: number) => void;
 }
 
 function PhaseAccordion(props: IPhaseAccordionProps) {
@@ -18,10 +21,8 @@ function PhaseAccordion(props: IPhaseAccordionProps) {
 
   const toggle = (id: string) => {
     if (openItems.includes(id)) {
-      // If the item is already open, close it
       setOpenItems(openItems.filter(item => item !== id));
     } else {
-      // If the item is closed, add it to the open items
       setOpenItems([...openItems, id]);
     }
   };
@@ -36,16 +37,18 @@ function PhaseAccordion(props: IPhaseAccordionProps) {
         <AccordionHeader targetId={phase.id.toString()} onClick={() => toggle(phase.id.toString())}>
           {phase.name}
         </AccordionHeader>
-        <AccordionBody accordionId={phase.id.toString()} style={{padding: 0}}>
+        <AccordionBody accordionId={phase.id.toString()} style={{ padding: 0 }}>
           <ListGroup>
             {phase.risks.map((risk) => (
-              <ListGroupItem key={risk.id}>
-                {risk.title}
-              </ListGroupItem>
+              <NavLink onClick={() => props.chooseRisk(risk.id)} key={risk.id} className="clickable">
+                <ListGroupItem>
+                  {risk.title}
+                </ListGroupItem>
+              </NavLink>
             ))}
           </ListGroup>
         </AccordionBody>
-       </AccordionItem>
+      </AccordionItem>
     ));
   };
 
