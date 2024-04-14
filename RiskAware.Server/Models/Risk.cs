@@ -8,6 +8,7 @@ namespace RiskAware.Server.Models
         public int Id { get; set; }
         [Required]
         public DateTime Created { get; set; }
+        // TODO -> IsValid -> move from RiskHistory to Risk ??
 
         /// <summary>
         /// 
