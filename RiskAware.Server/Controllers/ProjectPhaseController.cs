@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
@@ -14,12 +15,16 @@ namespace RiskAware.Server.Controllers
     public class ProjectPhaseController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly ProjectPhaseQueries _projectPhaseQueries;
+        private readonly ProjectRoleQueries _projectRoleQueries;
 
-        public ProjectPhaseController(AppDbContext context, ProjectPhaseQueries projectPhaseQueries)
+        public ProjectPhaseController(AppDbContext context, UserManager<User> userManager, ProjectPhaseQueries projectPhaseQueries, ProjectRoleQueries projectRoleQueries)
         {
             _context = context;
+            _userManager = userManager;
             _projectPhaseQueries = projectPhaseQueries;
+            _projectRoleQueries = projectRoleQueries;
         }
 
         ////////////////// GET METHODS //////////////////
@@ -57,14 +62,41 @@ namespace RiskAware.Server.Controllers
         // POST: api/ProjectPhases
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<ProjectPhase>> CreateProjectPhase(ProjectPhase projectPhase)
+        //public async Task<ActionResult<ProjectPhase>> CreateProjectPhase(int riskId, ProjectPhase projectPhase) // TODO -> depends if we want to just add new elem to the table or regenerate whole table in frontend
+        public async Task<IActionResult> CreateProjectPhase(int riskId, ProjectPhase projectPhase) // TODO -> change to DTO
         {
-            // TODO -> implement this method
-            //_context.ProjectPhases.Add(projectPhase);
-            //await _context.SaveChangesAsync();
+            // first get activeUser
+            var activeUser = await _userManager.GetUserAsync(User);
+            // then get project and check if it exists
+            var riskProject = await _context.RiskProjects.FindAsync(riskId);
+            if (riskProject == null)
+            {
+                return NotFound();
+            }
 
-            //return CreatedAtAction("GetProjectPhase", new { id = projectPhase.Id }, projectPhase);
-            return null;
+            // then check if he has premmision to create phase -> projectManager, RiskManager??
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(riskId, activeUser.Id);
+            var isRiskManager = await _projectRoleQueries.IsRiskManager(riskId, activeUser.Id);
+            if(!isProjectManager && !isRiskManager)
+            {
+                return Unauthorized();
+            }
+            
+            var newProjectPhase = new ProjectPhase
+            {
+                //Name = projectPhase.Name,
+                //Description = projectPhase.Description,
+                //Start = projectPhase.Start,
+                //End = projectPhase.End,
+                //RiskProjectId = riskId
+            };
+
+            // TODO -> add option to add user to phase when phase is created
+
+            _context.ProjectPhases.Add(newProjectPhase);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
         ////////////////// PUT METHODS //////////////////
@@ -74,6 +106,11 @@ namespace RiskAware.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProjectPhase(int id, ProjectPhase projectPhase)
         {
+            // get active user
+            // get project phase and check if it exists
+            // check if user has permission to update phase -> projectManager, RiskManager??
+            // update phase according to DTO
+
             // TODO -> implement this method
             //if (id != projectPhase.Id)
             //{
@@ -108,6 +145,13 @@ namespace RiskAware.Server.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProjectPhase(int id)
         {
+            // get active user
+            // get project phase and check if it exists
+            // check if user has permission to delete phase -> projectManager, RiskManager??
+            // then check if phase is not in use -> if it is not in use delete it
+            // else return error message -> phase is in use
+            // TODO -> think about soft delete
+
             // TODO -> implement this method
             //var projectPhase = await _context.ProjectPhases.FindAsync(id);
             //if (projectPhase == null)

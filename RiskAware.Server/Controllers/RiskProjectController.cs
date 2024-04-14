@@ -177,6 +177,7 @@ namespace RiskAware.Server.Controllers
                 End = riskProject.End,
                 IsBlank = true,
                 IsValid = true,
+                UserId = user.Id
             };
 
             _context.RiskProjects.Add(newRiskProject);
@@ -187,7 +188,8 @@ namespace RiskAware.Server.Controllers
             {
                 RiskProjectId = newRiskProject.Id,
                 UserId = riskProject.ProjectManager.Id,
-                RoleType = RoleType.ProjectManager
+                RoleType = RoleType.ProjectManager,
+                Name = "Projektový manažer"
             };
 
             _context.ProjectRoles.Add(newProjectRole);

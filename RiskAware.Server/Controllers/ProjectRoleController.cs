@@ -51,8 +51,6 @@ namespace RiskAware.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> AddUserToRiskProject(int riskProjectId, ProjectRoleCreateDto projectRoleDto) // TODO -> think about the return type of this -> mby change when frontend is being implemented
         {
-            // TODO -> check if user is already a member of the project
-            // if so -> return BadRequest
             var activeUser = await _userManager.GetUserAsync(User);
 
             // get project and check if it was found
@@ -68,6 +66,9 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized();
             }
 
+            // TODO -> check if user is already a member of the project
+            // if so -> return BadRequest
+
 
             // create new projectRole for this project based on give DTO
             var newProjectRole = new ProjectRole
@@ -82,7 +83,7 @@ namespace RiskAware.Server.Controllers
             // check if projectPhase was given and if yes set assign newly added user to this phase
             if(projectRoleDto.ProjectPhaseId != null) // TODO -> mby think of better way to do this
             {
-                // mby get projectPhase from db and check if it exists
+                // TODO -> mby get projectPhase from db and check if it exists and if its free
                 // and then assign it to newProjectRole
                 newProjectRole.RiskProjectId = (int)projectRoleDto.ProjectPhaseId;
             }
@@ -103,7 +104,12 @@ namespace RiskAware.Server.Controllers
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if(riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project not found");
+            }
+
+            if(_projectRoleQueries.HasProjectRoleOnRiskProject(riskProjectId, activeUser.Id).Result)
+            {
+                return BadRequest("User is already a member of this project");
             }
 
             var newProjectRole = new ProjectRole
@@ -177,7 +183,7 @@ namespace RiskAware.Server.Controllers
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if(riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project doesnt exist");
             }
 
             if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
@@ -188,7 +194,7 @@ namespace RiskAware.Server.Controllers
             var projectRole = await _context.ProjectRoles.Where(pr => pr.Id == projectRoleId).FirstOrDefaultAsync();
             if(projectRole == null)
             {
-                return NotFound();
+                return NotFound("Request doesnt exist");
             }
 
             projectRole.IsReqApproved = true;
@@ -231,7 +237,7 @@ namespace RiskAware.Server.Controllers
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if(riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project doesnt exist");
             }
 
             if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
@@ -242,7 +248,7 @@ namespace RiskAware.Server.Controllers
             var projectRole = await _context.ProjectRoles.Where(pr => pr.Id == projectRoleId).FirstOrDefaultAsync();
             if(projectRole == null)
             {
-                return NotFound();
+                return NotFound("Request doesnt exist");
             }
 
             _context.ProjectRoles.Remove(projectRole);
