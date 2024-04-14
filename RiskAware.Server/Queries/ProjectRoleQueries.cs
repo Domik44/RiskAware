@@ -2,6 +2,7 @@
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.ProjectRoleDTOs;
 using RiskAware.Server.DTOs.UserDTOs;
+using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Queries
 {
@@ -36,6 +37,34 @@ namespace RiskAware.Server.Queries
                 .ToListAsync();
 
             return projectRoles;
+        }
+
+        public async Task<bool> HasProjectRoleOnRiskProject(int riskProjectId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId);
+        }
+
+        public async Task<bool> IsProjectManager(int riskProjectId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.RoleType == RoleType.ProjectManager);
+        }
+
+        public async Task<bool> IsRiskManager(int riskProjectId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.RoleType == RoleType.RiskManager);
+        }
+
+        public async Task<bool> HasBasicEditPermissions(int riskProjectId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && (pr.RoleType == RoleType.ProjectManager || pr.RoleType == RoleType.RiskManager || pr.RoleType == RoleType.TeamMember));
         }
     }
 }
