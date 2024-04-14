@@ -26,6 +26,10 @@ ul li.nav-item {
     cursor: pointer;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .accordion-body {
     padding: 0 !important;
 }
@@ -38,4 +42,8 @@ ul li.nav-item {
 .list-group-item:last-child {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+}
+
+.hidden {
+    display: none;
 }
