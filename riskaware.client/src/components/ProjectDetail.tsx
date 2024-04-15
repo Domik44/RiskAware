@@ -41,8 +41,10 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
       <div className="container">
         <h1>{projectDetail.detail.title}</h1>
         <div className="row">
-          <div className="col-3">
-            <CreateProjectModal />
+            <div className="col-3">
+              {/*{projectDetail.isAdmin && (*/}
+              {/*<CreateProjectModal />*/}
+              {/*)}*/}
             <PhaseAccordion
               projectDetail={projectDetail}
               toggleTab={this.toggleTab}
@@ -78,7 +80,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   <Row>
                     <dt>Popis:</dt>
                     <dd>
-                      <textarea readOnly className="form-control">{projectDetail.detail.description}</textarea>
+                      <textarea readOnly className="form-control" value={projectDetail.detail.description} />
                     </dd>
                   </Row>
                   <Row>
@@ -95,6 +97,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                     <dt>Komentáře:</dt>
                       {projectDetail.detail.comments.map((comment) => (
                         <CommentCard
+                          key = {comment.id}
                           username = {comment.author}
                           date = {formatDate(comment.created)}
                           text = {comment.text}>

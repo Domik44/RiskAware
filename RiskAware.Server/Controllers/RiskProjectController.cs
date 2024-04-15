@@ -188,12 +188,15 @@ namespace RiskAware.Server.Controllers
             // TODO -> should be checking if wanted risk project IsBlank or not
             // if it is, then user ProjectManager should be prompted to set up project
             // In frontend I should check if project is blank and if it is, then I should redirect user to InitialRiskProjectSetup modal which will be unclosable
+            var user = await _userManager.GetUserAsync(User);
             var riskProjectPage = await _riskProjectQueries.GetRiskProjectPageAsync(id);
 
             if (riskProjectPage == null)
             {
                 return NotFound();
             }
+
+            riskProjectPage.IsAdmin = user.SystemRole.IsAdministrator; // TODO -> delete is just example
 
             return Ok(riskProjectPage);
         }
@@ -250,6 +253,7 @@ namespace RiskAware.Server.Controllers
 
         // POST: api/RiskProjects
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        // url: api/RiskProject
         [HttpPost]
         public async Task<IActionResult> CreateProject(RiskProjectCreateDto riskProject)
         {
@@ -260,6 +264,12 @@ namespace RiskAware.Server.Controllers
             }
 
             // TODO -> some data validation
+            var chosenUser = await _context.Users.Where(u => u.Email == riskProject.Email).FirstOrDefaultAsync();
+            if (chosenUser == null)
+            {
+                return NotFound();
+            }
+
             var newRiskProject = new RiskProject
             {
                 Title = riskProject.Title,
@@ -277,7 +287,7 @@ namespace RiskAware.Server.Controllers
             var newProjectRole = new ProjectRole
             {
                 RiskProjectId = newRiskProject.Id,
-                UserId = riskProject.ProjectManager.Id,
+                UserId = chosenUser.Id,
                 RoleType = RoleType.ProjectManager,
                 Name = "Projektový manažer"
             };

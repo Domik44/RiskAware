@@ -9,23 +9,53 @@ interface CreateProjectModalProps {
 const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
   const [modal, setModal] = useState(false);
 
-  // TODO -> mby clean data on closing?
-  //const open = () => setModal(true);
-  //const close = () => {
-  //  // Close the modal
-  //}
   const toggle = () => setModal(!modal);
-  const submit = () => {
+  const submit = async () => {
     console.log("Submit form data here");
-    // here will be fetch to the backend
-    // then clean the form
-    // then reload the page ?
+    // TODO -> data validation -> check if email exists in the database
+    try {
+      const response = await fetch('/api/RiskProject', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: (document.getElementById("title") as HTMLInputElement).value,
+          start: (document.getElementById("start") as HTMLInputElement).value,
+          end: (document.getElementById("end") as HTMLInputElement).value,
+          email: (document.getElementById("email") as HTMLInputElement).value
+        })
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('* Uživatel zvolený pro roli projektového manažera nenalezen!'); // TODO -> pre check before submit??
+        }
+        else if (response.status === 401) {
+          throw new Error('* Nedostatečná oprávnění pro tuto akci!');
+        }
+        else {
+          throw new Error('* Něco se pokazilo! Zkuste to prosím znovu.');
+        }
+      }
+      else {
+        toggle(); // Close the modal after submission
+      }
+    }
+    catch (error: any) {
+      var errorElement = document.getElementById("error");
+      if (errorElement) {
+        errorElement.innerHTML = error.toString().substring(7);
+        errorElement.classList.remove("hidden");
+      }
+    }
+
+    // TODO -> reload the table
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault(); // Prevent default form submission
     submit(); // Call the submit function
-    toggle(); // Close the modal after submission
   }
 
   return (
@@ -39,21 +69,21 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
           <ModalBody>
               <Row>
                 <FormGroup>
-                  <Label> Název projektu:</Label>
-                  <Input id="title" name="title" type="text" />
+                <Label> Název projektu:</Label>
+                <Input required id="title" name="title" type="text" />
                 </FormGroup>
               </Row>
               <Row>
                 <Col>
                   <FormGroup>
                     <Label> Začátek:</Label>
-                    <Input id="start" name="start" type="date" />
+                  <Input required id="start" name="start" type="date" />
                   </FormGroup>
                 </Col>
                 <Col>
                   <FormGroup>
                     <Label> Konec:</Label>
-                    <Input id="end" name="end" type="date" />
+                  <Input required id="end" name="end" type="date" />
                   </FormGroup>
                 </Col>
               </Row>
@@ -61,9 +91,12 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
                 <FormGroup>
                   <Label> Projektový manažer:</Label>
                   {/*TODO -> change this later?*/}
-                  <Input id="email" name="email" type="email" />
+                <Input required id="email" name="email" type="email" />
                 </FormGroup>
-               </Row>
+              </Row>
+              <Row>
+                <p id="error" className="text-danger hidden"></p>
+              </Row>
           </ModalBody>
           <ModalFooter>
             <Button color="primary" type="submit">

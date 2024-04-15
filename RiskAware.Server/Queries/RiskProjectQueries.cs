@@ -117,7 +117,7 @@ namespace RiskAware.Server.Queries
                 {
                     Id = pr.Id,
                     Title = pr.Title,
-                    Description = pr.Description,
+                    Description = pr.Description ?? "",
                     Start = pr.Start,
                     End = pr.End,
                     Comments = pr.Comments.Select(c => new CommentDto

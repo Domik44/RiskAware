@@ -14,5 +14,6 @@ namespace RiskAware.Server.DTOs.RiskProjectDTOs
         public IEnumerable<ProjectPhaseDto> Phases { get; set; }
         public IEnumerable<RiskDto> Risks { get; set; }
         public IEnumerable<ProjectRoleDto> Members { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

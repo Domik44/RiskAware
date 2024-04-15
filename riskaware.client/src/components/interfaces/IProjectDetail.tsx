@@ -10,6 +10,7 @@ interface IProjectDetail {
   risks: IRisks[];
   phases: IPhases[];
   chosenRisk: IRiskDetail;
+  //isAdmin: boolean; // TODO -> example
 }
 
 export default IProjectDetail;
