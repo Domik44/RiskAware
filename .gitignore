@@ -368,3 +368,5 @@ FodyWeavers.xsd
 .idea/.idea.RiskAware/.idea/dataSources/1ab83ef4-5644-4502-bd03-1d0fb5935e0b.xml
 .idea/.idea.RiskAware/.idea/dataSources.xml
 .idea/.idea.RiskAware/.idea/dataSources.local.xml
+FodyWeavers.xsd
+riskaware.client/.vite/deps/
