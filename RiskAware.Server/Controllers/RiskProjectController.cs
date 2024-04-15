@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
-using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.DTOs;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
+using RiskAware.Server.ViewModels;
+using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Controllers
 {
@@ -38,6 +41,93 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
         {
             return Ok(await _riskProjectQueries.GetAllRiskProjectsAsync());
+        }
+
+        /// <summary>
+        /// This controller method return all projects that are stored in database.
+        /// </summary>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : /api/RiskProjects
+        [HttpPost("/api/RiskProjects")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRiskProjects([FromBody] DtParams dtParams)
+        {
+            Console.WriteLine(dtParams.CurrentPage);
+            Console.WriteLine(dtParams.PerPage);
+            Console.WriteLine(dtParams.SortField);
+            Console.WriteLine(dtParams.SortOrder);
+            if (dtParams.SortField == null)
+            {
+                return new JsonResult(new
+                {
+                    data = new List<RiskProjectDto>(),
+                    totalsize = 0
+                });
+            }
+
+            // todo replace query below
+            //var projects = await _riskProjectQueries.GetAllRiskProjectsAsync();
+
+            var projects = await _context.RiskProjects
+                .AsNoTracking()
+                .Select(u =>
+                    new RiskProjectDto
+                    {
+                        Id = u.Id,
+                        Title = u.Title,
+                        Start = u.Start,
+                        End = u.End,
+                        NumOfMembers = u.ProjectRoles.Count,
+                        ProjectManagerName = u.ProjectRoles
+                            .Where(pr => pr.RoleType == RoleType.ProjectManager)
+                            .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+                            .FirstOrDefault()
+                    }
+            )
+                .OrderBy($"{dtParams.SortField} {dtParams.SortOrder}")
+                .Skip((dtParams.CurrentPage - 1) * dtParams.PerPage)
+                .Take(dtParams.PerPage)
+                .ToListAsync();
+
+            int totalsize = await _context.RiskProjects.CountAsync();
+
+            return new JsonResult(new
+            {
+                data = projects,
+                totalsize = totalsize
+            });
+        }
+
+        [HttpPost("/api/RiskProjects2")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRiskProjects2([FromBody] DtParams2 dtParams)
+        {
+            var projects = await _context.RiskProjects
+                .AsNoTracking()
+                .Select(u =>
+                    new RiskProjectDto
+                    {
+                        Id = u.Id,
+                        Title = u.Title,
+                        Start = u.Start,
+                        End = u.End,
+                        NumOfMembers = u.ProjectRoles.Count,
+                        ProjectManagerName = u.ProjectRoles
+                            .Where(pr => pr.RoleType == RoleType.ProjectManager)
+                            .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+                            .FirstOrDefault()
+                    }
+                )
+                .ToListAsync();
+
+            int totalsize = await _context.RiskProjects.CountAsync();
+
+            return new JsonResult(new
+            {
+                data = projects,
+                totalsize = totalsize
+            });
         }
 
         /// <summary>
@@ -96,8 +186,8 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<RiskProjectPageDto>> GetRiskProject(int id)
         {
             // TODO -> should be checking if wanted risk project IsBlank or not
-                // if it is, then user ProjectManager should be prompted to set up project
-                // In frontend I should check if project is blank and if it is, then I should redirect user to InitialRiskProjectSetup modal which will be unclosable
+            // if it is, then user ProjectManager should be prompted to set up project
+            // In frontend I should check if project is blank and if it is, then I should redirect user to InitialRiskProjectSetup modal which will be unclosable
             var riskProjectPage = await _riskProjectQueries.GetRiskProjectPageAsync(id);
 
             if (riskProjectPage == null)
@@ -168,7 +258,7 @@ namespace RiskAware.Server.Controllers
             {
                 return Unauthorized();
             }
-            
+
             // TODO -> some data validation
             var newRiskProject = new RiskProject
             {
@@ -225,7 +315,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// PUT METHODS //////////////////
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -279,7 +369,7 @@ namespace RiskAware.Server.Controllers
             {
                 return NotFound();
             }
-            else if(riskProject.IsBlank == false)
+            else if (riskProject.IsBlank == false)
             {
                 return BadRequest();
             }

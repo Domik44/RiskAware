@@ -5,6 +5,7 @@ using RiskAware.Server.Data;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 using RiskAware.Server.Seeds;
+using System.Globalization;
 
 namespace RiskAware.Server
 {
@@ -12,6 +13,9 @@ namespace RiskAware.Server
     {
         public static async Task Main(string[] args)
         {
+            // Set default czech datetime format
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("cs-CZ");
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.

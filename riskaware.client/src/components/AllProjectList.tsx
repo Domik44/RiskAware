@@ -1,6 +1,9 @@
 ﻿import { Component } from 'react';
-import ProjectList, { IProject } from './ProjectList';
+import ProjectTable from './ProjectTable/ProjectTable';
+import { QueryClientProvider, QueryClient } from 'react-query';
+import IProject from './interfaces/IProject';
 
+const queryClient = new QueryClient();
 export class AllProjectList extends Component<object, { projects: IProject[] | undefined }> {
   constructor(props: object) {
     super(props);
@@ -9,22 +12,28 @@ export class AllProjectList extends Component<object, { projects: IProject[] | u
     };
   }
 
-  componentDidMount() {
-    this.populateProjectListData();
-  }
+  //componentDidMount() {
+  //  this.populateProjectListData();
+  //}
 
-  async populateProjectListData() {
-    const response = await fetch("/api/RiskProjects");
-    const data = await response.json();
-    this.setState({ projects: data });
-  }
+  //async populateProjectListData() {
+  //  const response = await fetch("/api/RiskProjects");
+  //  const data = await response.json();
+  //  this.setState({ projects: data });
+  //}
 
   render() {
     return (
       <div>
-        <h2 id="projectListLabel">Všechny projekty</h2>
-        {this.state.projects ? <ProjectList projects={this.state.projects} />
-          : <p>Loading... Please refresh once the ASP.NET backend has started.</p>}
+        {/*<h2 id="projectListLabel">Všechny projekty</h2>*/}
+        <QueryClientProvider client={queryClient}>
+          <ProjectTable />
+        </QueryClientProvider>
+        {/*{this.state.projects ?*/}
+        {/*  <QueryClientProvider client={queryClient}>*/}
+        {/*    <ProjectList projects={this.state.projects} />*/}
+        {/*  </QueryClientProvider>*/}
+        {/*  : <p>Loading... Please refresh once the ASP.NET backend has started.</p>}*/}
       </div>
     );
   }

@@ -7,7 +7,7 @@ namespace RiskAware.Server.Seeds
     {
         public static void Seed(AppDbContext context)
         {
-            var projectsToSeed = new RiskProject[]
+            var projectsToSeed = new List<RiskProject>
             {
                 new RiskProject()
                 {
@@ -70,6 +70,25 @@ namespace RiskAware.Server.Seeds
                     UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8"
                 },
             };
+
+            DateTime start = DateTime.Parse("2024-08-01");
+            DateTime end = DateTime.Parse("2024-10-30");
+            for (int i = 7; i < 55; i++)
+            {
+                start = start.AddDays(7);
+                end = end.AddDays(7);
+                var project = new RiskProject()
+                {
+                    Title = $"Proj{i}",
+                    Description = $"Popis{i}",
+                    Start = start,
+                    End = end,
+                    IsValid = true,
+                    Scale = 5,
+                    UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
+                };
+                projectsToSeed.Add(project);
+            }
 
             foreach (var project in projectsToSeed)
             {
