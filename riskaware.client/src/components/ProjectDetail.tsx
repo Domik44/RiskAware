@@ -1,6 +1,6 @@
 ﻿import { Component } from 'react';
 import { formatDate } from "../helpers/DateFormatter";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Alert } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail from './interfaces/IProjectDetail';
 import CreateProjectModal from './CreateProjectModal';
@@ -41,10 +41,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
         <h1>{projectDetail.detail.title}</h1>
         <div className="row">
           <div className="col-3">
-            <AddPhaseModal />
             <CreateProjectModal />
-            <AddProjectRoleModal />
-            <AddRiskModal />
             <PhaseAccordion
               projectDetail={projectDetail}
               toggleTab={this.toggleTab}
@@ -75,20 +72,41 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   projectDetail={projectDetail}
                 />
               <TabPane tabId="detail">
-                <p>{projectDetail.detail.title}</p>
-                <p>{projectDetail.detail.description}</p>
-                <p>{formatDate(projectDetail.detail.start)} - {formatDate(projectDetail.detail.end)}</p>
-                <ul>
-                  {projectDetail.detail.comments.map((comment) => (
-                    <li key={comment.id}>
-                      <p>{comment.text}</p>
-                      <p>Created: {formatDate(comment.created)}</p>
-                      <p>Author: {comment.author}</p>
-                    </li>
-                  ))}
-                </ul>
+                {/*<p>{projectDetail.detail.title}</p>*/}
+                <dl>
+                  <Row>
+                    <dt>Popis:</dt>
+                    <dd>
+                      <textarea readOnly className="form-control">{projectDetail.detail.description}</textarea>
+                    </dd>
+                  </Row>
+                  <Row>
+                    <Col>
+                      <dt>Od</dt>
+                      <dd>{formatDate(projectDetail.detail.start)}</dd>
+                    </Col>
+                    <Col>
+                      <dt>Do</dt>
+                      <dd>{formatDate(projectDetail.detail.end)}</dd>
+                    </Col>
+                  </Row>
+                  <Row>
+                    <dt>Komentáře:</dt>
+                    {/*TODO -> map reactstrap cards as comments*/}
+                    <ul>
+                      {projectDetail.detail.comments.map((comment) => (
+                        <li key={comment.id}>
+                          <p>{comment.text}</p>
+                          <p>Created: {formatDate(comment.created)}</p>
+                          <p>Author: {comment.author}</p>
+                        </li>
+                      ))}
+                    </ul>
+                  </Row>
+                </dl>
               </TabPane>
               <TabPane tabId="phases">
+                <AddPhaseModal />
                 <ul>
                   {projectDetail.phases.map((phase) => (
                     <li key={phase.id}>
@@ -100,6 +118,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                 </ul>
               </TabPane>
               <TabPane tabId="risks">
+                <AddRiskModal />
                 <ul>
                   {projectDetail.risks.map((risk) => (
                     <li key={risk.id}>
@@ -112,6 +131,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                 </ul>
               </TabPane>
               <TabPane tabId="members">
+                <AddProjectRoleModal />
                 <ul>
                   {projectDetail.members.map((member) => (
                     <li key={member.id}>
