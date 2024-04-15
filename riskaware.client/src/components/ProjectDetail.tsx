@@ -9,6 +9,7 @@ import AddProjectRoleModal from './AddProjectRoleModal';
 import AddRiskModal from './AddRiskModal';
 import RiskDetail from './RiskDetail'; // Import the RiskDetail component
 import IRiskDetail from './interfaces/IRiskDetail';
+import CommentCard from './CommentCard';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -92,16 +93,13 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   </Row>
                   <Row>
                     <dt>Komentáře:</dt>
-                    {/*TODO -> map reactstrap cards as comments*/}
-                    <ul>
                       {projectDetail.detail.comments.map((comment) => (
-                        <li key={comment.id}>
-                          <p>{comment.text}</p>
-                          <p>Created: {formatDate(comment.created)}</p>
-                          <p>Author: {comment.author}</p>
-                        </li>
+                        <CommentCard
+                          username = {comment.author}
+                          date = {formatDate(comment.created)}
+                          text = {comment.text}>
+                        </CommentCard>
                       ))}
-                    </ul>
                   </Row>
                 </dl>
               </TabPane>

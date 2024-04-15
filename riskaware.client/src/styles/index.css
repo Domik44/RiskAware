@@ -47,3 +47,25 @@ ul li.nav-item {
 .hidden {
     display: none;
 }
+
+/*TODO align*/
+.CommentCard {
+    margin: 5px 10px
+}
+
+    .CommentCard .commentHeader {
+        display: flex;
+        justify-content: space-between;
+        padding: 5px 12px !important;
+    }
+
+    .CommentCard .commentText {
+        padding: 10px 12px !important;
+    }
+
+/*.CommentCard.date {*/
+/*float: right;*/
+/*}*/
+div.card {
+    padding: 0px !important;
+}
