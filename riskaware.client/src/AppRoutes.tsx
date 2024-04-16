@@ -23,7 +23,12 @@ const AppRoutes = [
     path: '/login',
     element: <Login />,
     isProtected: false
-  }
+  },
+  //{
+  //  path: '/project/:id/risk/:riskId', // TODO -> mby delete
+  //  element: <ProjectDetail />,
+  //  isProtected: true
+  //}
 ];
 
 export default AppRoutes;
