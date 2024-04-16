@@ -3,13 +3,13 @@ import { formatDate } from "../helpers/DateFormatter";
 import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail from './interfaces/IProjectDetail';
-import CreateProjectModal from './CreateProjectModal';
 import AddPhaseModal from './AddPhaseModal';
 import AddProjectRoleModal from './AddProjectRoleModal';
 import AddRiskModal from './AddRiskModal';
 import RiskDetail from './RiskDetail'; // Import the RiskDetail component
 import IRiskDetail from './interfaces/IRiskDetail';
 import CommentCard from './CommentCard';
+import InitialSetupModal from './InitialSetupModal';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -42,9 +42,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
         <h1>{projectDetail.detail.title}</h1>
         <div className="row">
             <div className="col-3">
-              {/*{projectDetail.isAdmin && (*/}
-              {/*<CreateProjectModal />*/}
-              {/*)}*/}
+              {projectDetail.detail.isBlank && (
+                <InitialSetupModal projectDetail={projectDetail} />
+              )}
             <PhaseAccordion
               projectDetail={projectDetail}
               toggleTab={this.toggleTab}
