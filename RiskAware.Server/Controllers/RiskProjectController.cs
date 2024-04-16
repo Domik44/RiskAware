@@ -222,7 +222,6 @@ namespace RiskAware.Server.Controllers
         [HttpGet("{id}/GetComments")]
         public async Task<ActionResult<IEnumerable<CommentDto>>> GetComments(int id)
         {
-            // TODO -> move query to queries
             // TODO -> think about moving CommentDto out of RiskProjectDetailDto and add as separate part for page
             // I could load them separatly when update is needed which would be faster
             // But then when loading page it would need to do one more query -> think about it
@@ -233,18 +232,7 @@ namespace RiskAware.Server.Controllers
                 return NotFound();
             }
 
-            var comments = await _context.Comments
-                .AsNoTracking()
-                .Where(c => c.RiskProjectId == id)
-                .Include(c => c.User)
-                .Select(c => new CommentDto
-                {
-                    Id = c.Id,
-                    Text = c.Text,
-                    Created = c.Created,
-                    Author = c.User.FirstName + " " + c.User.LastName
-                })
-                .ToListAsync();
+            var comments = _riskProjectQueries.GetRiskProjectCommentsAsync(id).Result;
 
             return Ok(comments);
         }
