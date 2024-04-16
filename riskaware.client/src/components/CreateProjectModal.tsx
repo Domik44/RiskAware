@@ -11,7 +11,6 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
 
   const toggle = () => setModal(!modal);
   const submit = async () => {
-    console.log("Submit form data here");
     // TODO -> data validation -> check if email exists in the database
     try {
       const response = await fetch('/api/RiskProject', {
@@ -69,8 +68,8 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
           <ModalBody>
               <Row>
                 <FormGroup>
-                <Label> Název projektu:</Label>
-                <Input required id="title" name="title" type="text" />
+                  <Label> Název projektu:</Label>
+                  <Input required id="title" name="title" type="text" />
                 </FormGroup>
               </Row>
               <Row>
