@@ -1,6 +1,6 @@
 ﻿import { Component } from 'react';
 import { formatDate } from "../helpers/DateFormatter";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col} from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail from './interfaces/IProjectDetail';
 import AddPhaseModal from './AddPhaseModal';
@@ -8,7 +8,7 @@ import AddProjectRoleModal from './AddProjectRoleModal';
 import AddRiskModal from './AddRiskModal';
 import RiskDetail from './RiskDetail'; // Import the RiskDetail component
 import IRiskDetail from './interfaces/IRiskDetail';
-import CommentCard from './CommentCard';
+import CommentList from './CommentList';
 import InitialSetupModal from './InitialSetupModal';
 
 interface IProjectDetailState {
@@ -94,15 +94,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                     </Col>
                   </Row>
                   <Row>
-                    <dt>Komentáře:</dt>
-                      {projectDetail.detail.comments.map((comment) => (
-                        <CommentCard
-                          key = {comment.id}
-                          username = {comment.author}
-                          date = {formatDate(comment.created)}
-                          text = {comment.text}>
-                        </CommentCard>
-                      ))}
+                    <CommentList projId={projectDetail.detail.id} comments={projectDetail.detail.comments }></CommentList>
                   </Row>
                 </dl>
               </TabPane>
