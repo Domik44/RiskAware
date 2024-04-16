@@ -108,6 +108,7 @@ namespace RiskAware.Server.Queries
 
         public async Task<RiskProjectDetailDto> GetRiskProjectDetailAsync(int id)
         {
+            var comments = await GetRiskProjectCommentsAsync(id);
             var riskProject = await _context.RiskProjects
                 .AsNoTracking()
                 .Where(pr => pr.Id == id)
@@ -120,12 +121,8 @@ namespace RiskAware.Server.Queries
                     Description = pr.Description ?? "",
                     Start = pr.Start,
                     End = pr.End,
-                    Comments = pr.Comments.Select(c => new CommentDto
-                    {
-                        Id = c.Id,
-                        Text = c.Text,
-                        Author = c.User.FirstName + " " + c.User.LastName
-                    }).ToList()
+                    Comments = comments,
+                    IsBlank = pr.IsBlank
                 })
                 .FirstOrDefaultAsync();
 
@@ -137,7 +134,7 @@ namespace RiskAware.Server.Queries
             return riskProject;
         }
 
-        public async Task<RiskProjectPageDto> GetRiskProjectPageAsync(int id)
+        public async Task<RiskProjectPageDto> GetRiskProjectPageAsync(int id, string userId)
         {
             var detail = await GetRiskProjectDetailAsync(id);
 
@@ -149,13 +146,15 @@ namespace RiskAware.Server.Queries
             var phases = await _projectPhaseQueries.GetRiskProjectPhasesAsync(id);
             var risks = await _riskQueries.GetRiskProjectRisksAsync(id);
             var members = await _projectRoleQueries.GetRiskProjectMembersAsync(id);
+            var userRole = await _projectRoleQueries.GetUsersRoleOnRiskProjectAsync(id, userId);
 
             return new RiskProjectPageDto
             {
                 Detail = detail,
                 Phases = phases,
                 Risks = risks,
-                Members = members
+                Members = members,
+                UserRole = userRole
             };
         }
 
@@ -166,16 +165,23 @@ namespace RiskAware.Server.Queries
                 .AnyAsync(pr => pr.RiskProjectId == riskProject.Id && pr.UserId == user.Id && pr.RoleType == RoleType.ProjectManager);
         }
 
-        //public async Task<IEnumerable<CommentDto>> GetRiskProjectCommentsAsync(int id)
-        //{
-        //    var comments = await _context.Comments
-        //        .AsNoTracking()
-        //        .Where(c => c.RiskProjectId == id)
-        //        .Include(c => c.User)
-        //        .Select(c => new CommentDto(c))
-        //        .ToListAsync();
+        public async Task<IEnumerable<CommentDto>> GetRiskProjectCommentsAsync(int id)
+        {
+            var comments = await _context.Comments
+                .AsNoTracking()
+                .Where(c => c.RiskProjectId == id)
+                .Include(c => c.User)
+                .Select(c => new CommentDto
+                {
+                    Id = c.Id,
+                    Text = c.Text,
+                    Created = c.Created,
+                    Author = c.User.FirstName + " " + c.User.LastName
+                })
+                .OrderByDescending(c => c.Created)
+                .ToListAsync();
 
-        //    return comments;
-        //}
+            return comments;
+        }
     }
 }
