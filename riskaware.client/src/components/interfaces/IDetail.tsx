@@ -1,7 +1,7 @@
 ﻿import IComments from "./IComments";
 
 /**
- * This interface is used to match RiskProjectDeatailDto.
+ * This interface is used to match RiskProjectDetailDto.
  * Its purpose is to define attributes for Detail tab.
  * */
 interface IDetail {
@@ -11,6 +11,8 @@ interface IDetail {
   start: Date;
   end: Date;
   comments: IComments[];
+  isBlank: boolean;
+  // TODO -> isBlank
 }
 
 export default IDetail;
