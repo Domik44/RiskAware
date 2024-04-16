@@ -1,26 +1,43 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
-
+import IProjectDetail from './interfaces/IProjectDetail';
 
 interface AddPhaseModalProps {
-  // Define any props if needed
-
+  projectDetail: IProjectDetail;
 }
 
-const AddPhaseModal: React.FC<AddPhaseModalProps> = () =>  {
+const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail }) =>  {
   const [modal, setModal] = useState(false);
+  const userRole = projectDetail.userRole;
 
-  // TODO -> mby clean data on closing?
-  //const open = () => setModal(true);
-  //const close = () => {
-  //  // Close the modal
-  //}
   const toggle = () => setModal(!modal);
-  const submit = () => {
-    console.log("Submit form data here");
-    // here will be fetch to the backend
-    // then clean the form
-    // then reload the page ?
+  const submit = async () => {
+    const id = projectDetail.detail.id;
+    const apiUrl = `/api/RiskProject/${id}/CreateProjectPhase`;
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: (document.getElementById("name") as HTMLInputElement).value,
+          start: (document.getElementById("start") as HTMLInputElement).value,
+          end: (document.getElementById("end") as HTMLInputElement).value,
+          userRoleType: userRole
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
+      }
+
+      // TODO -> fetch phases again + pannel update
+      // will add after the tables are implemented
+    }
+    catch (error: any) {
+      console.error(error);
+    }
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -39,52 +56,46 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = () =>  {
             <Row>
               <FormGroup>
                 <Label> Název:</Label>
-                <Input id="name" name="name" type="text" />
-              </FormGroup>
-            </Row>
-            <Row>
-              <FormGroup>
-                <Label> Popis:</Label>
-                <Input id="description" name="description" type="textarea" />
+                <Input required id="name" name="name" type="text" />
               </FormGroup>
             </Row>
             <Row>
               <Col>
                 <FormGroup>
                   <Label> Začátek:</Label>
-                  <Input id="start" name="start" type="date" />
+                  <Input required id="start" name="start" type="date" />
                 </FormGroup>
               </Col>
               <Col>
                 <FormGroup>
                   <Label> Konec:</Label>
-                  <Input id="end" name="end" type="date" />
+                  <Input required id="end" name="end" type="date" />
                 </FormGroup>
               </Col>
             </Row>
-            <Row>
-              <FormGroup>
-                <Label>Zodpovědná osoba:</Label>
-                <Input id="exampleSelect" name="select" type="select">
-                  {/*TODO -> fetch options from backend */}
-                  <option>
-                    1
-                  </option>
-                  <option>
-                    2
-                  </option>
-                  <option>
-                    3
-                  </option>
-                  <option>
-                    4
-                  </option>
-                  <option>
-                    5
-                  </option>
-                </Input>
-              </FormGroup>
-            </Row>
+            {/*<Row>*/}
+            {/*  <FormGroup>*/}
+            {/*    <Label>Zodpovědná osoba:</Label>*/}
+            {/*    <Input id="exampleSelect" name="select" type="select">*/}
+            {/*      */}{/*TODO -> fetch options from backend */}
+            {/*      <option>*/}
+            {/*        1*/}
+            {/*      </option>*/}
+            {/*      <option>*/}
+            {/*        2*/}
+            {/*      </option>*/}
+            {/*      <option>*/}
+            {/*        3*/}
+            {/*      </option>*/}
+            {/*      <option>*/}
+            {/*        4*/}
+            {/*      </option>*/}
+            {/*      <option>*/}
+            {/*        5*/}
+            {/*      </option>*/}
+            {/*    </Input>*/}
+            {/*  </FormGroup>*/}
+            {/*</Row>*/}
           </ModalBody>
           <ModalFooter>
             <Button color="primary" type="submit">

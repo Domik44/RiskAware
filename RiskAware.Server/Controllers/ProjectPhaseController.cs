@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
+using RiskAware.Server.DTOs.ProjectRoleDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 
@@ -61,37 +62,38 @@ namespace RiskAware.Server.Controllers
         
         // POST: api/ProjectPhases
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost("/api/RiskProject/{riskProjectId}/CreateProjectPhase")]
         //public async Task<ActionResult<ProjectPhase>> CreateProjectPhase(int riskId, ProjectPhase projectPhase) // TODO -> depends if we want to just add new elem to the table or regenerate whole table in frontend
-        public async Task<IActionResult> CreateProjectPhase(int riskId, ProjectPhase projectPhase) // TODO -> change to DTO
+        public async Task<IActionResult> CreateProjectPhase(int riskProjectId, ProjectPhaseCreateDto projectPhaseDto) // TODO -> change to DTO
         {
             // first get activeUser
-            var activeUser = await _userManager.GetUserAsync(User);
+            //var activeUser = await _userManager.GetUserAsync(User);
             // then get project and check if it exists
-            var riskProject = await _context.RiskProjects.FindAsync(riskId);
+            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if (riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project not found");
             }
 
             // then check if he has premmision to create phase -> projectManager, RiskManager??
-            var isProjectManager = await _projectRoleQueries.IsProjectManager(riskId, activeUser.Id);
-            var isRiskManager = await _projectRoleQueries.IsRiskManager(riskId, activeUser.Id);
-            if(!isProjectManager && !isRiskManager)
+            //var isProjectManager = await _projectRoleQueries.IsProjectManager(riskId, activeUser.Id);
+            //var isRiskManager = await _projectRoleQueries.IsRiskManager(riskId, activeUser.Id);
+            //if(!isProjectManager && !isRiskManager)
+            if (projectPhaseDto.UserRoleType != RoleType.ProjectManager) // TODO -> could be attacked like this??
             {
                 return Unauthorized();
             }
-            
+
             var newProjectPhase = new ProjectPhase
             {
-                //Name = projectPhase.Name,
-                //Description = projectPhase.Description,
-                //Start = projectPhase.Start,
-                //End = projectPhase.End,
-                //RiskProjectId = riskId
+                Name = projectPhaseDto.Name,
+                Start = projectPhaseDto.Start,
+                End = projectPhaseDto.End,
+                RiskProjectId = riskProjectId
             };
 
             // TODO -> add option to add user to phase when phase is created
+            // get users which have role on project a suggest them in select in frontend
 
             _context.ProjectPhases.Add(newProjectPhase);
             await _context.SaveChangesAsync();

@@ -98,8 +98,8 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   </Row>
                 </dl>
               </TabPane>
-              <TabPane tabId="phases">
-                <AddPhaseModal />
+                <TabPane tabId="phases">
+                  <AddPhaseModal projectDetail={projectDetail} />
                 <ul>
                   {projectDetail.phases.map((phase) => (
                     <li key={phase.id}>
@@ -123,18 +123,18 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   ))}
                 </ul>
               </TabPane>
-              <TabPane tabId="members">
-                <AddProjectRoleModal />
-                <ul>
-                  {projectDetail.members.map((member) => (
-                    <li key={member.id}>
-                      <p>{member.user.fullName}</p>
-                      <p>{member.roleName}</p>
-                      <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
-                      <p>{member.projectPhaseName}</p>
-                    </li>
-                  ))}
-                </ul>
+                <TabPane tabId="members">
+                  <AddProjectRoleModal projectDetail={projectDetail} />
+                  <ul>
+                    {projectDetail.members.map((member) => (
+                      <li key={member.id}>
+                        <p>{member.user.fullName}</p>
+                        <p>{member.roleName}</p>
+                        <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
+                        <p>{member.projectPhaseName}</p>
+                      </li>
+                    ))}
+                  </ul>
               </TabPane>
             </TabContent>
           </div>
@@ -149,7 +149,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
   }
 
   async populateProjectDetail() {
-    const id = window.location.pathname.split('/').pop();
+    const urlSplitted = window.location.pathname.split('/');
+    const id = urlSplitted[2];
+    
     const apiUrl = `/api/RiskProject/${id}`;
     try {
       const response = await fetch(apiUrl);
@@ -158,6 +160,13 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
     } catch (error) {
       console.error('Error fetching project detail:', error);
     }
+
+    //if (urlSplitted.length === 5) {
+    //  const riskId = urlSplitted[4];
+    //  // TODO -> mby delete -> would have to check if id in url is of risk from this project otherwise it would load risk from other projects as well
+    //  // TODO -> would have to manually change url when clicking on other nav tabs
+    //  this.chooseRisk(parseInt(riskId));
+    //}
   }
 
   toggleTab = (tab: string) => {
