@@ -189,7 +189,7 @@ namespace RiskAware.Server.Controllers
             // if it is, then user ProjectManager should be prompted to set up project
             // In frontend I should check if project is blank and if it is, then I should redirect user to InitialRiskProjectSetup modal which will be unclosable
             var user = await _userManager.GetUserAsync(User);
-            var riskProjectPage = await _riskProjectQueries.GetRiskProjectPageAsync(id);
+            var riskProjectPage = await _riskProjectQueries.GetRiskProjectPageAsync(id, user.Id);
 
             if (riskProjectPage == null)
             {
@@ -301,7 +301,7 @@ namespace RiskAware.Server.Controllers
         // TODO -> AddComment and GetComments
 
         [HttpPost("AddComment")]
-        public async Task<IActionResult> AddComment(int riskProjectId, string text)
+        public async Task<IActionResult> AddComment(int riskProjectId, string text) // TODO -> switch text to body -> use [FromBody]
         {
             var user = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
@@ -315,7 +315,7 @@ namespace RiskAware.Server.Controllers
                 RiskProjectId = riskProjectId,
                 UserId = user.Id,
                 Text = text,
-                Created = DateTime.Now
+                Created = DateTime.Now // TODO -> gives worng date!!
             };
 
             _context.Comments.Add(newComment);
