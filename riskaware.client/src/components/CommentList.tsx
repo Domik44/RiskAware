@@ -143,7 +143,8 @@ export class CommentList extends Component<ICommentList, ICommentListState> {
           </div>
         </Form>
         {displayComments.map((comment) => (
-        <CommentCard
+          <CommentCard
+          key={comment.id}
           username={comment.author}
           date={formatDate(comment.created)}
           text={comment.text}>
