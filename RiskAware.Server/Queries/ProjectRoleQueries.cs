@@ -66,5 +66,21 @@ namespace RiskAware.Server.Queries
                 .AsNoTracking()
                 .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && (pr.RoleType == RoleType.ProjectManager || pr.RoleType == RoleType.RiskManager || pr.RoleType == RoleType.TeamMember));
         }
+
+        public async Task<RoleType> GetUsersRoleOnRiskProjectAsync(int riskProjectId, string userId)
+        {
+            var role = await _context.ProjectRoles
+                .AsNoTracking()
+                .Where(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId)
+                //.Select(pr => pr.RoleType)
+                .FirstOrDefaultAsync();
+
+            if (role == null)
+            {
+                return RoleType.CommonUser;
+            }
+
+            return role.RoleType;
+        }
     }
 }

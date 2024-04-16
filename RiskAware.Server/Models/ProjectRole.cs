@@ -9,7 +9,7 @@ namespace RiskAware.Server.Models
         RiskManager = 1,
         TeamMember = 2,
         ExternalMember = 3,
-        CommonUser = 4
+        CommonUser = 4 // This means he user has no role assigned to the project
     }
 
     public class ProjectRole
