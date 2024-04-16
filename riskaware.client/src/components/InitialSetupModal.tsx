@@ -33,7 +33,6 @@ const InitialSetupModal: React.FC<InitialSetupModalProps> = ({ projectDetail }) 
     try {
       const id = projectDetail.detail.id;
       const apiUrl = `/api/RiskProject/${id}/InitialRiskProjectSetup`;
-      console.log(apiUrl);
       const response = await fetch(apiUrl, {
         method: 'PUT',
         headers: {
@@ -85,13 +84,13 @@ const InitialSetupModal: React.FC<InitialSetupModalProps> = ({ projectDetail }) 
         <Col>
           <FormGroup>
             <Label> Začátek:</Label>
-            <Input id="start" name="start" type="date" defaultValue={formatDateForInput(projectDetail.detail.start)} />
+            <Input required id="start" name="start" type="date" defaultValue={formatDateForInput(projectDetail.detail.start)} />
           </FormGroup>
         </Col>
         <Col>
           <FormGroup>
             <Label> Konec:</Label>
-            <Input id="end" name="end" type="date" defaultValue={formatDateForInput(projectDetail.detail.end)} />
+            <Input required id="end" name="end" type="date" defaultValue={formatDateForInput(projectDetail.detail.end)} />
           </FormGroup>
         </Col>
       </Row>
