@@ -277,7 +277,8 @@ namespace RiskAware.Server.Controllers
                 RiskProjectId = newRiskProject.Id,
                 UserId = chosenUser.Id,
                 RoleType = RoleType.ProjectManager,
-                Name = "Projektový manažer"
+                Name = "Projektový manažer",
+                IsReqApproved = true
             };
 
             _context.ProjectRoles.Add(newProjectRole);
