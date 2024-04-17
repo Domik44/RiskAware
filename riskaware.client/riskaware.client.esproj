@@ -9,6 +9,7 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\components\projectPage\" />
+    <None Remove="src\components\projectPage\**" />
+    <TypeScriptConfiguration Remove="src\components\projectPage\**" />
   </ItemGroup>
 </Project>

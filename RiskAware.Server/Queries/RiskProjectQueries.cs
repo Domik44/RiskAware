@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs;
-using RiskAware.Server.DTOs.ProjectPhaseDTOs;
-using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
+using RiskAware.Server.ViewModels;
+using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
@@ -23,9 +23,46 @@ namespace RiskAware.Server.Queries
             _projectRoleQueries = new ProjectRoleQueries(context);
         }
 
-        public async Task<IEnumerable<RiskProjectDto>> GetAllRiskProjectsAsync()
+        private static DateTime ParseClientDate(string date, DateTime defaultValue)
         {
-            return await _context.RiskProjects
+            return DateTime.TryParse(date, out DateTime parsed) ? parsed : defaultValue;
+        }
+
+        public IQueryable<RiskProjectDto> ApplyFilterQueryProjects(
+            IQueryable<RiskProjectDto> query, DtParams dtParams)
+        {
+            foreach (var filter in dtParams.Filters)
+            {
+                // todo string properties can be filtered by Contains or StartsWith
+                query = filter.PropertyName switch
+                {
+                    nameof(RiskProjectDto.Id) =>
+                        query.Where(p => p.Id.ToString().StartsWith(filter.Value)), // numeric property
+                    nameof(RiskProjectDto.Title) =>
+                        query.Where(p => p.Title.StartsWith(filter.Value)),         // string property
+                    nameof(RiskProjectDto.Start) =>
+                        query.Where(p => p.Start >= ParseClientDate(filter.Value, DateTime.MinValue)),  // datetime property
+                    nameof(RiskProjectDto.End) =>
+                        query.Where(p => p.End <= ParseClientDate(filter.Value, DateTime.MaxValue)),
+                    nameof(RiskProjectDto.NumOfMembers) =>
+                        query.Where(p => p.NumOfMembers.ToString().StartsWith(filter.Value)),
+                    nameof(RiskProjectDto.ProjectManagerName) =>
+                        query.Where(p => p.ProjectManagerName.StartsWith(filter.Value)),
+                    _ => query      // Default case - do not apply any filter
+                };
+            }
+
+            if (dtParams.Sorting.Any())
+            {
+                Sorting sorting = dtParams.Sorting.First();
+                query = query.OrderBy($"{sorting.Id} {sorting.Dir}");
+            }
+            return query;
+        }
+
+        public IQueryable<RiskProjectDto> QueryAllProjects()
+        {
+            return _context.RiskProjects
                 .AsNoTracking()
                 .Select(u =>
                     new RiskProjectDto
@@ -40,8 +77,43 @@ namespace RiskAware.Server.Queries
                             .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
                             .FirstOrDefault()
                     }
-                )
-                .ToListAsync();
+                );
+        }
+
+        public IQueryable<RiskProjectDto> QueryUsersProjects(User user)
+        {
+            return _context.RiskProjects
+                .AsNoTracking()
+                .Where(rp => rp.ProjectRoles.Any(pr => pr.UserId == user.Id))
+                .Select(projects => new RiskProjectDto
+                {
+                    Id = projects.Id,
+                    Title = projects.Title,
+                    Start = projects.Start,
+                    End = projects.End,
+                    NumOfMembers = projects.ProjectRoles.Count,
+                    ProjectManagerName = projects.ProjectRoles
+                        .Where(pr => pr.RoleType == RoleType.ProjectManager)
+                        .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+                        .FirstOrDefault()
+                });
+
+            // TODO -> seems to be faster
+            //return from projectRole in _context.ProjectRoles
+            //            where projectRole.UserId == user.Id
+            //            join riskProject in _context.RiskProjects on projectRole.RiskProjectId equals riskProject.Id
+            //            select new RiskProjectDto//(riskProject);
+            //            {
+            //                Id = riskProject.Id,
+            //                Title = riskProject.Title,
+            //                Start = riskProject.Start,
+            //                End = riskProject.End,
+            //                NumOfMembers = riskProject.ProjectRoles.Count,
+            //                ProjectManagerName = riskProject.ProjectRoles
+            //                    .Where(pr => pr.RoleType == RoleType.ProjectManager)
+            //                    .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
+            //                    .FirstOrDefault()
+            //            };
         }
 
         public async Task<IEnumerable<RiskProjectDto>> GetAllAdminRiskProjectsAsync(User user)
@@ -62,46 +134,6 @@ namespace RiskAware.Server.Queries
                         .FirstOrDefault()
                 })
                 .ToListAsync();
-
-            return projects;
-        }
-
-        public async Task<IEnumerable<RiskProjectDto>> GetAllUserRiskProjectsAsync(User user)
-        {
-            var projects = await _context.RiskProjects
-                .AsNoTracking()
-                .Where(rp => rp.ProjectRoles.Any(pr => pr.UserId == user.Id))
-                .Select(projects => new RiskProjectDto
-                {
-                    Id = projects.Id,
-                    Title = projects.Title,
-                    Start = projects.Start,
-                    End = projects.End,
-                    NumOfMembers = projects.ProjectRoles.Count,
-                    ProjectManagerName = projects.ProjectRoles
-                        .Where(pr => pr.RoleType == RoleType.ProjectManager)
-                        .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
-                        .FirstOrDefault()
-                })
-                .ToListAsync();
-
-            // TODO -> seems to be faster
-            //var query = from projectRole in _context.ProjectRoles
-            //            where projectRole.UserId == user.Id
-            //            join riskProject in _context.RiskProjects on projectRole.RiskProjectId equals riskProject.Id
-            //            select new RiskProjectDto//(riskProject);
-            //            {
-            //                Id = riskProject.Id,
-            //                Title = riskProject.Title,
-            //                Start = riskProject.Start,
-            //                End = riskProject.End,
-            //                NumOfMembers = riskProject.ProjectRoles.Count,
-            //                ProjectManagerName = riskProject.ProjectRoles
-            //                    .Where(pr => pr.RoleType == RoleType.ProjectManager)
-            //                    .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
-            //                    .FirstOrDefault()
-            //            };
-            //var projects = await query.ToListAsync();
 
             return projects;
         }

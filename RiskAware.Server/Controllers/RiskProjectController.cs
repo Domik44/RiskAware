@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs;
@@ -9,10 +8,8 @@ using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 using RiskAware.Server.ViewModels;
-using System;
-using System.Linq;
 using System.Linq.Dynamic.Core;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+
 
 namespace RiskAware.Server.Controllers
 {
@@ -33,7 +30,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// GET METHODS //////////////////
-
+        // TODO: delete if unused
         /// <summary>
         /// This controller method return all projects that are stored in database.
         /// </summary>
@@ -43,149 +40,8 @@ namespace RiskAware.Server.Controllers
         [HttpGet("/api/RiskProjects")]
         public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
         {
-            return Ok(await _riskProjectQueries.GetAllRiskProjectsAsync());
-        }
-
-        /// <summary>
-        /// This controller method return all projects that are stored in database.
-        /// </summary>
-        /// 
-        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : /api/RiskProjects
-        [HttpPost("/api/RiskProjects")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetRiskProjects([FromBody] DtParams dtParams)
-        {
-            Console.WriteLine(dtParams.CurrentPage);
-            Console.WriteLine(dtParams.PerPage);
-            Console.WriteLine(dtParams.SortField);
-            Console.WriteLine(dtParams.SortOrder);
-            if (dtParams.SortField == null)
-            {
-                return new JsonResult(new
-                {
-                    data = new List<RiskProjectDto>(),
-                    totalsize = 0
-                });
-            }
-
-            // todo replace query below
-            //var projects = await _riskProjectQueries.GetAllRiskProjectsAsync();
-
-            var projects = await _context.RiskProjects
-                .AsNoTracking()
-                .Select(u =>
-                    new RiskProjectDto
-                    {
-                        Id = u.Id,
-                        Title = u.Title,
-                        Start = u.Start,
-                        End = u.End,
-                        NumOfMembers = u.ProjectRoles.Count,
-                        ProjectManagerName = u.ProjectRoles
-                            .Where(pr => pr.RoleType == RoleType.ProjectManager)
-                            .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
-                            .FirstOrDefault()
-                    }
-            )
-                .OrderBy($"{dtParams.SortField} {dtParams.SortOrder}")
-                .Skip((dtParams.CurrentPage - 1) * dtParams.PerPage)
-                .Take(dtParams.PerPage)
-                .ToListAsync();
-
-            int totalsize = await _context.RiskProjects.CountAsync();
-
-            return new JsonResult(new
-            {
-                data = projects,
-                totalsize = totalsize
-            });
-        }
-
-        private static DateTime ParseClientDate(string date, DateTime defaultValue)
-        {
-            return DateTime.TryParse(date, out DateTime parsed) ? parsed : defaultValue;
-        }
-
-        [HttpPost("/api/RiskProjects2")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetRiskProjects2([FromBody] DtParams2 dtParams)
-        {
-            IQueryable<RiskProjectDto> query = _context.RiskProjects
-                .AsNoTracking()
-                .Select(u =>
-                    new RiskProjectDto
-                    {
-                        Id = u.Id,
-                        Title = u.Title,
-                        Start = u.Start,
-                        End = u.End,
-                        NumOfMembers = u.ProjectRoles.Count,
-                        ProjectManagerName = u.ProjectRoles
-                            .Where(pr => pr.RoleType == RoleType.ProjectManager)
-                            .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
-                            .FirstOrDefault()
-                    }
-                );
-
-            foreach (var filter in dtParams.Filters)
-            {
-                // todo string properties can be filtered by Contains or StartsWith
-                query = filter.PropertyName switch
-                {
-                    nameof(RiskProjectDto.Id) =>
-                        query.Where(p => p.Id.ToString().StartsWith(filter.Value)), // numeric property
-                    nameof(RiskProjectDto.Title) =>
-                        query.Where(p => p.Title.StartsWith(filter.Value)),         // string property
-                    nameof(RiskProjectDto.Start) =>
-                        query.Where(p => p.Start >= ParseClientDate(filter.Value, DateTime.MinValue)),  // datetime property
-                    nameof(RiskProjectDto.End) =>
-                        query.Where(p => p.End <= ParseClientDate(filter.Value, DateTime.MaxValue)),
-                    nameof(RiskProjectDto.NumOfMembers) =>
-                        query.Where(p => p.NumOfMembers.ToString().StartsWith(filter.Value)),
-                    nameof(RiskProjectDto.ProjectManagerName) =>
-                        query.Where(p => p.ProjectManagerName.StartsWith(filter.Value)),
-                    _ => query      // Default case - do not apply any filter
-                };
-            }
-
-            // todo delete advanced filtering by date
-            //if (dtParams.Filters.Any())
-            //{
-            //    var filterStart = dtParams.Filters
-            //        .Where(f => f.PropertyName == nameof(RiskProjectDto.Start))
-            //        .FirstOrDefault();
-            //    DateTime start = filterStart is not null ? DateTime.Parse(filterStart.Value) : DateTime.MinValue;
-
-            //    var filterEnd = dtParams.Filters
-            //        .Where(f => f.PropertyName == nameof(RiskProjectDto.End))
-            //        .FirstOrDefault();
-            //    DateTime end = filterEnd is not null ? DateTime.Parse(filterEnd.Value) : DateTime.MaxValue;
-
-            //    if (start != DateTime.MinValue || end != DateTime.MaxValue)
-            //    {
-            //        query = query.Where(p => p.Start >= start && p.End <= end);
-            //    }
-            //}
-
-            if (dtParams.Sorting.Any())
-            {
-                Sorting sorting = dtParams.Sorting.First();
-                query = query.OrderBy($"{sorting.Id} {sorting.Dir}");
-            }
-
-            int totalRowCount = await query.CountAsync();
-
-            var projects = await query
-                .Skip(dtParams.Start)
-                .Take(dtParams.Size)
-                .ToListAsync();
-
-            return new JsonResult(new
-            {
-                data = projects,
-                totalRowCount = totalRowCount
-            });
+            var projects = _riskProjectQueries.QueryAllProjects();
+            return Ok(await projects.ToListAsync());
         }
 
         /// <summary>
@@ -208,27 +64,6 @@ namespace RiskAware.Server.Controllers
             }
 
             var riskProjects = await _riskProjectQueries.GetAllAdminRiskProjectsAsync(user);
-
-            return Ok(riskProjects);
-        }
-
-        /// <summary>
-        /// This controller method serves for getting all projects where user has a role.
-        /// </summary>
-        /// 
-        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : /api/RiskProject/UserRiskProjects
-        [HttpGet("UserRiskProjects")]
-        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetUserRiskProjects()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                //TODO -> user is not logged in
-                return NoContent();
-            }
-
-            var riskProjects = await _riskProjectQueries.GetAllUserRiskProjectsAsync(user);
 
             return Ok(riskProjects);
         }
@@ -296,6 +131,60 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// POST METHODS //////////////////
+        /// <summary>
+        /// This controller method return all projects that are stored in database.
+        /// </summary>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : /api/RiskProjects
+        [HttpPost("/api/RiskProjects")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRiskProjects([FromBody] DtParams dtParams)
+        {
+            var query = _riskProjectQueries.QueryAllProjects();
+            query = _riskProjectQueries.ApplyFilterQueryProjects(query, dtParams);
+            int totalRowCount = await query.CountAsync();
+            var projects = await query
+                .Skip(dtParams.Start)
+                .Take(dtParams.Size)
+                .ToListAsync();
+            return new JsonResult(new DtResult<RiskProjectDto>
+            {
+                Data = projects,
+                TotalRowCount = totalRowCount
+            });
+        }
+
+        /// <summary>
+        /// This controller method serves for getting all projects where user has a role.
+        /// </summary>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : /api/RiskProject/UserRiskProjects
+        [HttpPost("UserRiskProjects")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetUserRiskProjects([FromBody] DtParams dtParams)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                //TODO -> user is not logged in
+                return NoContent();
+            }
+
+            var query = _riskProjectQueries.QueryUsersProjects(user);
+            query = _riskProjectQueries.ApplyFilterQueryProjects(query, dtParams);
+            int totalRowCount = await query.CountAsync();
+            var projects = await query
+                .Skip(dtParams.Start)
+                .Take(dtParams.Size)
+                .ToListAsync();
+            return new JsonResult(new DtResult<RiskProjectDto>
+            {
+                Data = projects,
+                TotalRowCount = totalRowCount
+            });
+        }
 
         // POST: api/RiskProjects
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

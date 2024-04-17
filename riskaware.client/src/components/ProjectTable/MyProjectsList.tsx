@@ -1,9 +1,9 @@
 ﻿import { Component } from 'react';
-import ProjectTableMaterial from './ProjectTable/ProjectTableMaterial';
-import IProject from './interfaces/IProject';
 import { Col, Row } from 'reactstrap';
-import CreateProjectModal from './CreateProjectModal';
-export class AllProjectsMaterial extends Component<object, { projects: IProject[] | undefined }> {
+import IProject from '../interfaces/IProject';
+import ProjectsList from './ProjectsList';
+import CreateProjectModal from '../CreateProjectModal';
+export class MyProjectsList extends Component<object, { projects: IProject[] | undefined }> {
   constructor(props: object) {
     super(props);
     this.state = {
@@ -14,21 +14,20 @@ export class AllProjectsMaterial extends Component<object, { projects: IProject[
   render() {
     return (
       <div>
-        {/*<h2>Material table</h2>*/}
         <Row>
           <Col>
-            <h4>Všechny projekty - MT</h4>
+            <h4>Vlastní projekty</h4>
           </Col>
           <Col className="d-flex justify-content-end">
             <CreateProjectModal>
             </CreateProjectModal>
           </Col>
         </Row>
-        <ProjectTableMaterial />
+        <ProjectsList fetchUrl={'/api/RiskProject/UserRiskProjects'} />
       </div>
     );
 
   }
 }
 
-export default AllProjectsMaterial;
+export default MyProjectsList;

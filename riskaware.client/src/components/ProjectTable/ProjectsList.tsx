@@ -35,29 +35,21 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { cs } from 'date-fns/locale';
 
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
+import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import autoTable, { CellInput } from 'jspdf-autotable';
 
-type RiskProjectApiResponse = {
-  data: Array<RiskProject>;
+import IProject from '../interfaces/IProject';
+
+type ProjectApiResponse = {
+  data: Array<IProject>;
   totalRowCount: number;
 };
 
-// todo make rather interface
-type RiskProject = {
-  id: number;
-  title: string;
-  start: Date;
-  end: Date;
-  numOfMembers: string;
-  projectManagerName: string;
-}
-
-const ProjectTableMaterial: React.FC = () => {
+const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
   //data and fetching state
-  const [data, setData] = useState<RiskProject[]>([]);
+  const [data, setData] = useState<IProject[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
@@ -82,15 +74,6 @@ const ProjectTableMaterial: React.FC = () => {
         setIsRefetching(true);
       }
 
-      //const url = new URL('/api/RiskProjects2');
-      //const startOffset = pagination.pageIndex * pagination.pageSize;
-      //url.searchParams.set('start', `${startOffset}`);
-      //url.searchParams.set('size', `${pagination.pageSize}`);
-      //url.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
-      //url.searchParams.set('globalFilter', globalFilter ?? '');
-      //url.searchParams.set('sorting', JSON.stringify(sorting ?? []));
-      //console.log(url.searchParams);
-
       const startOffset = pagination.pageIndex * pagination.pageSize;
       let searchParams = {
         start: startOffset,
@@ -100,14 +83,14 @@ const ProjectTableMaterial: React.FC = () => {
       };
       console.log(searchParams);
       try {
-        const response = await fetch('/api/RiskProjects2', {
+        const response = await fetch(fetchUrl, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(searchParams)
         });
-        const json = (await response.json()) as RiskProjectApiResponse;
+        const json = (await response.json()) as ProjectApiResponse;
         setData(json.data);
         setRowCount(json.totalRowCount);
       }
@@ -129,14 +112,16 @@ const ProjectTableMaterial: React.FC = () => {
     sorting, //re-fetch when sorting changes
   ]);
 
-  const columns = useMemo<MRT_ColumnDef<RiskProject>[]>(
+  const columns = useMemo<MRT_ColumnDef<IProject>[]>(
     () => [
       {
+        id: 'id',
         accessorKey: 'id',
         header: 'ID',
         filterFn: 'equalss',
       },
       {
+        id: 'title',
         accessorKey: 'title',
         header: 'Název',
       },
@@ -160,10 +145,12 @@ const ProjectTableMaterial: React.FC = () => {
         Cell: ({ cell }) => formatDate(cell.getValue<Date>()),
       },
       {
+        id: 'numOfMembers',
         accessorKey: 'numOfMembers',
         header: 'Počet členů',
       },
       {
+        id: 'projectManagerName',
         accessorKey: 'projectManagerName',
         header: 'Projektový manažer',
       },
@@ -172,16 +159,16 @@ const ProjectTableMaterial: React.FC = () => {
   );
 
   // todo copy delete confirm modal from ITU
-  const openDeleteConfirmModal = (row: MRT_Row<RiskProject>) => {
+  const openDeleteConfirmModal = (row: MRT_Row<IProject>) => {
     if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
       console.log(`Delete:${row.original.id}`);  // todo post delete
     }
   };
 
-  const exportToPDF = (rows: MRT_Row<RiskProject>[]) => {
+  const exportToPDF = (rows: MRT_Row<IProject>[]) => {
     const doc = new jsPDF();
-    const tableData = rows.map((row) => Object.values(row.original));
-    const tableHeaders = columns.map((c) => c.header);
+    const tableData = rows.map((row) => Object.values(row.original) as CellInput[]);
+    const tableHeaders = columns.map((c) => c.id);
 
     autoTable(doc, {
       head: [tableHeaders],
@@ -194,15 +181,28 @@ const ProjectTableMaterial: React.FC = () => {
   };
 
   const exportToCSV = () => {
+    const tableHeaders: ColumnHeader[] = columns.map((col) => ({
+      key: String(col.id),
+      displayLabel: String(col.header)
+    }));
+    const formattedData = data.map(project => ({
+      id: project.id.toString(),
+      title: project.title,
+      start: formatDate(project.start),
+      end: formatDate(project.end),
+      numOfMembers: project.numOfMembers,
+      projectManagerName: project.projectManagerName,
+    }));
+
     const now = new Date();
     const dateString = formatDateForInput(now);
     const csvConfig = mkConfig({
       filename: `${dateString}_registr_rizik`,
       fieldSeparator: ',',
       decimalSeparator: '.',
-      useKeysAsHeaders: true,
+      columnHeaders: tableHeaders,
     });
-    const csv = generateCsv(csvConfig)(data);
+    const csv = generateCsv(csvConfig)(formattedData);
     download(csvConfig)(csv);
   };
 
@@ -275,7 +275,7 @@ const ProjectTableMaterial: React.FC = () => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Zobrazit detail">
-          <IconButton href={`/api/RiskProject/${row.original.id}/Detail`}>
+          <IconButton href={`/project/${row.original.id}`}>
             <VisibilityOutlinedIcon />
           </IconButton>
         </Tooltip>
@@ -322,4 +322,4 @@ const ProjectTableMaterial: React.FC = () => {
   );
 };
 
-export default ProjectTableMaterial;
+export default ProjectsList;
