@@ -10,6 +10,7 @@ import RiskDetail from './RiskDetail'; // Import the RiskDetail component
 import IRiskDetail from './interfaces/IRiskDetail';
 import CommentList from './CommentList';
 import InitialSetupModal from './InitialSetupModal';
+import Matrix from './Matrix';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -140,7 +141,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                 </ul>
               </TabPane>
               <TabPane tabId="matrix">
-                <p>Matice</p>
+                <Matrix detail={projectDetail}></Matrix>
               </TabPane>
             </TabContent>
           </div>
