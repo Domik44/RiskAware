@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskDTOs;
+using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Queries
 {
@@ -111,6 +112,47 @@ namespace RiskAware.Server.Queries
             // TODO -> mby check if null return empty list?
 
             return risks;
+        }
+
+        public async Task<bool> AddRiskAsync(RiskCreateDto riskDto, string userId, int riskProjectId, int riskCategoryId, bool isApproved)
+        {
+            var risk = new Risk
+            {
+                Created = DateTime.Now,
+                UserId = userId,
+                RiskProjectId = riskProjectId,
+                ProjectPhaseId = riskDto.ProjectPhaseId,
+                RiskCategoryId = riskCategoryId
+            };
+            _context.Risks.Add(risk);
+            _context.SaveChanges();
+
+            var riskHistory = new RiskHistory
+            {
+                RiskId = risk.Id,
+                UserId = userId,
+                Created = risk.Created,
+                Title = riskDto.Title,
+                Description = riskDto.Description,
+                Probability = riskDto.Probability,
+                Impact = riskDto.Impact,
+                Threat = riskDto.Threat,
+                Indicators = riskDto.Indicators,
+                Prevention = riskDto.Prevention,
+                Status = riskDto.Status,
+                PreventionDone = riskDto.PreventionDone,
+                RiskEventOccured = riskDto.RiskEventOccured,
+                LastModif = DateTime.Now,
+                StatusLastModif = DateTime.Now,
+                End = riskDto.End,
+                IsValid = true,
+                IsApproved = isApproved
+            };
+
+            _context.RiskHistory.Add(riskHistory);
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

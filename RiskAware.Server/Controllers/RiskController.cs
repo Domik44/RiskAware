@@ -113,66 +113,12 @@ namespace RiskAware.Server.Controllers
                 return NotFound("Project phase not found");
             }
 
-            if(riskProject.Scale == 3) // TODO -> use modulo
-            {
-                if(riskDto.Probability == 3)
-                {
-                    riskDto.Probability = 2;
-                }
-                else if(riskDto.Probability == 5)
-                {
-                    riskDto.Probability = 3;
-                }
-
-                if (riskDto.Impact == 3)
-                {
-                    riskDto.Impact = 2;
-                }
-                else if (riskDto.Impact == 5)
-                {
-                    riskDto.Impact = 3;
-                }
-            }
-
-            var risk = new Risk
-            {
-                Created = DateTime.Now,
-                UserId = activeUser.Id,
-                RiskProjectId = riskProjectId,
-                ProjectPhaseId = riskDto.ProjectPhaseId,
-                RiskCategoryId = riskCategoryId
-            };
-            _context.Risks.Add(risk);
-            _context.SaveChanges();
-
+            riskDto.Probability = EditValue(riskDto.Probability, riskProject.Scale);
+            riskDto.Impact = EditValue(riskDto.Impact, riskProject.Scale);
             var isApproved = activeUserRole == RoleType.RiskManager || activeUserRole == RoleType.ProjectManager;
-            var riskHistory = new RiskHistory
-            {
-                RiskId = risk.Id,
-                UserId = activeUser.Id,
-                Created = risk.Created,
-                Title = riskDto.Title,
-                Description = riskDto.Description,
-                Probability = riskDto.Probability,
-                Impact = riskDto.Impact,
-                Threat = riskDto.Threat,
-                Indicators = riskDto.Indicators,
-                Prevention = riskDto.Prevention,
-                Status = riskDto.Status,
-                PreventionDone = riskDto.PreventionDone,
-                RiskEventOccured = riskDto.RiskEventOccured,
-                LastModif = DateTime.Now,
-                StatusLastModif = DateTime.Now,
-                End = riskDto.End,
-                IsValid = true,
-                IsApproved = isApproved
-            };
-            _context.RiskHistory.Add(riskHistory);
-            _context.SaveChanges();
 
-            // User call this, adds risk to db, then it would call fetch for getRisk and set active tab to display it
-            // instead i can pass it directly here and leave one fetch? 
-            // need to update RiskPageDto to include RiskDetailDto
+            await _riskQueries.AddRiskAsync(riskDto, activeUser.Id, riskProjectId, riskCategoryId, isApproved);
+
             return Ok();
         }
 
@@ -181,33 +127,35 @@ namespace RiskAware.Server.Controllers
         // PUT: api/Risk/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRisk(int id, Risk risk)
+        public async Task<IActionResult> UpdateRisk(int id, RiskCreateDto riskDto)
         {
+            var activeUser = await _userManager.GetUserAsync(User);
+            // TODO -> check if user is allowed to edit this risk
+
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound();
+            }
+            risk.RiskCategoryId = riskDto.RiskCategory.Id; // TODO -> check
+            risk.ProjectPhaseId = riskDto.ProjectPhaseId; /// TODO -> check
+
+            var scale = risk.RiskProject.Scale;
+            // TODO -> dates -> will have to get last history and check if something changed -> then set according dates
+            var newRiskHistory = new RiskHistory
+            {
+                Created = DateTime.Now,
+                UserId = activeUser.Id,
+                RiskId = risk.Id,
+                Title = riskDto.Title,
+                Description = riskDto.Description,
+                Probability = EditValue(riskDto.Probability, scale),
+                Impact = EditValue(riskDto.Impact, scale),
+                Status = riskDto.Status,
+                RiskEventOccured = riskDto.RiskEventOccured,
+                //IsApproved = riskDto.IsApproved // TODO 
+            };
             // TODO -> implement this method
-            //if (id != risk.Id)
-            //{
-            //    return BadRequest();
-            //}
-
-            //_context.Entry(risk).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!RiskExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            //return NoContent();
             return null;
         }
 
@@ -231,15 +179,49 @@ namespace RiskAware.Server.Controllers
         [HttpPut("{id}/Approve")]
         public async Task<IActionResult> ApproveRisk(int id)
         {
+            var activeUser = await _userManager.GetUserAsync(User);
             // TODO -> implement this method
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound();
+            }
+
+            var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
+            var newRiskHistory = new RiskHistory // TODO -> copy from old and change only isApproved
+            {
+                Created = DateTime.Now,
+                UserId = riskHistory.UserId,
+                RiskId = risk.Id,
+                Title = riskHistory.Title,
+                Description = riskHistory.Description,
+                Probability = riskHistory.Probability,
+                Impact = riskHistory.Impact,
+                Status = riskHistory.Status,
+                RiskEventOccured = riskHistory.RiskEventOccured,
+                IsApproved = true
+            };
+
             return null;
+            return Ok();
         }
 
         [HttpPut("{id}/Reject")]
         public async Task<IActionResult> RejectRisk(int id)
         {
             // TODO -> implement this method
+            var activeUser = await _userManager.GetUserAsync(User);
+            // TODO -> check user premissions
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound();
+            }
+
+            var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
+            // TODO -> should delete risk
             return null;
+            return Ok();
         }
 
         ////////////////// DELETE METHODS //////////////////
@@ -255,16 +237,31 @@ namespace RiskAware.Server.Controllers
                 return NotFound();
             }
 
+            var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
+            // TODO -> should create new history and soft delete
             //risk.IsValid = false;
             //await _context.SaveChangesAsync();
 
-            //return Ok();
             return null;
+            return Ok();
         }
 
         private bool RiskExists(int id)
         {
             return _context.Risks.Any(e => e.Id == id);
+        }
+
+        private int EditValue(int value, int scale)
+        {
+            switch (scale)
+            {
+                case 3 when value == 3:
+                    return 2;
+                case 3 when value == 5:
+                    return 3;
+                default:
+                    return value;
+            }
         }
     }
 }
