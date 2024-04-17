@@ -12,7 +12,7 @@ interface IDetail {
   end: Date;
   comments: IComments[];
   isBlank: boolean;
-  // TODO -> isBlank
+  scale: number;
 }
 
 export default IDetail;
