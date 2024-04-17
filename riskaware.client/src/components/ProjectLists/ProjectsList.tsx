@@ -1,16 +1,12 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import {
-  MaterialReactTable,
-  useMaterialReactTable,
-  type MRT_Row,
-  type MRT_ColumnDef,
-  type MRT_ColumnFiltersState,
-  type MRT_PaginationState,
-  type MRT_SortingState,
+  MaterialReactTable, useMaterialReactTable,
+  type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
+  type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
+import { MRT_Localization_CS } from 'material-react-table/locales/cs';
 import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
-import { MRT_Localization_CS } from 'material-react-table/locales/cs';
 import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
 import IDtResult from '../interfaces/DtResult';
 import IProject from '../interfaces/IProject';
@@ -26,14 +22,14 @@ import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 
 const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
-  // data and fetching state
+  // Data and fetching state
   const [data, setData] = useState<IProject[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
 
-  // table state
+  // Table state
   const initialColumnSort: ColumnSort = { id: 'id', desc: true };
   const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
@@ -59,7 +55,6 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         filters: columnFilters ?? [],
         sorting: sorting.length != 0 ? sorting : [initialColumnSort],
       };
-      console.log(searchParams);
       try {
         const response = await fetch(fetchUrl, {
           method: 'POST',
@@ -83,11 +78,11 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     };
     fetchData();
   }, [
-    columnFilters, //re-fetch when column filters change
-    globalFilter, //re-fetch when global filter changes
-    pagination.pageIndex, //re-fetch when page index changes
-    pagination.pageSize, //re-fetch when page size changes
-    sorting, //re-fetch when sorting changes
+    columnFilters,
+    globalFilter,
+    pagination.pageIndex,
+    pagination.pageSize,
+    sorting,
   ]);
 
   const columns = useMemo<MRT_ColumnDef<IProject>[]>(
@@ -108,17 +103,16 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         id: 'start',
         header: 'Začátek',
         filterVariant: 'date',
-        filterFn: 'lessThan',   // todo change to something else
+        filterFn: 'greaterThan',
         sortingFn: 'datetime',
         Cell: ({ cell }) => formatDate(cell.getValue<Date>()),
-        dateSetting: { locale: "cs-CZ" }, // todo delete
       },
       {
         accessorFn: (row) => new Date(row.end),
         id: 'end',
         header: 'Konec',
         filterVariant: 'date',
-        filterFn: 'lessThan',   // todo change to something else
+        filterFn: 'lessThan',
         sortingFn: 'datetime',
         Cell: ({ cell }) => formatDate(cell.getValue<Date>()),
       },
