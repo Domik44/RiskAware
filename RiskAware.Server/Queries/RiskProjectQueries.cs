@@ -122,7 +122,8 @@ namespace RiskAware.Server.Queries
                     Start = pr.Start,
                     End = pr.End,
                     Comments = comments,
-                    IsBlank = pr.IsBlank
+                    IsBlank = pr.IsBlank,
+                    Scale = pr.Scale,
                 })
                 .FirstOrDefaultAsync();
 
