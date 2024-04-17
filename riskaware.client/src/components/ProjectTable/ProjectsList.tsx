@@ -26,14 +26,14 @@ import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 
 const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
-  //data and fetching state
+  // data and fetching state
   const [data, setData] = useState<IProject[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
 
-  //table state
+  // table state
   const initialColumnSort: ColumnSort = { id: 'id', desc: true };
   const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
