@@ -19,8 +19,8 @@ namespace RiskAware.Server.Seeds
             await UserSeed.Seed(userManager, context);
 
             RiskProjectSeed.Seed(context);
-            ProjectRoleSeed.Seed(context);
             ProjectPhaseSeed.Seed(context);
+            ProjectRoleSeed.Seed(context);
             RiskCategorySeed.Seed(context);
             RiskSeed.Seed(context);
             RiskHistorySeed.Seed(context);

@@ -31,7 +31,8 @@ namespace RiskAware.Server.Seeds
                     RiskProjectId = 1,
                     Name = "Analytik",
                     RoleType = RoleType.TeamMember,
-                    IsReqApproved = true
+                    IsReqApproved = true,
+                    ProjectPhaseId = 1
                 },
                 new()
                 {
@@ -39,7 +40,8 @@ namespace RiskAware.Server.Seeds
                     RiskProjectId = 1,
                     Name = "Analytik",
                     RoleType = RoleType.TeamMember,
-                    IsReqApproved = true
+                    IsReqApproved = true,
+                    ProjectPhaseId = 2
                 }
             };
 

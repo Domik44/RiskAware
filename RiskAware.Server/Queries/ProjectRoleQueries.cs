@@ -25,7 +25,7 @@ namespace RiskAware.Server.Queries
                 .Select(pr => new ProjectRoleDto
                 {
                     Id = pr.Id,
-                    RoleName = pr.RoleType.ToString(),
+                    RoleName = pr.Name,
                     IsReqApproved = pr.IsReqApproved,
                     User = new UserDto
                     {

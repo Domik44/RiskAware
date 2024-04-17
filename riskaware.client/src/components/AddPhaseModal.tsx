@@ -73,29 +73,6 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail }) =>  {
                 </FormGroup>
               </Col>
             </Row>
-            {/*<Row>*/}
-            {/*  <FormGroup>*/}
-            {/*    <Label>Zodpovědná osoba:</Label>*/}
-            {/*    <Input id="exampleSelect" name="select" type="select">*/}
-            {/*      */}{/*TODO -> fetch options from backend */}
-            {/*      <option>*/}
-            {/*        1*/}
-            {/*      </option>*/}
-            {/*      <option>*/}
-            {/*        2*/}
-            {/*      </option>*/}
-            {/*      <option>*/}
-            {/*        3*/}
-            {/*      </option>*/}
-            {/*      <option>*/}
-            {/*        4*/}
-            {/*      </option>*/}
-            {/*      <option>*/}
-            {/*        5*/}
-            {/*      </option>*/}
-            {/*    </Input>*/}
-            {/*  </FormGroup>*/}
-            {/*</Row>*/}
           </ModalBody>
           <ModalFooter>
             <Button color="primary" type="submit">

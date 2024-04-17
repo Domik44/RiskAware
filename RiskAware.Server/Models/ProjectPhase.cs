@@ -33,8 +33,9 @@ namespace RiskAware.Server.Models
         ///// <summary>
         ///// 
         ///// </summary>
-        public int? ProjectRoleId { get; set; }
-        [ForeignKey(nameof(ProjectRoleId))]
-        public ProjectRole ProjectRole { get; set; }
+        //public int? ProjectRoleId { get; set; }
+        //[ForeignKey(nameof(ProjectRoleId))]
+        //public ProjectRole ProjectRole { get; set; }
+        public ICollection<ProjectRole> ProjectRoles { get; set; }
     }
 }

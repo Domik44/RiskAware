@@ -71,12 +71,12 @@ namespace RiskAware.Server.Queries
                             .Select(h => h.Status)
                             .FirstOrDefault()
                     }),
-                    AssignedUser = new UserDto
-                    {
-                        Id = pp.ProjectRole.User.Id,
-                        FullName = pp.ProjectRole.User.FirstName + " " + pp.ProjectRole.User.LastName,
-                        Email = pp.ProjectRole.User.Email,
-                    }
+                    //AssignedUser = new UserDto
+                    //{
+                    //    Id = pp.ProjectRole.User.Id,
+                    //    FullName = pp.ProjectRole.User.FirstName + " " + pp.ProjectRole.User.LastName,
+                    //    Email = pp.ProjectRole.User.Email,
+                    //}
                 })
                 .FirstOrDefaultAsync();
             

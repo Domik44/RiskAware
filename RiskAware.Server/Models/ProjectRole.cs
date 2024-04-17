@@ -30,6 +30,8 @@ namespace RiskAware.Server.Models
         [ForeignKey(nameof(RiskProjectId))]
         public RiskProject RiskProject { get; set; }
 
+        public int? ProjectPhaseId { get; set; }
+        [ForeignKey(nameof(ProjectPhaseId))]
         public ProjectPhase ProjectPhase { get; set; }
     }
 }

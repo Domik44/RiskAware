@@ -15,6 +15,11 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
   const submit = async () => {
     const id = projectDetail.detail.id;
     const apiUrl = `/api/RiskProject/${id}/AddUserToRiskProject`;
+    let phaseId = null;
+    const roleType = parseInt((document.getElementById("roleType") as HTMLInputElement).value);
+    if(roleType == RoleType.TeamMember) {
+      phaseId = parseInt((document.getElementById("phaseSelect") as HTMLInputElement).value);
+    }
     try { 
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -23,9 +28,10 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
         },
         body: JSON.stringify({
           email: (document.getElementById("email") as HTMLInputElement).value,
-          roleType: parseInt((document.getElementById("roleType") as HTMLInputElement).value),
+          roleType: roleType,
           name: (document.getElementById("name") as HTMLInputElement).value,
-          userRoleType: userRole
+          userRoleType: userRole,
+          projectPhaseId: phaseId
         })
       });
 
@@ -50,7 +56,7 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
 
   const selectFill = (selectedRole: number) => {
     const nameInput = document.getElementById("name") as HTMLInputElement;
-    const phaseSelect = document.getElementById("phaseSelect") as HTMLInputElement;
+    const phaseSelect = document.getElementById("phaseSelectGroup") as HTMLInputElement;
 
     phaseSelect.classList.add("hidden");
     if (selectedRole == RoleType.RiskManager) {
@@ -58,7 +64,6 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
     }
     else if (selectedRole == RoleType.TeamMember) {
       nameInput.value = "Člen týmu";
-      // TODO here show the phase select
       phaseSelect.classList.remove("hidden");
     }
     else {
@@ -107,10 +112,10 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
               </FormGroup>
             </Row>
             <Row>
-              <FormGroup>
+              <FormGroup id="phaseSelectGroup" className="hidden">
                 <Label>Přiřazená fáze:</Label>
-                <Input id="phaseSelect" name="select" type="select" className="hidden">
-                  {/*TODO -> now i can assigned already assigned phases -> FIX -> fetch only free phases*/}
+                <Input id="phaseSelect" name="select" type="select">
+                  {/*TODO -> FIX -> fetch phases again? -> mby not needed cuz only PM is doing this*/}
                   {projectDetail.phases.map((phase) => (
                     <option key={phase.id} value={phase.id}>
                       {phase.name}

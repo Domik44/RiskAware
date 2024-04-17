@@ -92,9 +92,6 @@ namespace RiskAware.Server.Controllers
                 RiskProjectId = riskProjectId
             };
 
-            // TODO -> add option to add user to phase when phase is created
-            // get users which have role on project a suggest them in select in frontend
-
             _context.ProjectPhases.Add(newProjectPhase);
             await _context.SaveChangesAsync();
 

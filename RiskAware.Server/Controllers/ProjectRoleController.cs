@@ -93,12 +93,15 @@ namespace RiskAware.Server.Controllers
             };
 
             // check if projectPhase was given and if yes set assign newly added user to this phase
-            //if(projectRoleDto.ProjectPhaseId != null) // TODO -> mby think of better way to do this
-            //{
-            //    // TODO -> mby get projectPhase from db and check if it exists and if its free
-            //    // and then assign it to newProjectRole
-            //    newProjectRole.RiskProjectId = (int)projectRoleDto.ProjectPhaseId;
-            //}
+            if (projectRoleDto.ProjectPhaseId != null) // TODO -> mby think of better way to do this
+            {
+                var projectPhase = await _context.ProjectPhases.Where(pp => pp.Id == projectRoleDto.ProjectPhaseId).FirstOrDefaultAsync();
+                if(projectPhase == null)
+                {
+                    return NotFound("Project phase not found");
+                }
+                newProjectRole.ProjectPhaseId = projectPhase.Id;
+            }
 
             _context.ProjectRoles.Add(newProjectRole);
             await _context.SaveChangesAsync();

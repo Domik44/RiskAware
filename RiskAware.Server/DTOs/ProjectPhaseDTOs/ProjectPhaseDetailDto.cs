@@ -12,6 +12,6 @@ namespace RiskAware.Server.DTOs.ProjectPhaseDTOs
         public DateTime End { get; set; }
         public IEnumerable<RiskDto> Risks { get; set; }
         // TODO -> assigned user 
-        public UserDto AssignedUser { get; set; }
+        //public UserDto AssignedUser { get; set; }
     }
 }

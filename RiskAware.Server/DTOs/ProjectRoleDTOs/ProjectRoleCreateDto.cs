@@ -10,6 +10,6 @@ namespace RiskAware.Server.DTOs.ProjectRoleDTOs
         public string Email { get; set; }
         public RoleType UserRoleType { get; set; }
         //public int RiskProjectId { get; set; }
-        //public int? ProjectPhaseId { get; set; } // TODO -> when user is assigned to phase
+        public int? ProjectPhaseId { get; set; } // TODO -> when user is assigned to phase
     }
 }
