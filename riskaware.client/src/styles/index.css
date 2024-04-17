@@ -48,9 +48,14 @@ ul li.nav-item {
     display: none;
 }
 
+.border {
+    border: 1px solid #dee2e6 !important;
+    border-radius: 5px;
+}
+
 /*TODO align*/
 .CommentCard {
-    margin: 5px 10px
+    margin: 10px 10px
 }
 
     .CommentCard .commentHeader {
@@ -73,5 +78,5 @@ div.card {
 .commentButtonContainer{
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center-align the form content horizontally */
+    align-items: end; /* Center-align the form content horizontally */
 }

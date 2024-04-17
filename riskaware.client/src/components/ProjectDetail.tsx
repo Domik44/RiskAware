@@ -2,7 +2,7 @@
 import { formatDate } from "../helpers/DateFormatter";
 import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col} from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
-import IProjectDetail from './interfaces/IProjectDetail';
+import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
 import AddPhaseModal from './AddPhaseModal';
 import AddProjectRoleModal from './AddProjectRoleModal';
 import AddRiskModal from './AddRiskModal';
@@ -40,12 +40,12 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
       </Alert>)
       :(
       <div className="container">
+        {projectDetail.detail.isBlank && (
+          <InitialSetupModal projectDetail={projectDetail} />
+        )}
         <h1>{projectDetail.detail.title}</h1>
         <div className="row">
             <div className="col-3">
-              {projectDetail.detail.isBlank && (
-                <InitialSetupModal projectDetail={projectDetail} />
-              )}
             <PhaseAccordion
               projectDetail={projectDetail}
               toggleTab={this.toggleTab}
@@ -79,15 +79,14 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   projectDetail={projectDetail}
                 />
               <TabPane tabId="detail">
-                {/*<p>{projectDetail.detail.title}</p>*/}
-                <dl>
-                  <Row>
-                    <dt>Popis:</dt>
+                  <dl>
+                    <Row className="mt-3">
+                      <dt className="mb-2">Popis:</dt>
                     <dd>
                       <textarea readOnly className="form-control" value={projectDetail.detail.description} />
                     </dd>
                   </Row>
-                  <Row>
+                    <Row className="mt-2">
                     <Col>
                       <dt>Od</dt>
                       <dd>{formatDate(projectDetail.detail.start)}</dd>
@@ -96,14 +95,18 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <dt>Do</dt>
                       <dd>{formatDate(projectDetail.detail.end)}</dd>
                     </Col>
-                  </Row>
-                  <Row>
-                    <CommentList projId={projectDetail.detail.id} comments={projectDetail.detail.comments }></CommentList>
-                  </Row>
+                    </Row>
+                    {projectDetail.userRole !== RoleType.CommonUser && (
+                      <Row className="mt-5">
+                        <CommentList projId={projectDetail.detail.id} comments={projectDetail.detail.comments }></CommentList>
+                      </Row>
+                    )}
                 </dl>
               </TabPane>
                 <TabPane tabId="phases">
-                  <AddPhaseModal projectDetail={projectDetail} />
+                  {projectDetail.userRole === RoleType.ProjectManager && ( 
+                    <AddPhaseModal projectDetail={projectDetail} />
+                  )}
                 <ul>
                   {projectDetail.phases.map((phase) => (
                     <li key={phase.id}>
@@ -115,6 +118,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                 </ul>
               </TabPane>
                 <TabPane tabId="risks">
+                  
                   <AddRiskModal projectDetail={projectDetail} />
                 <ul>
                   {projectDetail.risks.map((risk) => (
@@ -129,8 +133,10 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   ))}
                 </ul>
               </TabPane>
-              <TabPane tabId="members">
-                <AddProjectRoleModal projectDetail={projectDetail} />
+                <TabPane tabId="members">
+                  {projectDetail.userRole === RoleType.ProjectManager && ( 
+                    <AddProjectRoleModal projectDetail={projectDetail} />
+                  )}
                 <ul>
                   {projectDetail.members.map((member) => (
                     <li key={member.id}>

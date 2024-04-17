@@ -1,8 +1,9 @@
 ﻿import { ChangeEvent, Component, FormEvent } from 'react';
 import { formatDate } from "../helpers/DateFormatter";
-import { Form, Button, ButtonGroup } from 'reactstrap';
+import { Form, Button, ButtonGroup, Row, Col } from 'reactstrap';
 import CommentCard from './CommentCard';
 import IComments from './interfaces/IComments';
+import SendIcon from '@mui/icons-material/Send';
 
 interface ICommentList {
   projId: number;
@@ -121,26 +122,32 @@ export class CommentList extends Component<ICommentList, ICommentListState> {
     const hideLoadButtons = comments.length <= this.state.maxDisplayCnt;
 
     const contents = (
-      <div className="container">
-        <p>Komentáře:</p>
-        <Form id="addCommentForm" onSubmit={this.handleCommentSubmit}>
-          <div className="addComment">
-            <textarea
-              id="commentTextArea"  
-              className="form-control"
-              placeholder="Přidejte komentář..."
+      <div className="container p-0">
+        <h5>Komentáře:</h5>
+        <Form id="addCommentForm" onSubmit={this.handleCommentSubmit} className="mb-3">
+            <Row>
+              <Col className="col-10">
+                <div className="addComment">
+                      <textarea
+                        id="commentTextArea"  
+                        className="form-control"
+                        placeholder="Přidejte komentář..."
 
-            onChange={this.handleCommentChange}></textarea>
-            <div className="commentButtonContainer">
-              <Button
-                id="submitCommentB"
-                type="submit"
-                color="primary"
-                disabled={this.state.submitButtonDisabled}>
-                Přidat komentář
-              </Button>
-            </div>
-          </div>
+                      onChange={this.handleCommentChange}></textarea>
+                </div>
+              </Col>
+              <Col className="col-2 commentButtonContainer">
+                <div >
+                    <Button
+                      id="submitCommentB"
+                      type="submit"
+                      color="primary"
+                      disabled={this.state.submitButtonDisabled}>
+                      <SendIcon></SendIcon>
+                    </Button>
+                </div>
+              </Col>
+            </Row>
         </Form>
         {displayComments.map((comment) => (
           <CommentCard
