@@ -1,10 +1,8 @@
 ﻿import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import AppRoutes from './AppRoutes';
-import { Layout } from './components/Layout';
 import { AuthProvider } from './auth/AuthContext.tsx';
 import ProtectedRoute from './auth/ProtectedRoute.tsx';
-import "bootstrap/dist/css/bootstrap.min.css";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { Layout } from './components/Layout';
 
 // Localization libraries
 import { createTheme, ThemeProvider, useTheme } from '@mui/material';
