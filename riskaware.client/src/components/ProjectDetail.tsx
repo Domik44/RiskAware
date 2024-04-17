@@ -54,10 +54,13 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
             <div className="col-9">
               <Nav tabs className="flex-row-reverse">
               <NavItem>
-                <NavLink active={activeTab === 'members'} onClick={() => this.toggleTab('members')}> Členové </NavLink>
+                  <NavLink active={activeTab === 'matrix'} onClick={() => this.toggleTab('matrix')}> Matice </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink active={activeTab === 'risks'} onClick={() => this.toggleTab('risks')}> Rizika </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink active={activeTab === 'members'} onClick={() => this.toggleTab('members')}> Členové </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink active={activeTab === 'phases'} onClick={() => this.toggleTab('phases')}> Fáze </NavLink>
@@ -123,18 +126,21 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   ))}
                 </ul>
               </TabPane>
-                <TabPane tabId="members">
-                  <AddProjectRoleModal projectDetail={projectDetail} />
-                  <ul>
-                    {projectDetail.members.map((member) => (
-                      <li key={member.id}>
-                        <p>{member.user.fullName}</p>
-                        <p>{member.roleName}</p>
-                        <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
-                        <p>{member.projectPhaseName}</p>
-                      </li>
-                    ))}
-                  </ul>
+              <TabPane tabId="members">
+                <AddProjectRoleModal projectDetail={projectDetail} />
+                <ul>
+                  {projectDetail.members.map((member) => (
+                    <li key={member.id}>
+                      <p>{member.user.fullName}</p>
+                      <p>{member.roleName}</p>
+                      <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
+                      <p>{member.projectPhaseName}</p>
+                    </li>
+                  ))}
+                </ul>
+              </TabPane>
+              <TabPane tabId="matrix">
+                <p>Matice</p>
               </TabPane>
             </TabContent>
           </div>
@@ -149,6 +155,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
   }
 
   async populateProjectDetail() {
+    console.log('populateProjectDetail');
     const urlSplitted = window.location.pathname.split('/');
     const id = urlSplitted[2];
     
