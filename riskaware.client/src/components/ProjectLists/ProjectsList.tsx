@@ -4,9 +4,9 @@ import {
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
-import { MRT_Localization_CS } from 'material-react-table/locales/cs';
 import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
+import MUITableCommonOptions from '../../common/MUITableCommonOptions';
 import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
 import IDtResult from '../interfaces/DtResult';
 import IProject from '../interfaces/IProject';
@@ -21,7 +21,7 @@ import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 
-const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
+export const ProjectsList: React.FC<{ fetchUrl: string; }> = ({ fetchUrl }) => {
   // Data and fetching state
   const [data, setData] = useState<IProject[]>([]);
   const [isError, setIsError] = useState(false);
@@ -127,13 +127,13 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         header: 'Projektový manažer',
       },
     ],
-    [],
+    []
   );
 
   // todo copy delete confirm modal from ITU
   const openDeleteConfirmModal = (row: MRT_Row<IProject>) => {
     if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
-      console.log(`Delete:${row.original.id}`);  // todo post delete
+      console.log(`Delete:${row.original.id}`); // todo post delete
     }
   };
 
@@ -178,31 +178,15 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     download(csvConfig)(csv);
   };
 
-  // todo move options to object and reuse
   const table = useMaterialReactTable({
+    ...MUITableCommonOptions<IProject>(), // Add common and basic options
     columns,
     data,
-    enableRowSelection: false,
-    enableColumnFilterModes: false,   // todo maybe set to true but restrict to only one filter mode
-    enableGlobalFilter: false,    // todo delete global filter or alternatively create fulltext index to flex in PIS (*nerd)
-    enableRowActions: true,
-    positionActionsColumn: 'last',
-    manualFiltering: true,
-    manualPagination: true,
-    manualSorting: true,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     rowCount,
-    initialState: {
-      showColumnFilters: true,
-      showGlobalFilter: false,
-      columnPinning: {
-        right: ['mrt-row-actions'],
-      },
-      density: 'compact',
-    },
     state: {
       columnFilters,
       globalFilter,
@@ -212,26 +196,7 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
       showProgressBars: isRefetching,
       sorting,
     },
-    getRowId: (row) => String(row.id),
-    localization: MRT_Localization_CS,
-    paginationDisplayMode: 'pages',
-    positionToolbarAlertBanner: 'bottom',
-    muiSearchTextFieldProps: {
-      size: 'small',
-      variant: 'outlined',
-    },
-    muiPaginationProps: {
-      color: 'secondary',
-      rowsPerPageOptions: [5, 7, 10, 12, 15, 20, 25, 50, 100],
-      shape: 'rounded',
-      variant: 'outlined',
-    },
-    muiToolbarAlertBannerProps: isError
-      ? {
-        color: 'error',
-        children: 'Chyba při načítání dat',
-      }
-      : undefined,
+    enableRowActions: true,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Zobrazit detail">
@@ -251,13 +216,17 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         </Tooltip>
       </Box>
     ),
+    muiToolbarAlertBannerProps: isError
+      ? {
+        color: 'error',
+        children: 'Chyba při načítání dat',
+      }
+      : undefined,
     renderTopToolbarCustomActions: ({ table }) => (
       <Box>
         <Button
           disabled={table.getPrePaginationRowModel().rows.length === 0}
-          onClick={() =>
-            exportToPDF(table.getPrePaginationRowModel().rows)
-          }
+          onClick={() => exportToPDF(table.getPrePaginationRowModel().rows)}
           startIcon={<FileDownloadIcon />}
         >
           Exportovat do PDF
