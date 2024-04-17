@@ -1,27 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
-using RiskAware.Server.ViewModels;
 using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
-    public class RiskProjectQueries
+    public class RiskProjectQueries(AppDbContext context)
     {
-        private readonly AppDbContext _context;
-        private readonly ProjectPhaseQueries _projectPhaseQueries;
-        private readonly RiskQueries _riskQueries;
-        private readonly ProjectRoleQueries _projectRoleQueries;
-
-        public RiskProjectQueries(AppDbContext context)
-        {
-            _context = context;
-            _projectPhaseQueries = new ProjectPhaseQueries(context);
-            _riskQueries = new RiskQueries(context);
-            _projectRoleQueries = new ProjectRoleQueries(context);
-        }
+        private readonly AppDbContext _context = context;
+        private readonly ProjectPhaseQueries _projectPhaseQueries = new ProjectPhaseQueries(context);
+        private readonly RiskQueries _riskQueries = new RiskQueries(context);
+        private readonly ProjectRoleQueries _projectRoleQueries = new ProjectRoleQueries(context);
 
         private static DateTime ParseClientDate(string date, DateTime defaultValue)
         {
@@ -29,7 +21,7 @@ namespace RiskAware.Server.Queries
         }
 
         public IQueryable<RiskProjectDto> ApplyFilterQueryProjects(
-            IQueryable<RiskProjectDto> query, DtParams dtParams)
+            IQueryable<RiskProjectDto> query, DtParamsDto dtParams)
         {
             foreach (var filter in dtParams.Filters)
             {

@@ -71,7 +71,7 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<User>> CreateUser(UserDetailDto userDto)
         {
             var activeUser = await _userManager.GetUserAsync(User);
-            if(!activeUser.SystemRole.IsAdministrator)
+            if (!activeUser.SystemRole.IsAdministrator)
             {
                 return Unauthorized();
             }

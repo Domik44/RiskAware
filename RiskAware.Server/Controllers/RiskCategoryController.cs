@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs;
@@ -78,8 +77,8 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<int>> CreateRiskCategory(int riskId, RiskCategoryDto riskCategoryDto)
         {
             // risk category will be created when a risk is created
-                // user will either select an existing risk category or create a new one
-                // if user creates a new one, this method will be called
+            // user will either select an existing risk category or create a new one
+            // if user creates a new one, this method will be called
 
             // in fronted we will need to check if risk category is being created or selected
             // if it is being created, we will call this method and retrieve the risk category
@@ -106,11 +105,11 @@ namespace RiskAware.Server.Controllers
                 Name = riskCategoryDto.Name,
                 Description = riskCategoryDto.Description,
                 RiskProjectId = riskId
-            };  
+            };
 
             _context.RiskCategories.Add(newRiskCategory);
             await _context.SaveChangesAsync();
-            
+
             return newRiskCategory.Id;
         }
 

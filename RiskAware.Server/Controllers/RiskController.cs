@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.Models;
@@ -68,8 +67,8 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<Risk>> CreateRisk(RiskDetailDto riskDto) // TODO ->return risk or just action result?
         {
             // User call this, adds risk to db, then it would call fetch for getRisk and set active tab to display it
-                // instead i can pass it directly here and leave one fetch? 
-                // need to update RiskPageDto to include RiskDetailDto
+            // instead i can pass it directly here and leave one fetch? 
+            // need to update RiskPageDto to include RiskDetailDto
 
             // here not only RiskDetailDto is needed, but also chosen ProjecPhasedId and RiskCategoryId
             //_context.Risks.Add(risk);
@@ -146,7 +145,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// DELETE METHODS //////////////////
-        
+
         // DELETE: api/Risk/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRisk(int id)

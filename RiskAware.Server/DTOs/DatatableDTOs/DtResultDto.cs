@@ -1,6 +1,6 @@
-﻿namespace RiskAware.Server.ViewModels
+﻿namespace RiskAware.Server.DTOs.DatatableDTOs
 {
-    public class DtResult<T>
+    public class DtResultDto<T>
     {
         public IEnumerable<T> Data { get; set; }
         public int TotalRowCount { get; set; }

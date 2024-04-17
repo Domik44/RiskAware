@@ -1,6 +1,4 @@
-﻿using RiskAware.Server.DTOs.UserDTOs;
-
-namespace RiskAware.Server.DTOs.RiskProjectDTOs
+﻿namespace RiskAware.Server.DTOs.RiskProjectDTOs
 {
     public class RiskProjectCreateDto
     {

@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RiskAware.Server.ViewModels;
+namespace RiskAware.Server.DTOs.UserDTOs;
 
-public class LoginViewModel
+public class LoginDto
 {
     [Required]
     [EmailAddress]

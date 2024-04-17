@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
-using RiskAware.Server.ViewModels;
 using System.Linq.Dynamic.Core;
-
 
 namespace RiskAware.Server.Controllers
 {
@@ -139,7 +138,7 @@ namespace RiskAware.Server.Controllers
         /// url : /api/RiskProjects
         [HttpPost("/api/RiskProjects")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetRiskProjects([FromBody] DtParams dtParams)
+        public async Task<IActionResult> GetRiskProjects([FromBody] DtParamsDto dtParams)
         {
             var query = _riskProjectQueries.QueryAllProjects();
             query = _riskProjectQueries.ApplyFilterQueryProjects(query, dtParams);
@@ -148,7 +147,7 @@ namespace RiskAware.Server.Controllers
                 .Skip(dtParams.Start)
                 .Take(dtParams.Size)
                 .ToListAsync();
-            return new JsonResult(new DtResult<RiskProjectDto>
+            return new JsonResult(new DtResultDto<RiskProjectDto>
             {
                 Data = projects,
                 TotalRowCount = totalRowCount
@@ -163,7 +162,7 @@ namespace RiskAware.Server.Controllers
         /// url : /api/RiskProject/UserRiskProjects
         [HttpPost("UserRiskProjects")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetUserRiskProjects([FromBody] DtParams dtParams)
+        public async Task<IActionResult> GetUserRiskProjects([FromBody] DtParamsDto dtParams)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -179,7 +178,7 @@ namespace RiskAware.Server.Controllers
                 .Skip(dtParams.Start)
                 .Take(dtParams.Size)
                 .ToListAsync();
-            return new JsonResult(new DtResult<RiskProjectDto>
+            return new JsonResult(new DtResultDto<RiskProjectDto>
             {
                 Data = projects,
                 TotalRowCount = totalRowCount

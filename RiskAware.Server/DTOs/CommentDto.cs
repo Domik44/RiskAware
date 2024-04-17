@@ -1,6 +1,4 @@
-﻿using RiskAware.Server.Models;
-
-namespace RiskAware.Server.DTOs
+﻿namespace RiskAware.Server.DTOs
 {
     public class CommentDto
     {

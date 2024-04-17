@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
-using RiskAware.Server.DTOs.ProjectRoleDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 
@@ -29,7 +27,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// GET METHODS //////////////////
-        
+
         // GET: api/ProjectPhases/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ProjectPhaseDetailDto>> GetProjectPhase(int id)
@@ -59,7 +57,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// POST METHODS //////////////////
-        
+
         // POST: api/ProjectPhases
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("/api/RiskProject/{riskProjectId}/CreateProjectPhase")]
@@ -99,7 +97,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// PUT METHODS //////////////////
-        
+
         // PUT: api/ProjectPhases/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -139,7 +137,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// DELETE METHODS //////////////////
-        
+
         // DELETE: api/ProjectPhases/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProjectPhase(int id)

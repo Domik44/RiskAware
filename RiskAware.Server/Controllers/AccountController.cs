@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
-using RiskAware.Server.ViewModels;
 
 namespace RiskAware.Server.Controllers
 {
@@ -17,7 +17,7 @@ namespace RiskAware.Server.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
             if (ModelState.IsValid)
             {

@@ -45,7 +45,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// POST METHODS //////////////////
-        
+
         // POST: api/ProjectRole
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost("/api/RiskProject/{riskProjectId}/AddUserToRiskProject")]
@@ -57,14 +57,14 @@ namespace RiskAware.Server.Controllers
             // TODO -> think more about how this could be attacked
             // TODO -> mby just check if it exists? 
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
-            if(riskProject == null)
+            if (riskProject == null)
             {
                 return NotFound("Risk project not found");
             }
 
             // check if the activeUser is a project manager
             //if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result) // TODO -> could be attacked like this??
-            if(projectRoleDto.UserRoleType != RoleType.ProjectManager)
+            if (projectRoleDto.UserRoleType != RoleType.ProjectManager)
             {
                 return Unauthorized();
             }
@@ -72,12 +72,12 @@ namespace RiskAware.Server.Controllers
             // TODO -> check if user is already a member of the project
             // if so -> return BadRequest
             var userToBeAdded = await _context.Users.Where(u => u.Email == projectRoleDto.Email).FirstOrDefaultAsync();
-            if(userToBeAdded == null)
+            if (userToBeAdded == null)
             {
                 return NotFound("User not found");
             }
-            
-            if(_projectRoleQueries.HasProjectRoleOnRiskProject(riskProjectId, userToBeAdded.Id).Result)
+
+            if (_projectRoleQueries.HasProjectRoleOnRiskProject(riskProjectId, userToBeAdded.Id).Result)
             {
                 return BadRequest("User is already a member of this project");
             }
@@ -96,7 +96,7 @@ namespace RiskAware.Server.Controllers
             if (projectRoleDto.ProjectPhaseId != null) // TODO -> mby think of better way to do this
             {
                 var projectPhase = await _context.ProjectPhases.Where(pp => pp.Id == projectRoleDto.ProjectPhaseId).FirstOrDefaultAsync();
-                if(projectPhase == null)
+                if (projectPhase == null)
                 {
                     return NotFound("Project phase not found");
                 }
@@ -116,12 +116,12 @@ namespace RiskAware.Server.Controllers
             // if so -> return BadRequest
             var activeUser = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
-            if(riskProject == null)
+            if (riskProject == null)
             {
                 return NotFound("Risk project not found");
             }
 
-            if(_projectRoleQueries.HasProjectRoleOnRiskProject(riskProjectId, activeUser.Id).Result)
+            if (_projectRoleQueries.HasProjectRoleOnRiskProject(riskProjectId, activeUser.Id).Result)
             {
                 return BadRequest("User is already a member of this project");
             }
@@ -142,7 +142,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// PUT METHODS //////////////////
-        
+
         // PUT: api/ProjectRole/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         //[HttpPut("{id}")]
@@ -195,18 +195,18 @@ namespace RiskAware.Server.Controllers
             // and the member will stay as external member until he is assigned to some higher role
             var activeUser = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
-            if(riskProject == null)
+            if (riskProject == null)
             {
                 return NotFound("Risk project doesnt exist");
             }
 
-            if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
+            if (!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
             {
                 return Unauthorized();
             }
 
             var projectRole = await _context.ProjectRoles.Where(pr => pr.Id == projectRoleId).FirstOrDefaultAsync();
-            if(projectRole == null)
+            if (projectRole == null)
             {
                 return NotFound("Request doesnt exist");
             }
@@ -218,7 +218,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// DELETE METHODS //////////////////
-        
+
         // DELETE: api/ProjectRole/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> RemoveUserFromRiskProject(string id)
@@ -249,18 +249,18 @@ namespace RiskAware.Server.Controllers
             // and the user will be removed from the project
             var activeUser = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
-            if(riskProject == null)
+            if (riskProject == null)
             {
                 return NotFound("Risk project doesnt exist");
             }
 
-            if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
+            if (!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
             {
                 return Unauthorized();
             }
 
             var projectRole = await _context.ProjectRoles.Where(pr => pr.Id == projectRoleId).FirstOrDefaultAsync();
-            if(projectRole == null)
+            if (projectRole == null)
             {
                 return NotFound("Request doesnt exist");
             }

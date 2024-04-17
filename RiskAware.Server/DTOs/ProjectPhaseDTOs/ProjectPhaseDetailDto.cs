@@ -1,5 +1,4 @@
 ﻿using RiskAware.Server.DTOs.RiskDTOs;
-using RiskAware.Server.DTOs.UserDTOs;
 
 namespace RiskAware.Server.DTOs.ProjectPhaseDTOs
 {

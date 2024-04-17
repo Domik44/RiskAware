@@ -2,7 +2,6 @@
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.RiskDTOs;
-using RiskAware.Server.DTOs.UserDTOs;
 
 namespace RiskAware.Server.Queries
 {
@@ -10,8 +9,8 @@ namespace RiskAware.Server.Queries
     {
         private readonly AppDbContext _context;
 
-        public ProjectPhaseQueries(AppDbContext context) 
-        { 
+        public ProjectPhaseQueries(AppDbContext context)
+        {
             _context = context;
         }
 
@@ -79,7 +78,7 @@ namespace RiskAware.Server.Queries
                     //}
                 })
                 .FirstOrDefaultAsync();
-            
+
             return projectPhase;
         }
     }

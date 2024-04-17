@@ -168,7 +168,7 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
   const exportToPDF = (rows: MRT_Row<IProject>[]) => {
     const doc = new jsPDF();
     const tableData = rows.map((row) => Object.values(row.original) as CellInput[]);
-    const tableHeaders = columns.map((c) => c.id);
+    const tableHeaders = columns.map((c) => String(c.id));
 
     autoTable(doc, {
       head: [tableHeaders],
