@@ -1,74 +1,110 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import {
+  useEffect,
+  useMemo,
+  useState
+} from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
+  type MRT_Row,
   type MRT_ColumnDef,
   type MRT_ColumnFiltersState,
   type MRT_PaginationState,
   type MRT_SortingState,
 } from 'material-react-table';
+import {
+  Box,
+  Button,
+  Tooltip,
+  IconButton,
+  createTheme,
+  ThemeProvider,
+  useTheme,
+} from '@mui/material';
+import { ColumnSort } from '@tanstack/react-table';
+import { formatDate } from '../../helpers/DateFormatter';
 
-type UserApiResponse = {
-  data: Array<User>;
-  meta: {
-    totalRowCount: number;
-  };
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+
+import { MRT_Localization_CS } from 'material-react-table/locales/cs';
+import { csCZ } from '@mui/material/locale';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
+import { cs } from 'date-fns/locale';
+
+
+type RiskProjectApiResponse = {
+  data: Array<RiskProject>;
+  totalRowCount: number;
 };
 
-type User = {
-  firstName: string;
-  lastName: string;
-  address: string;
-  state: string;
-  phoneNumber: string;
-};
+// todo make rather interface
+type RiskProject = {
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+  numOfMembers: string;
+  projectManagerName: string;
+}
 
-const Example = () => {
+const ProjectTableMaterial: React.FC = () => {
   //data and fetching state
-  const [data, setData] = useState<User[]>([]);
+  const [data, setData] = useState<RiskProject[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
 
   //table state
-  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>(
-    [],
-  );
+  const initialColumnSort: ColumnSort = { id: 'id', desc: true };
+  const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
-  const [sorting, setSorting] = useState<MRT_SortingState>([]);
+  const [sorting, setSorting] = useState<MRT_SortingState>([initialColumnSort]);
   const [pagination, setPagination] = useState<MRT_PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
 
-  //if you want to avoid useEffect, look at the React Query example instead
   useEffect(() => {
     const fetchData = async () => {
       if (!data.length) {
         setIsLoading(true);
-      } else {
+      }
+      else {
         setIsRefetching(true);
       }
 
-      const url = new URL(
-        '/api/data',
-        process.env.NODE_ENV === 'production'
-          ? 'https://www.material-react-table.com'
-          : 'http://localhost:3000',
-      );
-      const startOffset = pagination.pageIndex * pagination.pageSize;
-      url.searchParams.set('start', `${startOffset}`);
-      url.searchParams.set('size', `${pagination.pageSize}`);
-      url.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
-      url.searchParams.set('globalFilter', globalFilter ?? '');
-      url.searchParams.set('sorting', JSON.stringify(sorting ?? []));
+      //const url = new URL('/api/RiskProjects2');
+      //const startOffset = pagination.pageIndex * pagination.pageSize;
+      //url.searchParams.set('start', `${startOffset}`);
+      //url.searchParams.set('size', `${pagination.pageSize}`);
+      //url.searchParams.set('filters', JSON.stringify(columnFilters ?? []));
+      //url.searchParams.set('globalFilter', globalFilter ?? '');
+      //url.searchParams.set('sorting', JSON.stringify(sorting ?? []));
+      //console.log(url.searchParams);
 
+      const startOffset = pagination.pageIndex * pagination.pageSize;
+      let searchParams = {
+        start: startOffset,
+        size: pagination.pageSize,
+        filters: columnFilters ?? [],
+        sorting: sorting.length != 0 ? sorting : [initialColumnSort],
+      };
+      console.log(searchParams);
       try {
-        const response = await fetch(url.href);
-        const json = (await response.json()) as UserApiResponse;
+        const response = await fetch('/api/RiskProjects2', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(searchParams)
+        });
+        const json = (await response.json()) as RiskProjectApiResponse;
         setData(json.data);
-        setRowCount(json.meta.totalRowCount);
+        setRowCount(json.totalRowCount);
       }
       catch (error) {
         setIsError(true);
@@ -80,7 +116,6 @@ const Example = () => {
       setIsRefetching(false);
     };
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     columnFilters, //re-fetch when column filters change
     globalFilter, //re-fetch when global filter changes
@@ -89,47 +124,93 @@ const Example = () => {
     sorting, //re-fetch when sorting changes
   ]);
 
-  const columns = useMemo<MRT_ColumnDef<User>[]>(
+  const columns = useMemo<MRT_ColumnDef<RiskProject>[]>(
     () => [
       {
-        accessorKey: 'firstName',
-        header: 'First Name',
-      },
-      //column definitions...
-      {
-        accessorKey: 'lastName',
-        header: 'Last Name',
+        accessorKey: 'id',
+        header: 'ID',
+        filterFn: 'equalss',
       },
       {
-        accessorKey: 'address',
-        header: 'Address',
+        accessorKey: 'title',
+        header: 'Název',
       },
       {
-        accessorKey: 'state',
-        header: 'State',
+        accessorFn: (row) => new Date(row.start),
+        id: 'start',
+        header: 'Začátek',
+        filterVariant: 'date',
+        filterFn: 'lessThan',   // todo change to something else
+        sortingFn: 'datetime',
+        Cell: ({ cell }) => formatDate(cell.getValue<Date>()),
+        dateSetting: { locale: "cs-CZ" }, // todo delete
       },
       {
-        accessorKey: 'phoneNumber',
-        header: 'Phone Number',
+        accessorFn: (row) => new Date(row.end),
+        id: 'end',
+        header: 'Konec',
+        filterVariant: 'date',
+        filterFn: 'lessThan',   // todo change to something else
+        sortingFn: 'datetime',
+        Cell: ({ cell }) => formatDate(cell.getValue<Date>()),
       },
-      //end
+      {
+        accessorKey: 'numOfMembers',
+        header: 'Počet členů',
+      },
+      {
+        accessorKey: 'projectManagerName',
+        header: 'Projektový manažer',
+      },
     ],
     [],
   );
 
+  // todo copy delete confirm modal from ITU
+  //DELETE action
+  const openDeleteConfirmModal = (row: MRT_Row<RiskProject>) => {
+    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
+      console.log(`Delete:${row.original.id}`);  // todo post delete
+    }
+  };
+
+  // todo move options to object and reuse
   const table = useMaterialReactTable({
+    //renderCaption: () => `Tabulka projektů`,   // todo rendering below
+    //renderTopToolbarCustomActions: () => (
+    //  <Row>
+    //    <Col>
+    //      <h4>Všechny projekty - MT</h4>
+    //    </Col>
+    //    <Col>
+    //      <CreateProjectModal>
+    //      </CreateProjectModal>
+    //    </Col>
+    //  </Row>
+    //),
     columns,
     data,
     enableRowSelection: false,
-    getRowId: (row) => row.phoneNumber,
-    initialState: { showColumnFilters: true },
+    enableColumnFilterModes: false,   // todo maybe set to true but restrict to only one filter mode
+    getRowId: (row) => String(row.id),
+    initialState: {
+      showColumnFilters: true,
+      showGlobalFilter: false,
+      columnPinning: {
+        right: ['mrt-row-actions'],
+      },
+      density: 'compact',
+    },
+    enableGlobalFilter: false,    // todo delete global filter or alternatively create fulltext index to flex in PIS (*nerd)
+    enableRowActions: true,
+    positionActionsColumn: 'last',
     manualFiltering: true,
     manualPagination: true,
     manualSorting: true,
     muiToolbarAlertBannerProps: isError
       ? {
         color: 'error',
-        children: 'Error loading data',
+        children: 'Chyba při načítání dat',
       }
       : undefined,
     onColumnFiltersChange: setColumnFilters,
@@ -146,9 +227,48 @@ const Example = () => {
       showProgressBars: isRefetching,
       sorting,
     },
+    localization: MRT_Localization_CS,
+    paginationDisplayMode: 'pages',
+    positionToolbarAlertBanner: 'bottom',
+    muiSearchTextFieldProps: {
+      size: 'small',
+      variant: 'outlined',
+    },
+    muiPaginationProps: {
+      color: 'secondary',
+      rowsPerPageOptions: [5, 7, 10, 12, 15, 20, 25, 50],
+      shape: 'rounded',
+      variant: 'outlined',
+    },
+    renderRowActions: ({ row }) => (
+      <Box sx={{ display: 'flex', gap: '1rem' }}>
+        <Tooltip title="Zobrazit detail">
+          <IconButton href={`/api/RiskProject/${row.original.id}/Detail`}>
+            <VisibilityOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Upravit">
+          <IconButton onClick={() => openDeleteConfirmModal(row)}>
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Vymazat">
+          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+    ),
   });
 
-  return <MaterialReactTable table={table} />;
+  const theme = useTheme();   // todo maybe it should be on App.tsx
+  return (
+    <ThemeProvider theme={createTheme(theme, csCZ)}>
+      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={cs}>
+        <MaterialReactTable table={table} />
+      </LocalizationProvider>
+    </ThemeProvider>
+  );
 };
 
-export default Example;
+export default ProjectTableMaterial;

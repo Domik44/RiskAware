@@ -9,7 +9,10 @@ using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 using RiskAware.Server.ViewModels;
+using System;
+using System.Linq;
 using System.Linq.Dynamic.Core;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RiskAware.Server.Controllers
 {
@@ -99,11 +102,16 @@ namespace RiskAware.Server.Controllers
             });
         }
 
+        private static DateTime ParseClientDate(string date, DateTime defaultValue)
+        {
+            return DateTime.TryParse(date, out DateTime parsed) ? parsed : defaultValue;
+        }
+
         [HttpPost("/api/RiskProjects2")]
         [Produces("application/json")]
         public async Task<IActionResult> GetRiskProjects2([FromBody] DtParams2 dtParams)
         {
-            var projects = await _context.RiskProjects
+            IQueryable<RiskProjectDto> query = _context.RiskProjects
                 .AsNoTracking()
                 .Select(u =>
                     new RiskProjectDto
@@ -118,15 +126,65 @@ namespace RiskAware.Server.Controllers
                             .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
                             .FirstOrDefault()
                     }
-                )
-                .ToListAsync();
+                );
 
-            int totalsize = await _context.RiskProjects.CountAsync();
+            foreach (var filter in dtParams.Filters)
+            {
+                // todo string properties can be filtered by Contains or StartsWith
+                query = filter.PropertyName switch
+                {
+                    nameof(RiskProjectDto.Id) =>
+                        query.Where(p => p.Id.ToString().StartsWith(filter.Value)), // numeric property
+                    nameof(RiskProjectDto.Title) =>
+                        query.Where(p => p.Title.StartsWith(filter.Value)),         // string property
+                    nameof(RiskProjectDto.Start) =>
+                        query.Where(p => p.Start >= ParseClientDate(filter.Value, DateTime.MinValue)),  // datetime property
+                    nameof(RiskProjectDto.End) =>
+                        query.Where(p => p.End <= ParseClientDate(filter.Value, DateTime.MaxValue)),
+                    nameof(RiskProjectDto.NumOfMembers) =>
+                        query.Where(p => p.NumOfMembers.ToString().StartsWith(filter.Value)),
+                    nameof(RiskProjectDto.ProjectManagerName) =>
+                        query.Where(p => p.ProjectManagerName.StartsWith(filter.Value)),
+                    _ => query      // Default case - do not apply any filter
+                };
+            }
+
+            // todo delete advanced filtering by date
+            //if (dtParams.Filters.Any())
+            //{
+            //    var filterStart = dtParams.Filters
+            //        .Where(f => f.PropertyName == nameof(RiskProjectDto.Start))
+            //        .FirstOrDefault();
+            //    DateTime start = filterStart is not null ? DateTime.Parse(filterStart.Value) : DateTime.MinValue;
+
+            //    var filterEnd = dtParams.Filters
+            //        .Where(f => f.PropertyName == nameof(RiskProjectDto.End))
+            //        .FirstOrDefault();
+            //    DateTime end = filterEnd is not null ? DateTime.Parse(filterEnd.Value) : DateTime.MaxValue;
+
+            //    if (start != DateTime.MinValue || end != DateTime.MaxValue)
+            //    {
+            //        query = query.Where(p => p.Start >= start && p.End <= end);
+            //    }
+            //}
+
+            if (dtParams.Sorting.Any())
+            {
+                Sorting sorting = dtParams.Sorting.First();
+                query = query.OrderBy($"{sorting.Id} {sorting.Dir}");
+            }
+
+            int totalRowCount = await query.CountAsync();
+
+            var projects = await query
+                .Skip(dtParams.Start)
+                .Take(dtParams.Size)
+                .ToListAsync();
 
             return new JsonResult(new
             {
                 data = projects,
-                totalsize = totalsize
+                totalRowCount = totalRowCount
             });
         }
 

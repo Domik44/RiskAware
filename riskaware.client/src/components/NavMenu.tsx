@@ -43,6 +43,9 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
                 <NavItem>
                   <NavLink tag={Link} className="text-dark" to="/myProjects">Vlastní projekty</NavLink>
                 </NavItem>
+                <NavItem>
+                  <NavLink tag={Link} className="text-dark" to="/allProjectsMaterial">MaterialTable</NavLink>
+                </NavItem>
               </ul>
               <ul className="navbar-nav ms-auto">
                 <NavItem>
