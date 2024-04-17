@@ -63,6 +63,14 @@ namespace RiskAware.Server.Queries
                         .OrderByDescending(h => h.Created)
                         .Select(h => h.Probability * h.Impact)
                         .FirstOrDefault(),
+                    Probability = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Probability)
+                        .FirstOrDefault(),
+                    Impact = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Impact)
+                        .FirstOrDefault(),
                     State = r.RiskHistory
                         .OrderByDescending(h => h.Created)
                         .Select(h => h.Status)

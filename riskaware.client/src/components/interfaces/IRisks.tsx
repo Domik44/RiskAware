@@ -2,7 +2,9 @@
   id: number;
   title: string;
   categoryName: string;
-  severity: string;
+  severity: number;
+  probability: number;
+  impact: number;
   state: string;
 }
 

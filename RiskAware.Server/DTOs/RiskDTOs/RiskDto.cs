@@ -9,6 +9,8 @@
         public string Title { get; set; }
         public string CategoryName { get; set; }
         public int Severity { get; set; }
+        public int Probability { get; set; }
+        public int Impact { get; set; }
         public string State { get; set; }
     }
 }
