@@ -40,12 +40,9 @@ import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
 
+import IDtResult from '../interfaces/DtResult';
 import IProject from '../interfaces/IProject';
 
-type ProjectApiResponse = {
-  data: Array<IProject>;
-  totalRowCount: number;
-};
 
 const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
   //data and fetching state
@@ -90,7 +87,7 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
           },
           body: JSON.stringify(searchParams)
         });
-        const json = (await response.json()) as ProjectApiResponse;
+        const json = (await response.json()) as IDtResult<IProject>;
         setData(json.data);
         setRowCount(json.totalRowCount);
       }
