@@ -1,8 +1,4 @@
-﻿import {
-  useEffect,
-  useMemo,
-  useState
-} from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable,
@@ -12,36 +8,21 @@ import {
   type MRT_PaginationState,
   type MRT_SortingState,
 } from 'material-react-table';
-import {
-  Box,
-  Button,
-  Tooltip,
-  IconButton,
-  createTheme,
-  ThemeProvider,
-  useTheme,
-} from '@mui/material';
+import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
+import { MRT_Localization_CS } from 'material-react-table/locales/cs';
 import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
+import IDtResult from '../interfaces/DtResult';
+import IProject from '../interfaces/IProject';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
-
-import { MRT_Localization_CS } from 'material-react-table/locales/cs';
-import { csCZ } from '@mui/material/locale';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
-import { cs } from 'date-fns/locale';
-
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
-
-import IDtResult from '../interfaces/DtResult';
-import IProject from '../interfaces/IProject';
+import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 
 const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
@@ -205,23 +186,21 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
 
   // todo move options to object and reuse
   const table = useMaterialReactTable({
-    // todo alternative of rendering heading
-    //renderTopToolbarCustomActions: () => (
-    //  <Row>
-    //    <Col>
-    //      <h4>Všechny projekty - MT</h4>
-    //    </Col>
-    //    <Col>
-    //      <CreateProjectModal>
-    //      </CreateProjectModal>
-    //    </Col>
-    //  </Row>
-    //),
     columns,
     data,
     enableRowSelection: false,
     enableColumnFilterModes: false,   // todo maybe set to true but restrict to only one filter mode
-    getRowId: (row) => String(row.id),
+    enableGlobalFilter: false,    // todo delete global filter or alternatively create fulltext index to flex in PIS (*nerd)
+    enableRowActions: true,
+    positionActionsColumn: 'last',
+    manualFiltering: true,
+    manualPagination: true,
+    manualSorting: true,
+    onColumnFiltersChange: setColumnFilters,
+    onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    rowCount,
     initialState: {
       showColumnFilters: true,
       showGlobalFilter: false,
@@ -230,23 +209,6 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
       },
       density: 'compact',
     },
-    enableGlobalFilter: false,    // todo delete global filter or alternatively create fulltext index to flex in PIS (*nerd)
-    enableRowActions: true,
-    positionActionsColumn: 'last',
-    manualFiltering: true,
-    manualPagination: true,
-    manualSorting: true,
-    muiToolbarAlertBannerProps: isError
-      ? {
-        color: 'error',
-        children: 'Chyba při načítání dat',
-      }
-      : undefined,
-    onColumnFiltersChange: setColumnFilters,
-    onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
-    onSortingChange: setSorting,
-    rowCount,
     state: {
       columnFilters,
       globalFilter,
@@ -256,6 +218,7 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
       showProgressBars: isRefetching,
       sorting,
     },
+    getRowId: (row) => String(row.id),
     localization: MRT_Localization_CS,
     paginationDisplayMode: 'pages',
     positionToolbarAlertBanner: 'bottom',
@@ -269,6 +232,12 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
       shape: 'rounded',
       variant: 'outlined',
     },
+    muiToolbarAlertBannerProps: isError
+      ? {
+        color: 'error',
+        children: 'Chyba při načítání dat',
+      }
+      : undefined,
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Zobrazit detail">
@@ -309,14 +278,7 @@ const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     ),
   });
 
-  const theme = useTheme();   // todo maybe it should be on App.tsx
-  return (
-    <ThemeProvider theme={createTheme(theme, csCZ)}>
-      <LocalizationProvider dateAdapter={AdapterDateFns} adapterLocale={cs}>
-        <MaterialReactTable table={table} />
-      </LocalizationProvider>
-    </ThemeProvider>
-  );
+  return <MaterialReactTable table={table} />;
 };
 
 export default ProjectsList;
