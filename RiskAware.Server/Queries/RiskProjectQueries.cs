@@ -173,13 +173,16 @@ namespace RiskAware.Server.Queries
             var members = await _projectRoleQueries.GetRiskProjectMembersAsync(id);
             var userRole = await _projectRoleQueries.GetUsersRoleOnRiskProjectAsync(id, userId);
 
+            var assignedPhase = await _projectRoleQueries.GetUsersAssignedPhaseAsync(id, userId); // TODO
+
             return new RiskProjectPageDto
             {
                 Detail = detail,
                 Phases = phases,
                 Risks = risks,
                 Members = members,
-                UserRole = userRole
+                UserRole = userRole,
+                AssignedPhase = assignedPhase
             };
         }
 
@@ -207,6 +210,22 @@ namespace RiskAware.Server.Queries
                 .ToListAsync();
 
             return comments;
+        }
+
+        public async Task<bool> CreateDefaultCategories(RiskProject riskProject) {
+            ICollection<string> names = [ "Finanční rizika","Lidská rizika","Operační rizika","Legislativní rizika","Technická rizika"];
+            foreach (var name in names)
+            {
+                var newRiskCategory = new RiskCategory
+                {
+                    Name = name,
+                    RiskProjectId = riskProject.Id
+                };
+                _context.RiskCategories.Add(newRiskCategory);
+            }
+            _context.SaveChanges();
+
+            return true;
         }
     }
 }

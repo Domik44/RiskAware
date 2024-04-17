@@ -26,7 +26,7 @@ namespace RiskAware.Server.Controllers
         }
 
         // GET: api/RiskCategory
-        [HttpGet("/api/RiskProject/{riskId}/RiskCategories")]
+        [HttpGet("/api/RiskProject/{riskProjectId}/RiskCategories")]
         public async Task<ActionResult<IEnumerable<RiskCategoryDto>>> GetRiskCategories(int riskProjectId)
         {
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
@@ -42,11 +42,10 @@ namespace RiskAware.Server.Controllers
                 {
                     Id = rc.Id,
                     Name = rc.Name,
-                    Description = rc.Description
                 })
                 .ToListAsync();
 
-            return riskCategories;
+            return Ok(riskCategories);
         }
 
         // GET: api/RiskCategory/5
@@ -64,8 +63,7 @@ namespace RiskAware.Server.Controllers
             var riskCategoryDto = new RiskCategoryDto
             {
                 Id = riskCategory.Id,
-                Name = riskCategory.Name,
-                Description = riskCategory.Description
+                Name = riskCategory.Name
             };
 
             return riskCategoryDto;
@@ -103,7 +101,6 @@ namespace RiskAware.Server.Controllers
             var newRiskCategory = new RiskCategory
             {
                 Name = riskCategoryDto.Name,
-                Description = riskCategoryDto.Description,
                 RiskProjectId = riskId
             };
 

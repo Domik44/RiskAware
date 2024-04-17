@@ -217,7 +217,6 @@ namespace RiskAware.Server.Controllers
             _context.RiskProjects.Add(newRiskProject);
             _context.SaveChanges();
 
-            // TODO -> validate if project manager was chosen
             var newProjectRole = new ProjectRole
             {
                 RiskProjectId = newRiskProject.Id,
@@ -229,6 +228,9 @@ namespace RiskAware.Server.Controllers
 
             _context.ProjectRoles.Add(newProjectRole);
             _context.SaveChanges();
+
+            // create default categories
+            var b = _riskProjectQueries.CreateDefaultCategories(newRiskProject);
 
             return Ok();
         }
