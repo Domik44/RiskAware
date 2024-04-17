@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.Models;
@@ -13,12 +15,16 @@ namespace RiskAware.Server.Controllers
     public class RiskController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly UserManager<User> _userManager;
         private readonly RiskQueries _riskQueries;
+        private readonly ProjectRoleQueries _projectRoleQueries;
 
-        public RiskController(AppDbContext context, RiskQueries riskQueries)
+        public RiskController(AppDbContext context, RiskQueries riskQueries, UserManager<User> userManager, ProjectRoleQueries projectRoleQueries)
         {
             _context = context;
             _riskQueries = riskQueries;
+            _userManager = userManager;
+            _projectRoleQueries = projectRoleQueries;
         }
 
         ////////////////// GET METHODS //////////////////
@@ -63,19 +69,111 @@ namespace RiskAware.Server.Controllers
 
         // POST: api/Risk
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Risk>> CreateRisk(RiskDetailDto riskDto) // TODO ->return risk or just action result?
+        [HttpPost("/api/RiskProject/{riskProjectId}/AddRisk")]
+        public async Task<IActionResult> CreateRisk(int riskProjectId, RiskCreateDto riskDto) // TODO ->return risk or just action result?
         {
+            var activeUser = await _userManager.GetUserAsync(User);
+            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId); // TODO -> mby do better like exists or something
+            if (riskProject == null)
+            {
+                return NotFound("Risk project not found");
+            }
+
+            //var activeUserRole = await _projectRoleQueries.GetUsersRoleOnRiskProjectAsync(riskProjectId, activeUser.Id);
+            var activeUserRole = riskDto.UserRoleType;
+            if(activeUserRole != RoleType.RiskManager && activeUserRole != RoleType.ProjectManager && activeUserRole != RoleType.TeamMember)
+            {
+                return Unauthorized();
+            }
+
+            var riskCategoryId = riskDto.RiskCategory.Id;
+            if(riskCategoryId == -1) // new type was selected
+            {
+                var newRiskCategory = new RiskCategory
+                {
+                    Name = riskDto.RiskCategory.Name,
+                    RiskProjectId = riskProjectId
+                };
+                _context.RiskCategories.Add(newRiskCategory);
+                _context.SaveChanges();
+                riskCategoryId = newRiskCategory.Id;
+            }
+            else // predefined type was selected
+            {
+                var riskCategory = await _context.RiskCategories.Where(rc => rc.RiskProjectId == riskProjectId && rc.Id == riskCategoryId).FirstOrDefaultAsync();
+                if(riskCategory == null)
+                {
+                    return NotFound("Risk category not found");
+                }
+            }
+
+            var projectPhase = await _context.ProjectPhases.Where(pp => pp.RiskProjectId == riskProjectId && pp.Id == riskDto.ProjectPhaseId).FirstOrDefaultAsync();
+            if (projectPhase == null)
+            {
+                return NotFound("Project phase not found");
+            }
+
+            if(riskProject.Scale == 3) // TODO -> use modulo
+            {
+                if(riskDto.Probability == 3)
+                {
+                    riskDto.Probability = 2;
+                }
+                else if(riskDto.Probability == 5)
+                {
+                    riskDto.Probability = 3;
+                }
+
+                if (riskDto.Impact == 3)
+                {
+                    riskDto.Impact = 2;
+                }
+                else if (riskDto.Impact == 5)
+                {
+                    riskDto.Impact = 3;
+                }
+            }
+
+            var risk = new Risk
+            {
+                Created = DateTime.Now,
+                UserId = activeUser.Id,
+                RiskProjectId = riskProjectId,
+                ProjectPhaseId = riskDto.ProjectPhaseId,
+                RiskCategoryId = riskCategoryId
+            };
+            _context.Risks.Add(risk);
+            _context.SaveChanges();
+
+            var isApproved = activeUserRole == RoleType.RiskManager || activeUserRole == RoleType.ProjectManager;
+            var riskHistory = new RiskHistory
+            {
+                RiskId = risk.Id,
+                UserId = activeUser.Id,
+                Created = risk.Created,
+                Title = riskDto.Title,
+                Description = riskDto.Description,
+                Probability = riskDto.Probability,
+                Impact = riskDto.Impact,
+                Threat = riskDto.Threat,
+                Indicators = riskDto.Indicators,
+                Prevention = riskDto.Prevention,
+                Status = riskDto.Status,
+                PreventionDone = riskDto.PreventionDone,
+                RiskEventOccured = riskDto.RiskEventOccured,
+                LastModif = DateTime.Now,
+                StatusLastModif = DateTime.Now,
+                End = riskDto.End,
+                IsValid = true,
+                IsApproved = isApproved
+            };
+            _context.RiskHistory.Add(riskHistory);
+            _context.SaveChanges();
+
             // User call this, adds risk to db, then it would call fetch for getRisk and set active tab to display it
             // instead i can pass it directly here and leave one fetch? 
             // need to update RiskPageDto to include RiskDetailDto
-
-            // here not only RiskDetailDto is needed, but also chosen ProjecPhasedId and RiskCategoryId
-            //_context.Risks.Add(risk);
-            //await _context.SaveChangesAsync();
-
-            //return CreatedAtAction("GetRisk", new { id = risk.Id }, risk);
-            return null;
+            return Ok();
         }
 
         ////////////////// PUT METHODS //////////////////

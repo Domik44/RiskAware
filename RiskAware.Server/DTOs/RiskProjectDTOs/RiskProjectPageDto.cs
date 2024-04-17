@@ -17,7 +17,7 @@ namespace RiskAware.Server.DTOs.RiskProjectDTOs
         public IEnumerable<ProjectRoleDto> Members { get; set; }
         public bool IsAdmin { get; set; } // TODO -> delete this property
         public RoleType UserRole { get; set; }
-
+        public ProjectPhaseSimpleDto AssignedPhase { get; set; }
         //public ProjectPhaseDto UserPhase { get; set; } // TODO -> will be used later
     }
 }

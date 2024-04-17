@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.ProjectRoleDTOs;
 using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
@@ -81,6 +82,31 @@ namespace RiskAware.Server.Queries
             }
 
             return role.RoleType;
+        }
+
+        public async Task<ProjectPhaseSimpleDto> GetUsersAssignedPhaseAsync(int riskProjectId, string userId)
+        {
+            var role = await _context.ProjectRoles
+                .AsNoTracking()
+                .Where(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId)
+                .Include(pr => pr.ProjectPhase)
+                .FirstOrDefaultAsync();
+
+            if (role == null)
+            {
+                return null;
+            }
+
+            if (role.ProjectPhase == null)
+            {
+                return null;
+            }
+
+            return new ProjectPhaseSimpleDto
+            {
+                Id = role.ProjectPhase.Id,
+                Name = role.ProjectPhase.Name
+            };
         }
     }
 }

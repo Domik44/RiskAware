@@ -19,6 +19,7 @@ interface IProjectDetail {
   phases: IPhases[];
   chosenRisk: IRiskDetail;
   userRole: RoleType;
+  assignedPhase: IPhases;
   //isAdmin: boolean; // TODO -> example
 }
 

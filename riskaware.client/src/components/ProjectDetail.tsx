@@ -114,14 +114,16 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   ))}
                 </ul>
               </TabPane>
-              <TabPane tabId="risks">
-                <AddRiskModal />
+                <TabPane tabId="risks">
+                  <AddRiskModal projectDetail={projectDetail} />
                 <ul>
                   {projectDetail.risks.map((risk) => (
                     <li key={risk.id}>
                       <p>{risk.title}</p>
                       <p>{risk.categoryName}</p>
                       <p>{risk.severity}</p>
+                      <p>{risk.probability}</p>
+                      <p>{risk.impact}</p>
                       <p>{risk.state}</p>
                     </li>
                   ))}
