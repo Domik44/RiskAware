@@ -22,7 +22,7 @@ import {
   useTheme,
 } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
-import { formatDate } from '../../helpers/DateFormatter';
+import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -34,6 +34,11 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFnsV3';
 import { cs } from 'date-fns/locale';
 
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { mkConfig, generateCsv, download } from 'export-to-csv';
+
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 type RiskProjectApiResponse = {
   data: Array<RiskProject>;
@@ -167,16 +172,43 @@ const ProjectTableMaterial: React.FC = () => {
   );
 
   // todo copy delete confirm modal from ITU
-  //DELETE action
   const openDeleteConfirmModal = (row: MRT_Row<RiskProject>) => {
     if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
       console.log(`Delete:${row.original.id}`);  // todo post delete
     }
   };
 
+  const exportToPDF = (rows: MRT_Row<RiskProject>[]) => {
+    const doc = new jsPDF();
+    const tableData = rows.map((row) => Object.values(row.original));
+    const tableHeaders = columns.map((c) => c.header);
+
+    autoTable(doc, {
+      head: [tableHeaders],
+      body: tableData,
+    });
+
+    const now = new Date();
+    const dateString = formatDateForInput(now);
+    doc.save(`${dateString}_registr_rizik.pdf`);
+  };
+
+  const exportToCSV = () => {
+    const now = new Date();
+    const dateString = formatDateForInput(now);
+    const csvConfig = mkConfig({
+      filename: `${dateString}_registr_rizik`,
+      fieldSeparator: ',',
+      decimalSeparator: '.',
+      useKeysAsHeaders: true,
+    });
+    const csv = generateCsv(csvConfig)(data);
+    download(csvConfig)(csv);
+  };
+
   // todo move options to object and reuse
   const table = useMaterialReactTable({
-    //renderCaption: () => `Tabulka projektů`,   // todo rendering below
+    // todo alternative of rendering heading
     //renderTopToolbarCustomActions: () => (
     //  <Row>
     //    <Col>
@@ -236,7 +268,7 @@ const ProjectTableMaterial: React.FC = () => {
     },
     muiPaginationProps: {
       color: 'secondary',
-      rowsPerPageOptions: [5, 7, 10, 12, 15, 20, 25, 50],
+      rowsPerPageOptions: [5, 7, 10, 12, 15, 20, 25, 50, 100],
       shape: 'rounded',
       variant: 'outlined',
     },
@@ -257,6 +289,25 @@ const ProjectTableMaterial: React.FC = () => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
+      </Box>
+    ),
+    renderTopToolbarCustomActions: ({ table }) => (
+      <Box>
+        <Button
+          disabled={table.getPrePaginationRowModel().rows.length === 0}
+          onClick={() =>
+            exportToPDF(table.getPrePaginationRowModel().rows)
+          }
+          startIcon={<FileDownloadIcon />}
+        >
+          Exportovat do PDF
+        </Button>
+        <Button
+          onClick={exportToCSV}
+          startIcon={<FileDownloadIcon />}
+        >
+          Exportovat do CSV
+        </Button>
       </Box>
     ),
   });
