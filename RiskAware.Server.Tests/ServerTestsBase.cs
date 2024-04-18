@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
@@ -6,11 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Respawn;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
+using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
@@ -21,49 +25,43 @@ namespace RiskAware.Server.Tests
     public abstract class ServerTestsBase : IClassFixture<ApiWebApplicationFactory>, IAsyncLifetime
     {
         protected readonly ApiWebApplicationFactory Factory;
-        protected readonly HttpClient Client;
+        protected HttpClient Client;
 
         private SqlConnection? _connection;
         private Respawner? _respawner;
 
-        protected ServerTestsBase(ApiWebApplicationFactory? fixture)
+        public ITestOutputHelper TestOutputHelper;
+
+        protected ServerTestsBase(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture)
         {
-            Factory = fixture ?? throw new ArgumentNullException(nameof(fixture));
-            Client = Factory.CreateClient();
+            TestOutputHelper = testOutputHelper;
+            Factory = fixture;
+            Client = Factory.CreateClient(
+                new WebApplicationFactoryClientOptions {AllowAutoRedirect = true});
         }
 
         public async Task InitializeAsync()
         {
-            string? connectionString =
-                Factory.Services.GetRequiredService<IConfiguration>().GetConnectionString("DefaultConnection");
-            _connection = new SqlConnection(connectionString);
-            await _connection.OpenAsync();
-
-            _respawner = await Respawner.CreateAsync(_connection,
-                new RespawnerOptions
-                {
-                    SchemasToInclude = new[] {"public"}, DbAdapter = DbAdapter.SqlServer, WithReseed = true
-                });
-
-            await _respawner.ResetAsync(_connection);
-
-            await SeedUsersData();
         }
 
         public async Task DisposeAsync()
         {
             Client.Dispose();
+        }
 
-            if (_connection != null)
+        public async Task PerformLogin(LoginDto loginDto)
+        {
+            LoginDto user = new() {Email = loginDto.Email, Password = loginDto.Password};
+
+            HttpResponseMessage res = await Client.PostAsJsonAsync("api/Account/login", user);
+
+            if (res.Headers.TryGetValues("Set-Cookie", out IEnumerable<string>? cookies))
             {
-                if (_respawner != null)
-                {
-                    await _respawner.ResetAsync(_connection);
-                }
-
-                await _connection.CloseAsync();
+                string authCookie = cookies.First();
+                authCookie = authCookie.Replace("auth_cookie=", string.Empty);
             }
         }
+
 
         private async Task SeedUsersData()
         {
