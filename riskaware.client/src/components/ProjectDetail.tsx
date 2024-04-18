@@ -131,13 +131,13 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} />
                 </TabPane>
                 <TabPane tabId="members">
-                  <Row>
+                  <Row className="mb-3">
                     <Col>
-                      <h5>Registr rizik</h5>
+                      <h5>Členové projektu</h5>
                     </Col>
                     <Col className="d-flex justify-content-end">
                       {projectDetail.userRole === RoleType.ProjectManager && (
-                        <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} />
+                        <AddProjectRoleModal projectDetail={projectDetail} reRender={this.reRender} />
                       )}
                     </Col>
                   </Row>
