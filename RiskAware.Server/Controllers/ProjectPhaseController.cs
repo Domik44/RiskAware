@@ -108,12 +108,14 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized();
             }
 
+            var order = _context.ProjectPhases.Where(pp => pp.RiskProjectId == riskProjectId).Count() + 1;
             var newProjectPhase = new ProjectPhase
             {
                 Name = projectPhaseDto.Name,
                 Start = projectPhaseDto.Start,
                 End = projectPhaseDto.End,
-                RiskProjectId = riskProjectId
+                RiskProjectId = riskProjectId,
+                Order = order
             };
 
             _context.ProjectPhases.Add(newProjectPhase);
