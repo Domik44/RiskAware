@@ -19,6 +19,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
+import RiskDeleteModal from './RiskDeleleModal';
 
 
 export const RiskList: React.FC<{
@@ -40,6 +41,19 @@ export const RiskList: React.FC<{
     pageIndex: 0,
     pageSize: 10,
   });
+
+  // Delete modal state
+  const [selectedRiskId, setSelectedRiskId] = useState<number | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const openDeleteModal = (riskId: number) => {
+    setSelectedRiskId(riskId);
+    setModalOpen(true);
+  };
+
+  const toggleDeleteModal = () => {
+    setModalOpen(!modalOpen);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -203,12 +217,12 @@ export const RiskList: React.FC<{
           </IconButton>
         </Tooltip>
         <Tooltip title="Upravit">
-          <IconButton onClick={() => openDeleteConfirmModal(row)}>
+          <IconButton onClick={() => openDeleteModal(row.original.id)}>
             <EditIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Vymazat">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+          <IconButton color="error" onClick={() => openDeleteModal(row.original.id)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -239,7 +253,12 @@ export const RiskList: React.FC<{
     ),
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <MaterialReactTable table={table} />
+      <RiskDeleteModal riskId={selectedRiskId ?? 0} isOpen={modalOpen} toggle={toggleDeleteModal} />
+    </>
+  );
 };
 
 export default RiskList;
