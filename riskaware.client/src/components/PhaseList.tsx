@@ -144,11 +144,6 @@ export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
     enableRowActions: true,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Zobrazit detail">
-          <IconButton href={`/project/${row.original.id}`}>
-            <DetailIcon />
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Upravit">
           <IconButton onClick={() => openDeleteConfirmModal(row)}>
             <EditIcon />

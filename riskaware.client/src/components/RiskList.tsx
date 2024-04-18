@@ -20,7 +20,7 @@ import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 
-export const RiskList: React.FC<{ projectId: number }> = ({ projectId }) => {
+export const RiskList: React.FC<{ projectId: number, chooseRisk: (id: number) => void }> = ({ projectId, chooseRisk }) => {
   // Data and fetching state
   const [data, setData] = useState<IRisks[]>([]);
   const [isError, setIsError] = useState(false);
@@ -193,7 +193,7 @@ export const RiskList: React.FC<{ projectId: number }> = ({ projectId }) => {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Zobrazit detail">
-          <IconButton href={`/project/${row.original.id}`}>
+          <IconButton onClick={() => chooseRisk(row.original.id)}>
             <DetailIcon />
           </IconButton>
         </Tooltip>
