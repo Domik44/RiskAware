@@ -31,20 +31,6 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// GET METHODS //////////////////
 
-        // GET: api/ProjectPhases/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProjectPhaseDetailDto>> GetProjectPhase(int id)
-        {
-            var projectPhase = await _projectPhaseQueries.GetProjectPhaseDetailAsync(id);
-
-            if (projectPhase == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(projectPhase);
-        }
-
         /// <summary>
         /// This controller method returns all phases for a specific project.
         /// </summary>
@@ -189,11 +175,6 @@ namespace RiskAware.Server.Controllers
 
             //return NoContent();
             return null;
-        }
-
-        private bool ProjectPhaseExists(int id)
-        {
-            return _context.ProjectPhases.Any(e => e.Id == id);
         }
     }
 }
