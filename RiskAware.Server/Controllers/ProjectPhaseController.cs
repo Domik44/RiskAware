@@ -70,25 +70,21 @@ namespace RiskAware.Server.Controllers
         }
 
 
-        // POST: api/ProjectPhases
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost("/api/RiskProject/{riskProjectId}/CreateProjectPhase")]
-        //public async Task<ActionResult<ProjectPhase>> CreateProjectPhase(int riskId, ProjectPhase projectPhase) // TODO -> depends if we want to just add new elem to the table or regenerate whole table in frontend
-        public async Task<IActionResult> CreateProjectPhase(int riskProjectId, ProjectPhaseCreateDto projectPhaseDto) // TODO -> change to DTO
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectPhaseDto"></param>
+        /// <returns></returns>
+        [HttpPost("/api/RiskProject/CreateProjectPhase")]
+        public async Task<IActionResult> CreateProjectPhase(ProjectPhaseCreateDto projectPhaseDto)
         {
-            // first get activeUser
-            //var activeUser = await _userManager.GetUserAsync(User);
-            // then get project and check if it exists
+            var riskProjectId = projectPhaseDto.RiskProjectId;
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if (riskProject == null)
             {
                 return NotFound("Risk project not found");
             }
 
-            // then check if he has premmision to create phase -> projectManager, RiskManager??
-            //var isProjectManager = await _projectRoleQueries.IsProjectManager(riskId, activeUser.Id);
-            //var isRiskManager = await _projectRoleQueries.IsRiskManager(riskId, activeUser.Id);
-            //if(!isProjectManager && !isRiskManager)
             if (projectPhaseDto.UserRoleType != RoleType.ProjectManager) // TODO -> could be attacked like this??
             {
                 return Unauthorized();
@@ -111,48 +107,49 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// PUT METHODS //////////////////
-
-        // PUT: api/ProjectPhases/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProjectPhase(int id, ProjectPhase projectPhase)
+        /// <summary>
+        /// Method for updating project phase based on user input.
+        /// </summary>
+        /// <param name="phaseId"> Id of phase.</param>
+        /// <param name="projectPhaseDto">DTO containing info about phase.</param>
+        /// <returns>Returns operation result.</returns>
+        //url: api/ProjectPhase/{phaseId}
+        [HttpPut("{phaseId}")]
+        public async Task<IActionResult> UpdateProjectPhase(int phaseId, ProjectPhaseCreateDto projectPhaseDto)
         {
-            // get active user
-            // get project phase and check if it exists
-            // check if user has permission to update phase -> projectManager, RiskManager??
-            // update phase according to DTO
+            var riskProjectId = projectPhaseDto.RiskProjectId;
+            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
+            if (riskProject == null)
+            {
+                return NotFound("Risk project not found");
+            }
 
-            // TODO -> implement this method
-            //if (id != projectPhase.Id)
-            //{
-            //    return BadRequest();
-            //}
+            if (projectPhaseDto.UserRoleType != RoleType.ProjectManager) // TODO -> could be attacked like this??
+            {
+                return Unauthorized();
+            }
 
-            //_context.Entry(projectPhase).State = EntityState.Modified;
+            var projectPhase = await _context.ProjectPhases.Where(pp => pp.Id == phaseId && pp.RiskProjectId == riskProjectId).FirstOrDefaultAsync();
+            if (projectPhase == null)
+            {
+                return BadRequest("Project phase not found");
+            }
 
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!ProjectPhaseExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
+            projectPhase.Name = projectPhaseDto.Name;
+            projectPhase.Start = projectPhaseDto.Start;
+            projectPhase.End = projectPhaseDto.End;
+            _context.SaveChanges();
 
-            //return NoContent();
-            return null;
+            return Ok();
         }
 
         ////////////////// DELETE METHODS //////////////////
 
-        // DELETE: api/ProjectPhases/5
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProjectPhase(int id)
         {

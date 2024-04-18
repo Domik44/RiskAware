@@ -14,7 +14,7 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender }
   const toggle = () => setModal(!modal);
   const submit = async () => {
     const id = projectDetail.detail.id;
-    const apiUrl = `/api/RiskProject/${id}/CreateProjectPhase`;
+    const apiUrl = `/api/RiskProject/CreateProjectPhase`;
     try {
       const response = await fetch(apiUrl, {
         method: 'POST',
@@ -25,7 +25,8 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender }
           name: (document.getElementById("name") as HTMLInputElement).value,
           start: (document.getElementById("start") as HTMLInputElement).value,
           end: (document.getElementById("end") as HTMLInputElement).value,
-          userRoleType: userRole
+          userRoleType: userRole,
+          riskProjectId: id
         })
       });
 
