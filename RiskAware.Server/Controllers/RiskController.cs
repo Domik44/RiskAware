@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.RiskDTOs;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 
@@ -66,6 +68,27 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// POST METHODS //////////////////
+        /// <summary>
+        /// Get filtered project's risks
+        /// </summary>
+        /// <param name="dtParams">Data table filtering parameters</param>
+        /// <returns>Filtered project's risks DTOs</returns>
+        [HttpPost("/api/RiskProject/{projectId}/Risks")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRiskProjects(int projectId, [FromBody] DtParamsDto dtParams)
+        {
+            var query = _riskQueries.QueryProjectRisks(projectId, dtParams);
+            int totalRowCount = await query.CountAsync();
+            var risks = await query
+                .Skip(dtParams.Start)
+                .Take(dtParams.Size)
+                .ToListAsync();
+            return new JsonResult(new DtResultDto<RiskDto>
+            {
+                Data = risks,
+                TotalRowCount = totalRowCount
+            });
+        }
 
         // POST: api/Risk
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

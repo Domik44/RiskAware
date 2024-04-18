@@ -30,7 +30,7 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
   const [rowCount, setRowCount] = useState(0);
 
   // Table state
-  const initialColumnSort: ColumnSort = { id: 'id', desc: true };
+  const initialColumnSort: ColumnSort = { id: 'start', desc: true };
   const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([initialColumnSort]);
@@ -53,7 +53,7 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         start: startOffset,
         size: pagination.pageSize,
         filters: columnFilters ?? [],
-        sorting: sorting.length != 0 ? sorting : [initialColumnSort],
+        sorting: sorting ?? [],
       };
       try {
         const response = await fetch(fetchUrl, {
@@ -87,12 +87,6 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
 
   const columns = useMemo<MRT_ColumnDef<IProject>[]>(
     () => [
-      {
-        id: 'id',
-        accessorKey: 'id',
-        header: 'ID',
-        filterFn: 'startsWith',
-      },
       {
         id: 'title',
         accessorKey: 'title',

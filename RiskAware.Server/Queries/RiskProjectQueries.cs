@@ -44,7 +44,12 @@ namespace RiskAware.Server.Queries
             if (dtParams.Sorting.Any())
             {
                 Sorting sorting = dtParams.Sorting.First();
-                query = query.OrderBy($"{sorting.Id} {sorting.Dir}");
+                query = query.OrderBy($"{sorting.Id} {sorting.Dir}")
+                    .ThenByDescending(p => p.Id);
+            }
+            else
+            {
+                query = query.OrderByDescending(p => p.Id);
             }
             return query;
         }

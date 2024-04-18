@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.DatatableDTOs;
+using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.RiskDTOs;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
+using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
@@ -44,6 +48,70 @@ namespace RiskAware.Server.Queries
                 .FirstOrDefaultAsync();
 
             return risk;
+        }
+
+        public IQueryable<RiskDto> QueryProjectRisks(int projectId, DtParamsDto dtParams)
+        {
+            var query = _context.Risks
+                .AsNoTracking()
+                .Where(r => r.RiskProjectId == projectId)
+                //.Include(r => r.RiskCategory)
+                .Select(r => new RiskDto
+                {
+                    Id = r.Id,
+                    Title = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Title)
+                        .FirstOrDefault(),
+                    CategoryName = r.RiskCategory.Name,
+                    Severity = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Probability * h.Impact)
+                        .FirstOrDefault(),
+                    Probability = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Probability)
+                        .FirstOrDefault(),
+                    Impact = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Impact)
+                        .FirstOrDefault(),
+                    State = r.RiskHistory
+                        .OrderByDescending(h => h.Created)
+                        .Select(h => h.Status)
+                        .FirstOrDefault()
+                });
+
+            foreach (var filter in dtParams.Filters)
+            {
+                query = filter.PropertyName switch
+                {
+                    nameof(RiskDto.Title) =>
+                        query.Where(r => r.Title.StartsWith(filter.Value)),                 // string property
+                    nameof(RiskDto.CategoryName) =>
+                        query.Where(r => r.CategoryName.StartsWith(filter.Value)),
+                    nameof(RiskDto.Severity) =>
+                        query.Where(r => r.Severity.ToString().StartsWith(filter.Value)),   // numeric property
+                    nameof(RiskDto.Probability) =>
+                        query.Where(r => r.Probability.ToString().StartsWith(filter.Value)),
+                    nameof(RiskDto.Impact) =>
+                        query.Where(r => r.Impact.ToString().StartsWith(filter.Value)),
+                    nameof(RiskDto.State) =>
+                        query.Where(r => r.State.StartsWith(filter.Value)),
+                    _ => query      // Default case - do not apply any filter
+                };
+            }
+
+            if (dtParams.Sorting.Any())
+            {
+                Sorting sorting = dtParams.Sorting.First();
+                query = query.OrderBy($"{sorting.Id} {sorting.Dir}");
+            }
+            else
+            {
+                query = query.OrderBy(phase => phase.Id);
+            }
+            return query;
         }
 
         public async Task<IEnumerable<RiskDto>> GetRiskProjectRisksAsync(int id)

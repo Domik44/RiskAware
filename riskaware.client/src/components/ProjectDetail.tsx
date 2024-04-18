@@ -12,6 +12,7 @@ import CommentList from './CommentList';
 import InitialSetupModal from './InitialSetupModal';
 import Matrix from './Matrix';
 import PhaseList from './PhaseList';
+import RiskList from './RiskList';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -118,20 +119,16 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   <PhaseList projectId={projectDetail.detail.id} />
                 </TabPane>
                 <TabPane tabId="risks">
-                  <Button onClick={this.reRender}>rerender</Button>
-                  <AddRiskModal projectDetail={projectDetail} />
-                  <ul>
-                    {projectDetail.risks.map((risk) => (
-                      <li key={risk.id}>
-                        <p>{risk.title}</p>
-                        <p>{risk.categoryName}</p>
-                        <p>{risk.severity}</p>
-                        <p>{risk.probability}</p>
-                        <p>{risk.impact}</p>
-                        <p>{risk.state}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  <Row>
+                    <Col>
+                      <h5>Registr rizik</h5>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      <Button onClick={this.reRender}>rerender</Button>
+                      <AddRiskModal projectDetail={projectDetail} />
+                    </Col>
+                  </Row>
+                  <RiskList projectId={projectDetail.detail.id} />
                 </TabPane>
                 <TabPane tabId="members">
                   {projectDetail.userRole === RoleType.ProjectManager && (

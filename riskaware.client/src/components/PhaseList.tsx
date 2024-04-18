@@ -6,6 +6,7 @@ import {
 } from 'material-react-table';
 import { Box, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
+import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MUITableCommonOptions from './../common/MUITableCommonOptions';
@@ -22,7 +23,7 @@ export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
   const [rowCount, setRowCount] = useState(0);
 
   // Table state
-  const initialColumnSort: ColumnSort = { id: 'id', desc: true };
+  const initialColumnSort: ColumnSort = { id: 'order', desc: false };
   const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const [sorting, setSorting] = useState<MRT_SortingState>([initialColumnSort]);
@@ -76,7 +77,6 @@ export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
     pagination.pageSize,
     sorting,
   ]);
-
 
   const columns = useMemo<MRT_ColumnDef<IPhases>[]>(
     () => [
@@ -144,6 +144,11 @@ export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
     enableRowActions: true,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
+        <Tooltip title="Zobrazit detail">
+          <IconButton href={`/project/${row.original.id}`}>
+            <DetailIcon />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Upravit">
           <IconButton onClick={() => openDeleteConfirmModal(row)}>
             <EditIcon />
