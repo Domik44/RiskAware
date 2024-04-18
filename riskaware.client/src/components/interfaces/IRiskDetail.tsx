@@ -2,16 +2,24 @@
   id: number;
   title: string;
   description: string;
-  categoryName: string;
   probability: number;
-  impact: number;
   severity: number;
-  state: string;
+  impact: number;
   threat: string;
   indicators: string;
   prevention: string;
-  //phaseName: string; // TODO -> depends on backend dto
-  // TODO -> dates -> depends on backend dto
+  status: string;
+  preventionDone: Date;
+  riskEventOccured: Date;
+  end: Date;
+  lastModif: Date;
+  created: Date;
+  statusLastModif: Date;
+  projectPhaseName: string;
+  riskCategoryName: string;
+  isValid: boolean;
+  isApproved: boolean;
+  userFullName: string;
 }
 
 export default IRiskDetail;

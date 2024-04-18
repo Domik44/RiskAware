@@ -239,6 +239,27 @@ namespace RiskAware.Server.Controllers
             return Ok();
         }
 
+        [HttpPut("/api/ProjectRole/{projectRoleId}/AssignPhase/{projectPhaseId}")]
+        public async Task<IActionResult> AssignPhaseToUser(int projectPhaseId, int projectRoleId)
+        {
+            var projectRole = await _context.ProjectRoles.Where(pr => pr.Id == projectRoleId).FirstOrDefaultAsync();
+            if (projectRole == null)
+            {
+                return NotFound("Project role not found");
+            }
+
+            var projectPhase = await _context.ProjectPhases.Where(pp => pp.Id == projectPhaseId).FirstOrDefaultAsync();
+            if (projectPhase == null)
+            {
+                return NotFound("Project phase not found");
+            }
+
+            projectRole.ProjectPhaseId = projectPhase.Id;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+
         ////////////////// DELETE METHODS //////////////////
 
         // DELETE: api/ProjectRole/5

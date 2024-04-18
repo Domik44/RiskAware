@@ -25,9 +25,8 @@ namespace RiskAware.Server.Queries
                 .Where(h => h.RiskId == id)
                 .OrderByDescending(h => h.Created)
                 .FirstOrDefaultAsync();
-            // TODO -> check if recentRiskHistory is null handle
 
-            var risk = await _context.Risks
+            var riskDto = await _context.Risks
                 .AsNoTracking()
                 .Where(r => r.Id == id)
                 //.Include(r => r.RiskCategory)
@@ -36,18 +35,28 @@ namespace RiskAware.Server.Queries
                     Id = r.Id,
                     Title = recentRiskHistory.Title,
                     Description = recentRiskHistory.Description,
-                    CategoryName = r.RiskCategory.Name,
                     Probability = recentRiskHistory.Probability,
                     Impact = recentRiskHistory.Impact,
                     Severity = recentRiskHistory.Probability * recentRiskHistory.Impact,
-                    State = recentRiskHistory.Status,
                     Threat = recentRiskHistory.Threat,
                     Indicators = recentRiskHistory.Indicators,
-                    Prevention = recentRiskHistory.Prevention
+                    Prevention = recentRiskHistory.Prevention,
+                    Status = recentRiskHistory.Status,
+                    PreventionDone = recentRiskHistory.PreventionDone,
+                    RiskEventOccured = recentRiskHistory.RiskEventOccured,
+                    End = recentRiskHistory.End,
+                    LastModif = recentRiskHistory.LastModif,
+                    Created = r.Created,
+                    StatusLastModif = recentRiskHistory.StatusLastModif,
+                    ProjectPhaseName = r.ProjectPhase.Name,
+                    RiskCategoryName = r.RiskCategory.Name,
+                    IsVaid = recentRiskHistory.IsValid,
+                    IsApproved = recentRiskHistory.IsApproved,
+                    UserFullName = r.User.FirstName + " " + r.User.LastName
                 })
                 .FirstOrDefaultAsync();
 
-            return risk;
+            return riskDto;
         }
 
         public IQueryable<RiskDto> QueryProjectRisks(int projectId, DtParamsDto dtParams)
