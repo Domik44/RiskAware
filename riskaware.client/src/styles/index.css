@@ -75,8 +75,56 @@ div.card {
     padding: 0px !important;
 }
 
-.commentButtonContainer{
+.commentButtonContainer {
     display: flex;
     flex-direction: column;
-    align-items: end; /* Center-align the form content horizontally */
+    align-items: center;
+}
+
+
+.matrixTop {
+    display: flex;
+}
+
+.matrixCells {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(90px, 1fr));
+    gap: 0; /* Remove any gap between cells */
+    padding: 2; /* Remove padding */
+    border: 3px solid #262c36; /* Add a 5px black border */
+}
+
+
+.matrixCell {
+    min-width: 80px;
+    min-height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #262c36;
+}
+
+.matrixCell .riskCnt {
+    margin: 0;
+    text-align: center;
+    font-size: 25px;
+}
+
+.matrixPopoverRisk {
+    /*text-align: center;*/
+    padding-left: 15px;
+}
+
+.dopad {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    display: flex;
+    justify-content: center;
+    font-size: 35px;
+}
+
+.pravdepodobnost {
+    display: flex;
+    justify-content: center;
+    font-size: 35px;
 }
