@@ -4,10 +4,10 @@ import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
 
 interface AddProjectRoleModalProps {
   projectDetail: IProjectDetail;
-  // Define any props if needed
+  reRender: () => void;
 }
 
-const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail }) => {
+const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail, reRender }) => {
   const [modal, setModal] = useState(false);
   const userRole = projectDetail.userRole;
 
@@ -37,6 +37,9 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
 
       if (!response.ok) {
         throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
+      }
+      else {
+        reRender(); // Rerender the page;
       }
 
       // TODO -> fetch members again

@@ -6,8 +6,10 @@ import IRiskCategory from './interfaces/IRiskCategory';
 
 interface AddRiskModalProps {
   projectDetail: IProjectDetail;
+  reRender: () => void;
 }
-const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail }) => {
+
+const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender }) => {
   const [modal, setModal] = useState(false);
   const [categories, setCategories] = useState<IRiskCategory[]>([]);
   const scale = projectDetail.detail.scale;
@@ -38,6 +40,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail }) => {
   const toggle = () => {
     setModal(!modal);
   };
+
   const submit = async () => {
     const id = projectDetail.detail.id;
     const apiUrl = `/api/RiskProject/${id}/AddRisk`;
@@ -71,6 +74,9 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail }) => {
 
       if (!response.ok) {
         throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
+      }
+      else {
+        reRender(); // Rerender the page
       }
     }
     catch (error: any) {
@@ -163,7 +169,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail }) => {
             <Row>
               <Col>
                 <FormGroup>
-                  <Label> Pravďepodobnost:</Label>
+                  <Label> Pravděpodobnost:</Label>
                   <Input id="propability" name="propability" type="select">
                     {/*TODO -> fetch options from backend */}
                     <option value={Probability.Insignificant}>
@@ -267,8 +273,9 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail }) => {
             <Row>
               <Col>
                 <FormGroup>
-                  <Label>Riziko objeveno??:</Label>
-                  <Input required id="riskOccured" name="riskOccured" type="date" />
+                  {/*TODO -> handle na nevyplnene riziko*/}
+                  <Label>Riziko nastalo:</Label> 
+                  <Input id="riskOccured" name="riskOccured" type="date" />
                 </FormGroup>
               </Col>
               <Col>

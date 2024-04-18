@@ -112,7 +112,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                     </Col>
                     {projectDetail.userRole === RoleType.ProjectManager && (
                       <Col className="d-flex justify-content-end">
-                        <AddPhaseModal projectDetail={projectDetail} />
+                        <AddPhaseModal projectDetail={projectDetail} reRender={this.reRender} />
                       </Col>
                     )}
                   </Row>
@@ -124,15 +124,14 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <h5>Registr rizik</h5>
                     </Col>
                     <Col className="d-flex justify-content-end">
-                      <Button onClick={this.reRender}>rerender</Button>
-                      <AddRiskModal projectDetail={projectDetail} />
+                      <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} />
                     </Col>
                   </Row>
                   <RiskList projectId={projectDetail.detail.id} />
                 </TabPane>
                 <TabPane tabId="members">
                   {projectDetail.userRole === RoleType.ProjectManager && (
-                    <AddProjectRoleModal projectDetail={projectDetail} />
+                    <AddProjectRoleModal projectDetail={projectDetail} reRender={this.reRender} />
                   )}
                   <ul>
                     {projectDetail.members.map((member) => (
@@ -205,9 +204,11 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
     }
   };
 
-  reRender = async () => {
+  reRender = async () => { // TODO -> now it rerenders the whole page, should be changed to rerender only specific parts
     await this.populateProjectDetail();
   }
+
+  // TODO -> add functions to re render specific parts for example reRenderPhases...
 }
 
 export default ProjectDetail;

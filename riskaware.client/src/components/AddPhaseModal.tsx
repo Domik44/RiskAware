@@ -4,9 +4,10 @@ import IProjectDetail from './interfaces/IProjectDetail';
 
 interface AddPhaseModalProps {
   projectDetail: IProjectDetail;
+  reRender: () => void;
 }
 
-const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail }) =>  {
+const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender }) =>  {
   const [modal, setModal] = useState(false);
   const userRole = projectDetail.userRole;
 
@@ -31,9 +32,9 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail }) =>  {
       if (!response.ok) {
         throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
       }
-
-      // TODO -> fetch phases again + pannel update
-      // will add after the tables are implemented
+      else {
+        reRender(); // Rerender the page
+      }
     }
     catch (error: any) {
       console.error(error);
