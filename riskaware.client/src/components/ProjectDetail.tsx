@@ -45,9 +45,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
           {projectDetail.detail.isBlank && (
             <InitialSetupModal projectDetail={projectDetail} />
           )}
-          <h1>{projectDetail.detail.title}</h1>
           <div className="row">
             <div className="col-3">
+              <h1 className="mb-3">{projectDetail.detail.title}</h1>
               <PhaseAccordion
                 projectDetail={projectDetail}
                 toggleTab={this.toggleTab}
@@ -55,7 +55,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
               />
             </div>
             <div className="col-9">
-              <Nav tabs className="flex-row-reverse">
+              <Nav tabs className="flex-row-reverse mb-3">
                 <NavItem>
                   <NavLink active={activeTab === 'matrix'} onClick={() => this.toggleTab('matrix')}> Matice </NavLink>
                 </NavItem>
@@ -106,7 +106,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   </dl>
                 </TabPane>
                 <TabPane tabId="phases">
-                  <Row>
+                  <Row className="mb-3">
                     <Col>
                       <h5>Fáze projektu</h5>
                     </Col>
@@ -116,10 +116,10 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       </Col>
                     )}
                   </Row>
-                  <PhaseList projectId={projectDetail.detail.id} />
+                  <PhaseList projectId={projectDetail.detail.id}/>
                 </TabPane>
                 <TabPane tabId="risks">
-                  <Row>
+                  <Row className="mb-3">
                     <Col>
                       <h5>Registr rizik</h5>
                     </Col>
@@ -145,7 +145,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   </ul>
                 </TabPane>
                 <TabPane tabId="matrix">
+                  <Row>
                     <Matrix detail={projectDetail} chooseRisk={this.chooseRisk}></Matrix>
+                  </Row>
                 </TabPane>
               </TabContent>
             </div>
