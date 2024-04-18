@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectRoleDTOs;
+using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 
@@ -40,11 +42,31 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<IEnumerable<ProjectRoleDto>>> GetUsersOnRiskProject(int id)
         {
             var projectRoles = await _projectRoleQueries.GetRiskProjectMembersAsync(id);
-
             return Ok(projectRoles);
         }
 
         ////////////////// POST METHODS //////////////////
+        /// <summary>
+        /// Get filtered members working on the project
+        /// </summary>
+        /// <param name="dtParams">Data table filtering parameters</param>
+        /// <returns>Filtered member DTOs</returns>
+        [HttpPost("/api/RiskProject/{projectId}/Members")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRiskProjects(int projectId, [FromBody] DtParamsDto dtParams)
+        {
+            var query = _projectRoleQueries.QueryRiskProjectMembers(projectId, dtParams);
+            int totalRowCount = await query.CountAsync();
+            var members = await query
+                .Skip(dtParams.Start)
+                .Take(dtParams.Size)
+                .ToListAsync();
+            return new JsonResult(new DtResultDto<ProjectRoleListDto>
+            {
+                Data = members,
+                TotalRowCount = totalRowCount
+            });
+        }
 
         // POST: api/ProjectRole
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

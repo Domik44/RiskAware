@@ -7,6 +7,7 @@ import {
 import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import MUITableCommonOptions from './../common/MUITableCommonOptions';
 import { formatDateForInput } from './../helpers/DateFormatter';
+import IDtParams from './interfaces/IDtParams';
 import IDtResult from './interfaces/DtResult';
 import IRisks from './interfaces/IRisks';
 
@@ -20,7 +21,10 @@ import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 
 
-export const RiskList: React.FC<{ projectId: number, chooseRisk: (id: number) => void }> = ({ projectId, chooseRisk }) => {
+export const RiskList: React.FC<{
+  projectId: number,
+  chooseRisk: (id: number) => void,
+}> = ({ projectId, chooseRisk }) => {
   // Data and fetching state
   const [data, setData] = useState<IRisks[]>([]);
   const [isError, setIsError] = useState(false);
@@ -47,7 +51,7 @@ export const RiskList: React.FC<{ projectId: number, chooseRisk: (id: number) =>
       }
 
       const startOffset = pagination.pageIndex * pagination.pageSize;
-      let searchParams = {
+      let searchParams: IDtParams = {
         start: startOffset,
         size: pagination.pageSize,
         filters: columnFilters ?? [],
@@ -92,6 +96,7 @@ export const RiskList: React.FC<{ projectId: number, chooseRisk: (id: number) =>
         filterFn: 'startsWith',
       },
       {
+        // todo add category dropdown selection
         id: 'categoryName',
         accessorKey: 'categoryName',
         header: 'Kategorie',

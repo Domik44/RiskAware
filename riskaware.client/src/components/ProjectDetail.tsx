@@ -13,6 +13,7 @@ import InitialSetupModal from './InitialSetupModal';
 import Matrix from './Matrix';
 import PhaseList from './PhaseList';
 import RiskList from './RiskList';
+import UsersOnProjectList from './UsersOnProjectList';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -130,19 +131,17 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} />
                 </TabPane>
                 <TabPane tabId="members">
-                  {projectDetail.userRole === RoleType.ProjectManager && (
-                    <AddProjectRoleModal projectDetail={projectDetail} reRender={this.reRender} />
-                  )}
-                  <ul>
-                    {projectDetail.members.map((member) => (
-                      <li key={member.id}>
-                        <p>{member.user.fullName}</p>
-                        <p>{member.roleName}</p>
-                        <p>{member.isReqApproved ? 'Approved' : 'Not approved'}</p>
-                        <p>{member.projectPhaseName}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  <Row>
+                    <Col>
+                      <h5>Registr rizik</h5>
+                    </Col>
+                    <Col className="d-flex justify-content-end">
+                      {projectDetail.userRole === RoleType.ProjectManager && (
+                        <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} />
+                      )}
+                    </Col>
+                  </Row>
+                  <UsersOnProjectList projectId={projectDetail.detail.id} />
                 </TabPane>
                 <TabPane tabId="matrix">
                   <Row>

@@ -1,9 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.ProjectRoleDTOs;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
+using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
@@ -36,8 +41,53 @@ namespace RiskAware.Server.Queries
                     ProjectPhaseName = pr.ProjectPhase.Name
                 })
                 .ToListAsync();
-
             return projectRoles;
+        }
+
+        public IQueryable<ProjectRoleListDto> QueryRiskProjectMembers(int projectId, DtParamsDto dtParams)
+        {
+            var query = _context.ProjectRoles
+                .AsNoTracking()
+                .Where(pr => pr.RiskProjectId == projectId)
+                .Include(pr => pr.User)
+                .Include(pr => pr.ProjectPhase)
+                .Select(pr => new ProjectRoleListDto
+                {
+                    Id = pr.Id,
+                    Fullname = pr.User.FirstName + " " + pr.User.LastName,
+                    Email = pr.User.Email,
+                    RoleName = pr.Name,
+                    ProjectPhaseName = pr.ProjectPhase.Name,
+                    IsReqApproved = pr.IsReqApproved,
+                });
+
+            foreach (var filter in dtParams.Filters)
+            {
+                query = filter.PropertyName switch
+                {
+                    nameof(ProjectRoleDto.User.FullName) =>
+                        query.Where(r => r.Fullname.StartsWith(filter.Value)),
+                    nameof(ProjectRoleDto.User.Email) =>
+                        query.Where(r => r.Email.StartsWith(filter.Value)),
+                    nameof(ProjectRoleDto.RoleName) =>
+                        query.Where(r => r.RoleName.StartsWith(filter.Value)),
+                    nameof(ProjectRoleDto.ProjectPhaseName) =>
+                        query.Where(r => r.ProjectPhaseName.StartsWith(filter.Value)),
+                    _ => query      // Default case - do not apply any filter
+                };
+            }
+
+            if (dtParams.Sorting.Any())
+            {
+                Sorting sorting = dtParams.Sorting.First();
+                query = query.OrderBy($"{sorting.Id} {sorting.Dir}")
+                    .ThenByDescending(r => r.Id);
+            }
+            else
+            {
+                query = query.OrderByDescending(r => r.Id);
+            }
+            return query;
         }
 
         public async Task<bool> HasProjectRoleOnRiskProject(int riskProjectId, string userId)

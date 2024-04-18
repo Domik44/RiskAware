@@ -8,6 +8,7 @@ import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
 import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
+import IDtParams from '../interfaces/IDtParams';
 import IDtResult from '../interfaces/DtResult';
 import IProject from '../interfaces/IProject';
 
@@ -49,7 +50,7 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
       }
 
       const startOffset = pagination.pageIndex * pagination.pageSize;
-      let searchParams = {
+      let searchParams: IDtParams = {
         start: startOffset,
         size: pagination.pageSize,
         filters: columnFilters ?? [],
