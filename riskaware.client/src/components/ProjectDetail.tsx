@@ -1,6 +1,6 @@
 ﻿import { Component } from 'react';
 import { formatDate } from "../helpers/DateFormatter";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col, Button } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
 import AddPhaseModal from './AddPhaseModal';
@@ -127,7 +127,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} />
                     </Col>
                   </Row>
-                  <RiskList projectId={projectDetail.detail.id} />
+                  <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} />
                 </TabPane>
                 <TabPane tabId="members">
                   {projectDetail.userRole === RoleType.ProjectManager && (
