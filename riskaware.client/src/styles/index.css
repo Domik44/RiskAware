@@ -83,12 +83,14 @@ div.card {
 
 
 .matrixTop {
-    display: flex;
+   display: flex;
+   justify-content: center;
+   margin-top: 20px;
 }
 
 .matrixCells {
     display: grid;
-    grid-template-columns: repeat(5, minmax(90px, 1fr));
+    /*grid-template-columns: repeat(5, minmax(90px, 1fr));*/
     gap: 0; /* Remove any gap between cells */
     padding: 2; /* Remove padding */
     border: 3px solid #262c36; /* Add a 5px black border */

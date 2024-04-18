@@ -42,40 +42,10 @@ export class MatrixCell extends Component<IMatrix, IMatrixState> {
     }));
   };
 
-  //mixColor = (colorA: string, colorB: string, proportion: number): string => {
-  //  // Convert hex color to RGB
-  //  const hexToRgb = (hex: string): number[] => {
-  //    const r = parseInt(hex.slice(1, 3), 16);
-  //    const g = parseInt(hex.slice(3, 5), 16);
-  //    const b = parseInt(hex.slice(5, 7), 16);
-  //    return [r, g, b];
-  //  };
-
-  //  // Convert RGB to hex color
-  //  const rgbToHex = (rgb: number[]): string => {
-  //    return '#' + rgb.map(c => c.toString(16).padStart(2, '0')).join('');
-  //  };
-
-  //  const [redA, greenA, blueA] = hexToRgb(colorA);
-  //  const [redB, greenB, blueB] = hexToRgb(colorB);
-
-  //  // Calculate mixed color components
-  //  const mixedRed = Math.round(redA * (1 - proportion) + redB * proportion);
-  //  const mixedGreen = Math.round(greenA * (1 - proportion) + greenB * proportion);
-  //  const mixedBlue = Math.round(blueA * (1 - proportion) + blueB * proportion);
-
-  //  // Convert mixed color to hex
-  //  return rgbToHex([mixedRed, mixedGreen, mixedBlue]);
-  //}
-
-
   rgbToHex = (rgb: number[]): string => {
-    // Convert each RGB component to hexadecimal
+    // convert each RGB component to hexadecimal
     const hexComponents = rgb.map(component => {
-      // Ensure the component is within the valid range [0, 255]
-      const componentHex = Math.min(255, Math.max(0, component));
-      // Convert the component to hexadecimal and pad with zeros if necessary
-      return componentHex.toString(16).padStart(2, '0');
+      return component.toString(16).padStart(2, '0');
     });
 
     // Concatenate the hexadecimal components and prepend '#' to form the hex color
@@ -91,9 +61,6 @@ export class MatrixCell extends Component<IMatrix, IMatrixState> {
     const scale = this.state.scale;
 
 
-    //background - color: #ccc;
-    const a = [21, 41, 134];
-    const b = [208, 117, 127];
     //const proportion = 1;
     const green = [26, 237, 7];
     const yellow = [255, 226, 5];
@@ -110,6 +77,9 @@ export class MatrixCell extends Component<IMatrix, IMatrixState> {
       maxThreshold -= scale;
       lowerColor = yellow;
       higherColor = red;
+    }
+    else {
+      threshold *= 2;
     }
 
 

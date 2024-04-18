@@ -19,7 +19,7 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
     super(props);
     this.state = {
       detail: props.detail,
-      scale: 5,
+      scale: props.detail.detail.scale,
       chooseRisk: props.chooseRisk
     };
   }
@@ -27,7 +27,7 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
 
   render() {
     const scale = this.state.scale;
-    const risks = this.state.detail.risks
+    const risks = this.state.detail.risks;
 
 
     let dataMatrix: IRisks[][][] = [];
@@ -53,43 +53,24 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
       cells.unshift(...row);
     }
 
+    let gridString: string = "repeat(" + scale + ", minmax(90px, 1fr))"
     let contents;
-    if (scale == 5) {
-      contents = (
-        <div className="container">
-          <p>MATICE: 5x5</p>
-          <div className="matrixTop">
-            <div className="dopad">
-              <div>Dopad</div>
+    contents = (
+      <div className="container">
+        <div className="matrixTop">
+          <div className="dopad">
+            <div>Dopad</div>
+          </div>
+          <div>
+            <div className="matrixCells" style={{ gridTemplateColumns: gridString } }>
+              {cells}
             </div>
-            <div>
-              <div className="matrixCells">
-                {cells}
-              </div>
-              <div className="pravdepodobnost">
-                <div>Pravděpodobnost</div>
-              </div>
+            <div className="pravdepodobnost">
+              <div>Pravděpodobnost</div>
             </div>
           </div>
-        </div>);
-    }
-    else {
-      contents = (
-        <div className="container">
-          <p>MATICE: 3x3 TODO</p>
-          <div className="matrixGrid">
-            <div>1</div>
-            <div>2</div>
-            <div>3</div>
-            <div>4</div>
-            <div>5</div>
-            <div>6</div>
-            <div>7</div>
-            <div>8</div>
-            <div>9</div>
-          </div>
-        </div>);
-    }
+        </div>
+      </div>);
 
     
 
