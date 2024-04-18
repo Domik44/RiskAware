@@ -114,19 +114,12 @@ export class MatrixCell extends Component<IMatrix, IMatrixState> {
 
 
     const ratio = threshold / maxThreshold;
-    console.log(ratio);
 
     let c = [];
     for (let i = 0; i < 3; i++) {
       c.push(Math.round((lowerColor[i] * (1 - ratio) + higherColor[i] * ratio)));
     }
-    //console.log(this.rgbToHex(c));
-    //console.log(scale);
-
     let color = this.rgbToHex(c);
-
-
-
 
 
     let popover = <></>;

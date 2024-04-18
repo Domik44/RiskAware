@@ -26,9 +26,6 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
 
 
   render() {
-    //const { comments } = this.state;
-    //const displayComments = comments.slice(0, this.state.maxDisplayCnt);
-    //const hideLoadButtons = comments.length <= this.state.maxDisplayCnt;
     const scale = this.state.scale;
     const risks = this.state.detail.risks
 
@@ -44,20 +41,8 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
     risks.forEach(risk => {
       dataMatrix[risk.impact - 1][risk.probability - 1].push(risk);
     });
-    // print
-    //console.log('dataMatrix');
-    //for (var i: number = 0; i < scale; i++) {
-    //  for (var j: number = 0; j < scale; j++) {
-    //    if (dataMatrix[i][j].length > 0)
-    //      console.log(i, j, dataMatrix[i][j]);
-    //  }
-    //}
 
     let cells = [];
-    //for (let i: number = 0; i < scale*scale; i++) {
-    //  cells.unshift(<MatrixCell cellID={i}></MatrixCell>);
-    //}
-    console.log("SETTING CELLS");
     for (let imp: number = 0; imp < scale; imp++) {
       let row = [];
       for (let prob: number = 0; prob < scale; prob++) {
