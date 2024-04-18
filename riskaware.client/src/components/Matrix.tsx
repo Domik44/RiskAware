@@ -1,15 +1,17 @@
 ﻿import { Component } from 'react';
 import IProjectDetail from './interfaces/IProjectDetail';
 import IRisks from './interfaces/IRisks';
-import { Button, PopoverBody, PopoverHeader, UncontrolledPopover } from 'reactstrap';
+import MatrixCell from './MatrixCell';
 
 interface IMatrix {
   detail: IProjectDetail;
+  chooseRisk: (id: number) => void;
 }
 
 interface IMatrixState {
   detail: IProjectDetail;
   scale: number;
+  chooseRisk: (id: number) => void;
 }
 
 export class Matrix extends Component<IMatrix, IMatrixState> {
@@ -17,17 +19,16 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
     super(props);
     this.state = {
       detail: props.detail,
-      scale: 5
+      scale: 5,
+      chooseRisk: props.chooseRisk
     };
   }
 
 
   render() {
-    //const { comments } = this.state;
-    //const displayComments = comments.slice(0, this.state.maxDisplayCnt);
-    //const hideLoadButtons = comments.length <= this.state.maxDisplayCnt;
     const scale = this.state.scale;
     const risks = this.state.detail.risks
+
 
     let dataMatrix: IRisks[][][] = [];
     for (var i: number = 0; i < scale; i++) {
@@ -38,49 +39,36 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
     }
 
     risks.forEach(risk => {
-      dataMatrix[risk.probability - 1][risk.impact - 1].push(risk);
+      dataMatrix[risk.impact - 1][risk.probability - 1].push(risk);
     });
-    // print
-    console.log('dataMatrix');
-    for (var i: number = 0; i < scale; i++) {
-      for (var j: number = 0; j < scale; j++) {
-        if (dataMatrix[i][j].length > 0)
-          console.log(i, j, dataMatrix[i][j]);
+
+    let cells = [];
+    for (let imp: number = 0; imp < scale; imp++) {
+      let row = [];
+      for (let prob: number = 0; prob < scale; prob++) {
+        const index = scale * imp + prob;
+        const risks: IRisks[] = dataMatrix[imp][prob];
+        row.push(<MatrixCell key={index} cellID={index} risks={risks} scale={scale} prob={prob + 1} impact={imp + 1} chooseRisk={this.state.chooseRisk}></MatrixCell>); //TODo not usre about key
       }
+      cells.unshift(...row);
     }
 
     let contents;
     if (scale == 5) {
       contents = (
         <div className="container">
-          <div className="Matrix">
-            <p>MATICE: 5x5</p>
-            <div className = "row">
-              <div>1</div>
-              <div>
-                <Button
-                  id="PopoverLegacy"
-                  type="button"
-                >
-                  Launch Popover (Legacy)
-                </Button>
-                <UncontrolledPopover
-                  placement="bottom"
-                  target="PopoverLegacy"
-                  trigger="legacy"
-                >
-                  <PopoverHeader>
-                    Legacy Trigger
-                  </PopoverHeader>
-                  <PopoverBody>
-                    Legacy is a reactstrap special trigger value (outside of bootstrap‘s spec/standard). Before reactstrap correctly supported click and focus, it had a hybrid which was very useful and has been brought back as trigger=“legacy“. One advantage of the legacy trigger is that it allows the popover text to be selected while also closing when clicking outside the triggering element and popover itself.
-                  </PopoverBody>
-                </UncontrolledPopover>
+          <p>MATICE: 5x5</p>
+          <div className="matrixTop">
+            <div className="dopad">
+              <div>Dopad</div>
+            </div>
+            <div>
+              <div className="matrixCells">
+                {cells}
               </div>
-              <div>2</div>
-              <div>3</div>
-              <div>4</div>
-              <div>5</div>
+              <div className="pravdepodobnost">
+                <div>Pravděpodobnost</div>
+              </div>
             </div>
           </div>
         </div>);
@@ -103,7 +91,7 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
         </div>);
     }
 
-
+    
 
     return (
       <div>

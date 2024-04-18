@@ -145,7 +145,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   </ul>
                 </TabPane>
                 <TabPane tabId="matrix">
-                  <Matrix detail={projectDetail}></Matrix>
+                    <Matrix detail={projectDetail} chooseRisk={this.chooseRisk}></Matrix>
                 </TabPane>
               </TabContent>
             </div>
