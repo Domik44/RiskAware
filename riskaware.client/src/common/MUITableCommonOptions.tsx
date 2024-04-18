@@ -3,11 +3,13 @@ import { MRT_Localization_CS } from "material-react-table/locales/cs";
 
 function MUITableCommonOptions<T extends MRT_RowData>(): MRT_TableOptions<T> {
   return {
-    columns: [], // required option, but will be overwritten
-    data: [], // required option, but will be overwritten
+    columns: [],  // required option, but will be overwritten
+    data: [],     // required option, but will be overwritten
+    enableFilters: true,
+    enableTopToolbar: true,
     enableRowSelection: false,
     enableColumnFilterModes: false, // todo maybe set to true but restrict to only one filter mode
-    enableGlobalFilter: false, // todo delete global filter or alternatively create fulltext index to flex in PIS (*nerd)
+    enableGlobalFilter: false,      // todo delete global filter or alternatively create fulltext index to flex in PIS (*nerd)
     positionActionsColumn: 'last',
     manualFiltering: true,
     manualPagination: true,

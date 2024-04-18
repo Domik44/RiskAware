@@ -20,5 +20,10 @@
         public int Size { get; set; }
         public IEnumerable<ColumnFilter> Filters { get; set; }
         public IEnumerable<Sorting> Sorting { get; set; }
+
+        internal static DateTime ParseClientDate(string date, DateTime defaultValue)
+        {
+            return DateTime.TryParse(date, out DateTime parsed) ? parsed : defaultValue;
+        }
     }
 }

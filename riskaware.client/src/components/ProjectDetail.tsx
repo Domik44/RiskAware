@@ -11,6 +11,7 @@ import IRiskDetail from './interfaces/IRiskDetail';
 import CommentList from './CommentList';
 import InitialSetupModal from './InitialSetupModal';
 import Matrix from './Matrix';
+import PhaseList from './PhaseList';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -104,18 +105,17 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   </dl>
                 </TabPane>
                 <TabPane tabId="phases">
-                  {projectDetail.userRole === RoleType.ProjectManager && (
-                    <AddPhaseModal projectDetail={projectDetail} />
-                  )}
-                  <ul>
-                    {projectDetail.phases.map((phase) => (
-                      <li key={phase.id}>
-                        <p>{phase.order}</p>
-                        <p>{phase.name}</p>
-                        <p>{formatDate(phase.start)} - {formatDate(phase.end)}</p>
-                      </li>
-                    ))}
-                  </ul>
+                  <Row>
+                    <Col>
+                      <h5>Fáze projektu</h5>
+                    </Col>
+                    {projectDetail.userRole === RoleType.ProjectManager && (
+                      <Col className="d-flex justify-content-end">
+                        <AddPhaseModal projectDetail={projectDetail} />
+                      </Col>
+                    )}
+                  </Row>
+                  <PhaseList projectId={projectDetail.detail.id} />
                 </TabPane>
                 <TabPane tabId="risks">
                   <Button onClick={this.reRender}>rerender</Button>

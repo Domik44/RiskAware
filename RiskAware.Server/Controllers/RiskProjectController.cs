@@ -131,11 +131,10 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// POST METHODS //////////////////
         /// <summary>
-        /// This controller method return all projects that are stored in database.
+        /// Get filtered risk projects
         /// </summary>
-        /// 
-        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : /api/RiskProjects
+        /// <param name="dtParams">Data table filtering parameters</param>
+        /// <returns>Filtered projects DTOs</returns>
         [HttpPost("/api/RiskProjects")]
         [Produces("application/json")]
         public async Task<IActionResult> GetRiskProjects([FromBody] DtParamsDto dtParams)
@@ -155,11 +154,11 @@ namespace RiskAware.Server.Controllers
         }
 
         /// <summary>
-        /// This controller method serves for getting all projects where user has a role.
+        /// Get filtered user participated risk projects
         /// </summary>
-        /// 
-        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : /api/RiskProject/UserRiskProjects
+        /// <param name="dtParams">Data table filtering parameters</param>
+        /// <returns>Filtered projects DTOs</returns>
+        /// <url>/api/RiskProject/UserRiskProjects</url>
         [HttpPost("UserRiskProjects")]
         [Produces("application/json")]
         public async Task<IActionResult> GetUserRiskProjects([FromBody] DtParamsDto dtParams)

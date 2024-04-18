@@ -15,11 +15,6 @@ namespace RiskAware.Server.Queries
         private readonly RiskQueries _riskQueries = new RiskQueries(context);
         private readonly ProjectRoleQueries _projectRoleQueries = new ProjectRoleQueries(context);
 
-        private static DateTime ParseClientDate(string date, DateTime defaultValue)
-        {
-            return DateTime.TryParse(date, out DateTime parsed) ? parsed : defaultValue;
-        }
-
         public IQueryable<RiskProjectDto> ApplyFilterQueryProjects(
             IQueryable<RiskProjectDto> query, DtParamsDto dtParams)
         {
@@ -33,9 +28,11 @@ namespace RiskAware.Server.Queries
                     nameof(RiskProjectDto.Title) =>
                         query.Where(p => p.Title.StartsWith(filter.Value)),         // string property
                     nameof(RiskProjectDto.Start) =>
-                        query.Where(p => p.Start >= ParseClientDate(filter.Value, DateTime.MinValue)),  // datetime property
+                        query.Where(p => p.Start >= DtParamsDto
+                            .ParseClientDate(filter.Value, DateTime.MinValue)),     // datetime property
                     nameof(RiskProjectDto.End) =>
-                        query.Where(p => p.End <= ParseClientDate(filter.Value, DateTime.MaxValue)),
+                        query.Where(p => p.End <= DtParamsDto
+                            .ParseClientDate(filter.Value, DateTime.MaxValue)),
                     nameof(RiskProjectDto.NumOfMembers) =>
                         query.Where(p => p.NumOfMembers.ToString().StartsWith(filter.Value)),
                     nameof(RiskProjectDto.ProjectManagerName) =>

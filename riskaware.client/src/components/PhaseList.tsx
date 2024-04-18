@@ -4,26 +4,18 @@ import {
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
-import { Box, Button, Tooltip, IconButton } from '@mui/material';
+import { Box, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
-import MUITableCommonOptions from '../../common/MUITableCommonOptions';
-import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
-import IDtResult from '../interfaces/DtResult';
-import IProject from '../interfaces/IProject';
-
-import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import MUITableCommonOptions from './../common/MUITableCommonOptions';
+import { formatDate } from './../helpers/DateFormatter';
+import IDtResult from './interfaces/DtResult';
+import IPhases from './interfaces/IPhases';
 
-import { jsPDF } from 'jspdf';
-import autoTable, { CellInput } from 'jspdf-autotable';
-import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
-
-
-export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
+export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
   // Data and fetching state
-  const [data, setData] = useState<IProject[]>([]);
+  const [data, setData] = useState<IPhases[]>([]);
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
@@ -56,14 +48,14 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         sorting: sorting.length != 0 ? sorting : [initialColumnSort],
       };
       try {
-        const response = await fetch(fetchUrl, {
+        const response = await fetch(`/api/RiskProject/${projectId}/Phases`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
           body: JSON.stringify(searchParams)
         });
-        const json: IDtResult<IProject> = await response.json();
+        const json: IDtResult<IPhases> = await response.json();
         setData(json.data);
         setRowCount(json.totalRowCount);
       }
@@ -85,18 +77,20 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     sorting,
   ]);
 
-  const columns = useMemo<MRT_ColumnDef<IProject>[]>(
+
+  const columns = useMemo<MRT_ColumnDef<IPhases>[]>(
     () => [
       {
-        id: 'id',
-        accessorKey: 'id',
-        header: 'ID',
+        id: 'order',
+        accessorKey: 'order',
+        header: 'Pořadí',
         filterFn: 'startsWith',
       },
       {
-        id: 'title',
-        accessorKey: 'title',
+        id: 'name',
+        accessorKey: 'name',
         header: 'Název',
+        filterFn: 'startsWith',
       },
       {
         accessorFn: (row) => new Date(row.start),
@@ -116,70 +110,19 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         sortingFn: 'datetime',
         Cell: ({ cell }) => formatDate(cell.getValue<Date>()),
       },
-      {
-        id: 'numOfMembers',
-        accessorKey: 'numOfMembers',
-        header: 'Počet členů',
-      },
-      {
-        id: 'projectManagerName',
-        accessorKey: 'projectManagerName',
-        header: 'Projektový manažer',
-      },
     ],
     []
   );
 
   // todo copy delete confirm modal from ITU
-  const openDeleteConfirmModal = (row: MRT_Row<IProject>) => {
-    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
+  const openDeleteConfirmModal = (row: MRT_Row<IPhases>) => {
+    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.name}?`)) {
       console.log(`Delete:${row.original.id}`); // todo post delete
     }
   };
 
-  const exportToPDF = (rows: MRT_Row<IProject>[]) => {
-    const doc = new jsPDF();
-    const tableData = rows.map((row) => Object.values(row.original) as CellInput[]);
-    const tableHeaders = columns.map((c) => String(c.id));
-
-    autoTable(doc, {
-      head: [tableHeaders],
-      body: tableData,
-    });
-
-    const now = new Date();
-    const dateString = formatDateForInput(now);
-    doc.save(`${dateString}_registr_rizik.pdf`);
-  };
-
-  const exportToCSV = () => {
-    const tableHeaders: ColumnHeader[] = columns.map((col) => ({
-      key: String(col.id),
-      displayLabel: String(col.header)
-    }));
-    const formattedData = data.map(project => ({
-      id: project.id.toString(),
-      title: project.title,
-      start: formatDate(project.start),
-      end: formatDate(project.end),
-      numOfMembers: project.numOfMembers,
-      projectManagerName: project.projectManagerName,
-    }));
-
-    const now = new Date();
-    const dateString = formatDateForInput(now);
-    const csvConfig = mkConfig({
-      filename: `${dateString}_registr_rizik`,
-      fieldSeparator: ',',
-      decimalSeparator: '.',
-      columnHeaders: tableHeaders,
-    });
-    const csv = generateCsv(csvConfig)(formattedData);
-    download(csvConfig)(csv);
-  };
-
   const table = useMaterialReactTable({
-    ...MUITableCommonOptions<IProject>(), // Add common and basic options
+    ...MUITableCommonOptions<IPhases>(), // Add common and basic options
     columns,
     data,
     onColumnFiltersChange: setColumnFilters,
@@ -187,6 +130,8 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     onPaginationChange: setPagination,
     onSortingChange: setSorting,
     rowCount,
+    enableFilters: false,
+    enableTopToolbar: false,
     state: {
       columnFilters,
       globalFilter,
@@ -199,11 +144,6 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     enableRowActions: true,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Zobrazit detail">
-          <IconButton href={`/project/${row.original.id}`}>
-            <DetailIcon />
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Upravit">
           <IconButton onClick={() => openDeleteConfirmModal(row)}>
             <EditIcon />
@@ -216,32 +156,9 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
         </Tooltip>
       </Box>
     ),
-    muiToolbarAlertBannerProps: isError
-      ? {
-        color: 'error',
-        children: 'Chyba při načítání dat',
-      }
-      : undefined,
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Box>
-        <Button
-          disabled={table.getPrePaginationRowModel().rows.length === 0}
-          onClick={() => exportToPDF(table.getPrePaginationRowModel().rows)}
-          startIcon={<FileDownloadIcon />}
-        >
-          Exportovat do PDF
-        </Button>
-        <Button
-          onClick={exportToCSV}
-          startIcon={<FileDownloadIcon />}
-        >
-          Exportovat do CSV
-        </Button>
-      </Box>
-    ),
   });
 
   return <MaterialReactTable table={table} />;
-};
+}
 
-export default ProjectsList;
+export default PhaseList;

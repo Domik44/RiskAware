@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.RiskDTOs;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
+using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
@@ -33,11 +36,35 @@ namespace RiskAware.Server.Queries
                         Id = r.Id,
                         Title = r.RiskHistory.OrderByDescending(h => h.Created).FirstOrDefault().Title, // TODO -> mby add Title to Risk entity, in this case the redudancy will be minimal and it will be easier to get the title
                     })
-
                 })
                 .ToListAsync();
-
             return projectPhases;
+        }
+
+        public IQueryable<ProjectPhaseDto> QueryProjectPhases(int projectId, DtParamsDto dtParams)
+        {
+            var query = _context.ProjectPhases
+                .AsNoTracking()
+                .Where(phase => phase.RiskProjectId == projectId)
+                .Select(phase => new ProjectPhaseDto
+                {
+                    Id = phase.Id,
+                    Order = phase.Order,
+                    Name = phase.Name,
+                    Start = phase.Start,
+                    End = phase.End,
+                });
+
+            if (dtParams.Sorting.Any())
+            {
+                Sorting sorting = dtParams.Sorting.First();
+                query = query.OrderBy($"{sorting.Id} {sorting.Dir}");
+            }
+            else
+            {
+                query = query.OrderBy(phase => phase.Order);
+            }
+            return query;
         }
 
         public async Task<ProjectPhaseDetailDto> GetProjectPhaseDetailAsync(int id)

@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
+using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 
@@ -57,6 +60,29 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// POST METHODS //////////////////
+        /// <summary>
+        /// Get filtered project phases
+        /// </summary>
+        /// <param name="projectId">Project identifier</param>
+        /// <param name="dtParams">Data table filtering parameters</param>
+        /// <returns>Filtered project phases DTOs</returns>
+        [HttpPost("/api/RiskProject/{projectId}/Phases")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetRiskProjectPhases(int projectId, [FromBody] DtParamsDto dtParams)
+        {
+            var query = _projectPhaseQueries.QueryProjectPhases(projectId, dtParams);
+            int totalRowCount = await query.CountAsync();
+            var phases = await query
+                .Skip(dtParams.Start)
+                .Take(dtParams.Size)
+                .ToListAsync();
+            return new JsonResult(new DtResultDto<ProjectPhaseDto>
+            {
+                Data = phases,
+                TotalRowCount = totalRowCount
+            });
+        }
+
 
         // POST: api/ProjectPhases
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754

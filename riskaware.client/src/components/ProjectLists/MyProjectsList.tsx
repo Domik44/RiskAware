@@ -1,14 +1,10 @@
 ﻿import { Component } from 'react';
 import { Col, Row } from 'reactstrap';
-import IProject from '../interfaces/IProject';
 import ProjectsList from './ProjectsList';
 import CreateProjectModal from '../CreateProjectModal';
-export class MyProjectsList extends Component<object, { projects: IProject[] | undefined }> {
+export class MyProjectsList extends Component<object> {
   constructor(props: object) {
     super(props);
-    this.state = {
-      projects: undefined
-    };
   }
 
   render() {
@@ -19,14 +15,12 @@ export class MyProjectsList extends Component<object, { projects: IProject[] | u
             <h4>Vlastní projekty</h4>
           </Col>
           <Col className="d-flex justify-content-end">
-            <CreateProjectModal>
-            </CreateProjectModal>
+            <CreateProjectModal />
           </Col>
         </Row>
         <ProjectsList fetchUrl={'/api/RiskProject/UserRiskProjects'} />
       </div>
     );
-
   }
 }
 
