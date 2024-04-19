@@ -59,6 +59,7 @@ namespace RiskAware.Server
             await using (AppDbContext db = app.Services.CreateScope().ServiceProvider.GetService<AppDbContext>())
             {
                 await db.Database.MigrateAsync();
+                await DbSeeder.SeedAll(app.Services);
             }
 
             if (args.Length > 0)

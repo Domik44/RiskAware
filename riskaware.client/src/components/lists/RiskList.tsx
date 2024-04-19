@@ -188,6 +188,7 @@ export const RiskList: React.FC<{
         filterFn: 'startsWith',
       },
       {
+        // todo add category dropdown selection
         id: 'categoryName',
         accessorKey: 'categoryName',
         header: 'Kategorie',
