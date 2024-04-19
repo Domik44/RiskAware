@@ -16,7 +16,7 @@ namespace RiskAware.Server
             // Set default czech datetime format
             Thread.CurrentThread.CurrentCulture = new CultureInfo("cs-CZ");
 
-            var builder = WebApplication.CreateBuilder(args);
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
             builder.Services.AddControllers();
@@ -50,10 +50,10 @@ namespace RiskAware.Server
                 options.ExpireTimeSpan = TimeSpan.FromDays(2);
                 options.SlidingExpiration = true;
                 options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Setting always breaks tests
             });
 
-            var app = builder.Build();
+            WebApplication app = builder.Build();
 
             if (args.Length > 0)
             {
@@ -66,16 +66,16 @@ namespace RiskAware.Server
                 else if (args[0] == "unseed")
                 {
                     // For database table cleanup use cmd: dotnet run unseed
-                    using var scope = app.Services.CreateScope();
-                    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    using IServiceScope scope = app.Services.CreateScope();
+                    AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                     DbCleaner.TruncateAllTablesData(dbContext);
                     return;
                 }
                 else if (args[0] == "delete-db")
                 {
                     // For database delete use cmd: dotnet run delete-db
-                    using var scope = app.Services.CreateScope();
-                    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                    using IServiceScope scope = app.Services.CreateScope();
+                    AppDbContext dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
                     DbCleaner.DeleteEntireDb(dbContext);
                     return;
                 }
