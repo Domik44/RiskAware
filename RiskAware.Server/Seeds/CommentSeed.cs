@@ -13,6 +13,7 @@ namespace RiskAware.Server.Seeds
                 {
                     Text = "Tenhle projekt je Bomba!!!",
                     UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
+                    Created = DateTime.Parse("2024-04-19"),
                     RiskProjectId = 1
                 }
             };

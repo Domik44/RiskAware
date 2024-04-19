@@ -9,14 +9,17 @@ namespace RiskAware.Server.Seeds
         public static void Seed(AppDbContext context)
         {
             ICollection<string> names = ["Finanční rizika", "Lidská rizika", "Operační rizika", "Legislativní rizika", "Technická rizika"];
-            foreach (var name in names)
+            for (int i = 1; i < 5; i++)
             {
-                var newRiskCategory = new RiskCategory
+                foreach (var name in names)
                 {
-                    Name = name,
-                    RiskProjectId = 1
-                };
-                context.RiskCategories.Add(newRiskCategory);
+                    var newRiskCategory = new RiskCategory
+                    {
+                        Name = name,
+                        RiskProjectId = i
+                    };
+                    context.RiskCategories.Add(newRiskCategory);
+                }
             }
 
             context.SaveChanges();

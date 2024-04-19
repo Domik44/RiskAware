@@ -42,7 +42,33 @@ namespace RiskAware.Server.Seeds
                     RoleType = RoleType.TeamMember,
                     IsReqApproved = true,
                     ProjectPhaseId = 2
-                }
+                },
+                new()
+                {
+                    UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8",
+                    RiskProjectId = 2,
+                    Name = RoleType.ProjectManager.ToString(),
+                    RoleType = RoleType.ProjectManager,
+                    IsReqApproved = true
+                },
+                new()
+                {
+                    UserId = "84c8b270-14e5-4158-bcde-a76c6edc4cf7",
+                    RiskProjectId = 3,
+                    Name = RoleType.ProjectManager.ToString(),
+                    RoleType = RoleType.ProjectManager,
+                    IsReqApproved = true,
+                    ProjectPhaseId = 1
+                },
+                new()
+                {
+                    UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8",
+                    RiskProjectId = 3,
+                    Name = "Analytik",
+                    RoleType = RoleType.TeamMember,
+                    IsReqApproved = true,
+                    ProjectPhaseId = 5
+                },
             };
 
             foreach (var role in rolesToSeed)

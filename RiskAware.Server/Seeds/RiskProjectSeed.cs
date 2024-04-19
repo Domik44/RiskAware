@@ -11,43 +11,47 @@ namespace RiskAware.Server.Seeds
             {
                 new RiskProject()
                 {
-                    Title = "PokusProj",
-                    Description = "Popis tohoto projektu muze byt velice zajimavy, ale ja nejsem kreativni :)",
+                    Title = "MPR projekt",
+                    Description = "Velice zajímavý projekt, který Vás mnoho naučí.",
                     Start = DateTime.Parse("2024-02-13"),
                     End = DateTime.Parse("2024-06-01"),
                     IsValid = true,
+                    IsBlank = false,
                     Scale = 5,
                     UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
                 new RiskProject()
                 {
-                    Title = "Proj2",
+                    Title = "Nenastaveny_Pepa_Brnak",
                     Description = "Popis2",
                     Start = DateTime.Parse("2024-02-16"),
                     End = DateTime.Parse("2024-06-14"),
                     IsValid = true,
+                    IsBlank = true,
                     Scale = 5,
                     UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
                 new RiskProject()
                 {
-                    Title = "Proj3",
+                    Title = "Nastaveny_neni_PM",
                     Description = "Popis3",
                     Start = DateTime.Parse("2024-02-27"),
                     End = DateTime.Parse("2024-06-30"),
                     IsValid = true,
-                    Scale = 5,
+                    IsBlank = false,
+                    Scale = 3,
                     UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
                 new RiskProject()
                 {
-                    Title = "Proj4",
+                    Title = "Nenastaveny_nema_roli",
                     Description = "Popis4",
                     Start = DateTime.Parse("2024-03-03"),
                     End = DateTime.Parse("2024-07-31"),
                     IsValid = true,
+                    IsBlank = true,
                     Scale = 5,
-                    UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2"
+                    UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
                 new RiskProject()
                 {
@@ -57,7 +61,7 @@ namespace RiskAware.Server.Seeds
                     End = DateTime.Parse("2024-08-31"),
                     IsValid = true,
                     Scale = 5,
-                    UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2"
+                    UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
                 new RiskProject()
                 {
@@ -67,7 +71,7 @@ namespace RiskAware.Server.Seeds
                     End = DateTime.Parse("2024-09-20"),
                     IsValid = true,
                     Scale = 5,
-                    UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8"
+                    UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
             };
 

@@ -47,7 +47,7 @@ namespace RiskAware.Server.Seeds
                     UserId = "5862be25-6467-450e-81fa-1cac9578650b",
                     RiskProjectId = 1,
                     ProjectPhaseId = 2,
-                    RiskCategoryId = 2
+                    RiskCategoryId = 3
                 }
             };
 
