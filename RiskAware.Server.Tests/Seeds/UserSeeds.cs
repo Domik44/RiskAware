@@ -19,12 +19,12 @@ namespace RiskAware.Server.Tests.Seeds
 
         public static readonly User AdminUser = new()
         {
-            Id = "d6f46418-2c21-43f8-b167-162fb5e3a999",
-            UserName = "admin@google.com",
-            Email = "admin@google.com",
+            Id = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
+            UserName = "zb@google.com",
+            Email = "zb@google.com",
             EmailConfirmed = true,
-            FirstName = "HonzaAdmin",
-            LastName = "Zvesnice",
+            FirstName = "Zdenda",
+            LastName = "Branik",
             SystemRole = AdminRole
         };
 
