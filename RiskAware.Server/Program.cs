@@ -50,10 +50,16 @@ namespace RiskAware.Server
                 options.ExpireTimeSpan = TimeSpan.FromDays(2);
                 options.SlidingExpiration = true;
                 options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest; // Setting always breaks tests
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
             });
 
             WebApplication app = builder.Build();
+
+            // Migration
+            await using (AppDbContext db = app.Services.CreateScope().ServiceProvider.GetService<AppDbContext>())
+            {
+                await db.Database.MigrateAsync();
+            }
 
             if (args.Length > 0)
             {
