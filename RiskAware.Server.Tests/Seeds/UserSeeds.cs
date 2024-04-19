@@ -19,12 +19,10 @@ namespace RiskAware.Server.Tests.Seeds
 
         public static User AdminUser = new()
         {
-            Id = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
-            UserName = "zb@google.com",
-            Email = "zb@google.com",
-            EmailConfirmed = true,
-            FirstName = "Zdenda",
-            LastName = "Branik",
+            Id = "d6f46418-2c21-43f8-b167-162fb5e3a999",
+            Email = "admin@google.com",
+            FirstName = "HonzaAdmin",
+            LastName = "Zvesnice",
             SystemRole = AdminRole
         };
 
@@ -39,7 +37,7 @@ namespace RiskAware.Server.Tests.Seeds
             SystemRole = BasicRole
         };
 
-        public static LoginDto AdminLogin = new() {Email = AdminUser.Email, Password = "Basic123"};
+        public static LoginDto AdminLogin = new() {Email = AdminUser.Email, Password = "Admin123"};
 
         public static LoginDto BasicLogin = new() {Email = BasicUser.Email, Password = "Basic123"};
     }

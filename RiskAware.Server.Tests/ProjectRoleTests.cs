@@ -29,7 +29,7 @@ namespace RiskAware.Server.Tests
 
             List<ProjectRoleDto> dto = (await response.Content.ReadFromJsonAsync<List<ProjectRoleDto>>())!;
 
-            Assert.True(dto.Exists(p => p.User.FullName == "Pepa Brnak"));
+            Assert.True(dto.Exists(p => p.RoleName == "ProjectManager"));
         }
 
         [Fact]

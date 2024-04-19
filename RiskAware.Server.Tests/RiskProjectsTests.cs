@@ -1,4 +1,5 @@
-﻿using RiskAware.Server.DTOs;
+﻿using NuGet.Protocol;
+using RiskAware.Server.DTOs;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
@@ -43,6 +44,8 @@ namespace RiskAware.Server.Tests
             response.EnsureSuccessStatusCode();
 
             List<RiskProjectDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskProjectDto>>())!;
+
+            TestOutputHelper.WriteLine(dto.Count.ToString());
 
             Assert.True(dto.Exists(p =>
                 p.ProjectManagerName == $"{UserSeeds.BasicUser.FirstName} {UserSeeds.BasicUser.LastName}"));
@@ -156,13 +159,16 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task PUT_Risk_Project_is_OK()
         {
-            await PerformLogin(UserSeeds.AdminLogin);
+            await PerformLogin(UserSeeds.BasicLogin);
 
             HttpResponseMessage dto = await Client.GetAsync($"{Endpoint}/RiskProject/{ProjectId}/Detail");
             dto.EnsureSuccessStatusCode();
 
             RiskProjectDetailDto newDto = (await dto.Content.ReadFromJsonAsync<RiskProjectDetailDto>())!;
             newDto.Description = "Test description";
+
+            StringContent content = new(newDto.ToJson(), System.Text.Encoding.UTF8, "application/json");
+            TestOutputHelper.WriteLine(content.ReadAsStringAsync().Result);
 
             // TODO not authorized with admin login
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}", newDto);
