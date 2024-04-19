@@ -26,19 +26,6 @@ namespace RiskAware.Server.Tests
         private const int ProjectId = 1;
 
         [Fact]
-        public async Task GET_Project_Phases_is_OK()
-        {
-            // await PerformLogin(UserSeeds.BasicLogin);
-            //
-            // HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/{ProjectId}");
-            //
-            // response.EnsureSuccessStatusCode();
-            // ProjectPhaseDetailDto dto = (await response.Content.ReadFromJsonAsync<ProjectPhaseDetailDto>())!;
-            //
-            // Assert.Equal(ProjectId, dto.Id);
-        }
-
-        [Fact]
         public async Task GET_RiskProject_Project_Phases_is_OK()
         {
             await PerformLogin(UserSeeds.BasicLogin);
@@ -78,7 +65,7 @@ namespace RiskAware.Server.Tests
             };
 
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync($"/api/RiskProject/{ProjectId}/CreateProjectPhase", dto);
+                await Client.PostAsJsonAsync($"/api/RiskProject/CreateProjectPhase", dto);
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -87,25 +74,26 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task PUT_Project_Phase_is_OK()
         {
-            // await PerformLogin(UserSeeds.BasicLogin);
-            //
-            // HttpResponseMessage oldPhase = await Client.GetAsync($"{Endpoint}/{ProjectId}");
-            // ProjectPhaseDetailDto oldDto = (await oldPhase.Content.ReadFromJsonAsync<ProjectPhaseDetailDto>())!;
-            //
-            // ProjectPhaseDto dto = new()
-            // {
-            //     Id = oldDto.Id,
-            //     Order = 0,
-            //     Name = Guid.NewGuid().ToString(),
-            //     Start = DateTime.Now,
-            //     End = DateTime.Now.AddDays(3),
-            //     Risks = []
-            // };
-            //
-            // HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/{ProjectId}", dto);
-            //
-            // response.EnsureSuccessStatusCode();
-            // Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            await PerformLogin(UserSeeds.BasicLogin);
+
+            HttpResponseMessage oldPhase = await Client.GetAsync($"api/RiskProject/{ProjectId}/Phases");
+
+            List<ProjectPhaseDto> oldDto = (await oldPhase.Content.ReadFromJsonAsync<List<ProjectPhaseDto>>())!;
+            ProjectPhaseDto tmp = oldDto.First(p => p.Id == ProjectId);
+
+            ProjectPhaseCreateDto dto = new()
+            {
+                Name = tmp.Name,
+                Start = tmp.Start,
+                End = tmp.End,
+                UserRoleType = RoleType.ProjectManager,
+                RiskProjectId = ProjectId
+            };
+
+            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/{ProjectId}", dto);
+
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
