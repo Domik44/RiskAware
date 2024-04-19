@@ -92,6 +92,9 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync(
                     $"{Endpoint}/RiskProject/{ProjectId}/ApproveJoinRequest/{RoleType.TeamMember}", new { });
+
+            response.EnsureSuccessStatusCode();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         [Fact]
