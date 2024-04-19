@@ -17,7 +17,7 @@ namespace RiskAware.Server.Tests.Seeds
             Name = "Basic", IsAdministrator = false, Description = "Basic app user"
         };
 
-        public static readonly User AdminUser = new()
+        public static User AdminUser = new()
         {
             Id = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
             UserName = "zb@google.com",
@@ -28,7 +28,7 @@ namespace RiskAware.Server.Tests.Seeds
             SystemRole = AdminRole
         };
 
-        public static readonly User BasicUser = new()
+        public static User BasicUser = new()
         {
             Id = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8",
             UserName = "pb@google.com",
