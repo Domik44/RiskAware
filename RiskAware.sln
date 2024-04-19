@@ -16,7 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3506EF36
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskAware.Server.Tests", "RiskAware.Server.Tests\RiskAware.Server.Tests.csproj", "{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskAware.Client.Tests", "RiskAware.Client.Tests\RiskAware.Client.Tests.csproj", "{DA996702-E30B-4AC1-BDE8-E486F7B5626D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskAware.Client.Tests", "RiskAware.Client.Tests\RiskAware.Client.Tests.csproj", "{38C46CC6-80E9-4C0E-B1AE-21E67BB04856}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,10 +38,10 @@ Global
 		{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DA996702-E30B-4AC1-BDE8-E486F7B5626D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DA996702-E30B-4AC1-BDE8-E486F7B5626D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DA996702-E30B-4AC1-BDE8-E486F7B5626D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DA996702-E30B-4AC1-BDE8-E486F7B5626D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38C46CC6-80E9-4C0E-B1AE-21E67BB04856}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38C46CC6-80E9-4C0E-B1AE-21E67BB04856}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38C46CC6-80E9-4C0E-B1AE-21E67BB04856}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38C46CC6-80E9-4C0E-B1AE-21E67BB04856}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -51,6 +51,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9} = {3506EF36-9286-4680-A518-FAF4608072BE}
-		{DA996702-E30B-4AC1-BDE8-E486F7B5626D} = {3506EF36-9286-4680-A518-FAF4608072BE}
+		{38C46CC6-80E9-4C0E-B1AE-21E67BB04856} = {3506EF36-9286-4680-A518-FAF4608072BE}
 	EndGlobalSection
 EndGlobal
