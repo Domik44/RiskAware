@@ -20,66 +20,27 @@ namespace RiskAware.Server.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<User> _userManager;
         private readonly RiskProjectQueries _riskProjectQueries;
+        private readonly ProjectRoleQueries _projectRoleQueries;
 
-        public RiskProjectController(AppDbContext context, UserManager<User> userManager, RiskProjectQueries riskProjectQueries)
+        public RiskProjectController(AppDbContext context, UserManager<User> userManager, RiskProjectQueries riskProjectQueries, ProjectRoleQueries projectRoleQueries)
         {
             _context = context;
             _userManager = userManager;
             _riskProjectQueries = riskProjectQueries;
+            _projectRoleQueries = projectRoleQueries;
         }
 
         ////////////////// GET METHODS //////////////////
-        // TODO: delete if unused
-        /// <summary>
-        /// This controller method return all projects that are stored in database.
-        /// </summary>
-        /// 
-        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : /api/RiskProjects
-        [HttpGet("/api/RiskProjects")]
-        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
-        {
-            var projects = _riskProjectQueries.QueryAllProjects();
-            return Ok(await projects.ToListAsync());
-        }
 
         /// <summary>
-        /// This controller method returns all projects that were created by admin only if logged user is admin.
+        /// Method for getting risk project page.
         /// </summary>
-        /// 
-        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
-        /// url : /api/RiskProject/AdminRiskProjects
-        [HttpGet("AdminRiskProjects")]
-        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetAdminRiskProjects()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
-            {
-                return NoContent();
-            }
-            else if (!user.SystemRole.IsAdministrator)
-            {
-                return Unauthorized();
-            }
-
-            var riskProjects = await _riskProjectQueries.GetAllAdminRiskProjectsAsync(user);
-
-            return Ok(riskProjects);
-        }
-
-        /// <summary>
-        /// This controller method returns all information about a risk project with specific id.
-        /// </summary>
-        /// 
         /// <param name="id"> Id of a RiskProject. </param>
-        /// <returns> Returns DTO used for risk project page. </returns>
+        /// <returns> Returns DTO used for risk project page, contains all necessary info. </returns>
         /// url: api/RiskProjects/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskProjectPageDto>> GetRiskProject(int id)
         {
-            // TODO -> should be checking if wanted risk project IsBlank or not
-            // if it is, then user ProjectManager should be prompted to set up project
-            // In frontend I should check if project is blank and if it is, then I should redirect user to InitialRiskProjectSetup modal which will be unclosable
             var user = await _userManager.GetUserAsync(User);
             var riskProjectPage = await _riskProjectQueries.GetRiskProjectPageAsync(id, user.Id);
 
@@ -88,17 +49,15 @@ namespace RiskAware.Server.Controllers
                 return NotFound();
             }
 
-            riskProjectPage.IsAdmin = user.SystemRole.IsAdministrator; // TODO -> delete is just example
-
             return Ok(riskProjectPage);
         }
 
         /// <summary>
-        /// This controller method returns infromation needed for project detail.
+        /// Method for getting detail of a risk project.
         /// </summary>
         /// 
         /// <param name="id"> Id of a RiskProject </param>
-        /// <returns>Returns DTO for risk project detail tab.</returns>
+        /// <returns> Returns DTO for risk project detail tab. </returns>
         [HttpGet("{id}/Detail")]
         public async Task<ActionResult<RiskProjectDetailDto>> GetRiskProjectDetail(int id)
         {
@@ -111,17 +70,18 @@ namespace RiskAware.Server.Controllers
             return Ok(riskProject);
         }
 
+        /// <summary>
+        /// Method for getting comments of a risk project.
+        /// </summary>
+        /// <param name="id"> Risk project id. </param>
+        /// <returns> Returns a list of DTOs containing basic info about comment. </returns>
         [HttpGet("{id}/GetComments")]
         public async Task<ActionResult<IEnumerable<CommentDto>>> GetComments(int id)
         {
-            // TODO -> think about moving CommentDto out of RiskProjectDetailDto and add as separate part for page
-            // I could load them separatly when update is needed which would be faster
-            // But then when loading page it would need to do one more query -> think about it
-            // As it is rn when I edit description or title, it will load comments as well
             var riskProject = await _context.RiskProjects.FindAsync(id);
             if (riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project not found!");
             }
 
             var comments = _riskProjectQueries.GetRiskProjectCommentsAsync(id).Result;
@@ -131,10 +91,10 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// POST METHODS //////////////////
         /// <summary>
-        /// Get filtered risk projects
+        /// Get filtered risk projects.
         /// </summary>
-        /// <param name="dtParams">Data table filtering parameters</param>
-        /// <returns>Filtered projects DTOs</returns>
+        /// <param name="dtParams"> Data table filtering parameters. </param>
+        /// <returns> Filtered projects DTOs </returns>
         [HttpPost("/api/RiskProjects")]
         [Produces("application/json")]
         public async Task<IActionResult> GetRiskProjects([FromBody] DtParamsDto dtParams)
@@ -146,10 +106,11 @@ namespace RiskAware.Server.Controllers
                 .Skip(dtParams.Start)
                 .Take(dtParams.Size)
                 .ToListAsync();
+
             return new JsonResult(new DtResultDto<RiskProjectDto>
             {
                 Data = projects,
-                TotalRowCount = totalRowCount
+                TotalRowCount = totalRowCount,
             });
         }
 
@@ -184,29 +145,30 @@ namespace RiskAware.Server.Controllers
             });
         }
 
-        // POST: api/RiskProjects
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        // url: api/RiskProject
+        /// <summary>
+        /// Method for creating new risk project by admin.
+        /// </summary>
+        /// <param name="riskProject"> DTO containing info about created project. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
         [HttpPost]
         public async Task<IActionResult> CreateProject(RiskProjectCreateDto riskProject)
         {
             var user = await _userManager.GetUserAsync(User);
             if (!user.SystemRole.IsAdministrator)
             {
-                return Unauthorized();
+                return Unauthorized("User is not admin!");
             }
 
-            // TODO -> some data validation
             var chosenUser = await _context.Users.Where(u => u.Email == riskProject.Email).FirstOrDefaultAsync();
             if (chosenUser == null)
             {
-                return NotFound();
+                return NotFound("Project manager not found!");
             }
 
             var newRiskProject = new RiskProject
             {
                 Title = riskProject.Title,
-                Start = riskProject.Start, // TODO -> maybe delete dates and let project manager to set them
+                Start = riskProject.Start,
                 End = riskProject.End,
                 IsBlank = true,
                 IsValid = true,
@@ -214,7 +176,7 @@ namespace RiskAware.Server.Controllers
             };
 
             _context.RiskProjects.Add(newRiskProject);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             var newProjectRole = new ProjectRole
             {
@@ -226,24 +188,33 @@ namespace RiskAware.Server.Controllers
             };
 
             _context.ProjectRoles.Add(newProjectRole);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            // create default categories
             var b = _riskProjectQueries.CreateDefaultCategories(newRiskProject);
 
             return Ok();
         }
 
-        // TODO -> AddComment and GetComments
-
+        /// <summary>
+        /// Method for adding comment to a risk project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="text"> Text of comment. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
         [HttpPost("AddComment")]
-        public async Task<IActionResult> AddComment(int riskProjectId, string text) // TODO -> switch text to body -> use [FromBody]
+        public async Task<IActionResult> AddComment(int riskProjectId, string text)
         {
             var user = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if (riskProject == null)
             {
-                return NotFound();
+                return NotFound("Project not found!");
+            }
+
+            var isCommonUser = await _projectRoleQueries.IsCommonUser(riskProjectId, user.Id);
+            if (isCommonUser) // User has no role on project.
+            {
+                return Unauthorized("User cannot add comments.");
             }
 
             var newComment = new Comment
@@ -251,11 +222,11 @@ namespace RiskAware.Server.Controllers
                 RiskProjectId = riskProjectId,
                 UserId = user.Id,
                 Text = text,
-                Created = DateTime.Now // TODO -> gives worng date!!
+                Created = DateTime.Now
             };
 
             _context.Comments.Add(newComment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
@@ -263,49 +234,50 @@ namespace RiskAware.Server.Controllers
         ////////////////// PUT METHODS //////////////////
 
         /// <summary>
-        /// 
+        /// Method for editing risk project detail.
         /// </summary>
-        /// <param name="id"></param>
-        /// <param name="riskProjectDto"></param>
-        /// <returns></returns>
+        /// <param name="id"> Id of risk project. </param>
+        /// <param name="riskProjectDto"> DTO containing basic info about risk project. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
         /// url: api/RiskProjects/5
+        // TODO -> frontend
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRiskProject(int id, RiskProjectDetailDto riskProjectDto)
         {
-            // TODO -> rn is using RiskProjectDetailDto, but mby it should have its own DTO so we dont send comments 
             if (id != riskProjectDto.Id)
             {
-                return BadRequest();
+                return BadRequest("Risk project ids dont match!");
             }
 
             var user = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(id);
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(riskProject.Id, user.Id);
             if (riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project not found!");
             }
-            else if (!_riskProjectQueries.IsProjectManager(riskProject, user).Result)
+            else if (!isProjectManager)
             {
-                return Unauthorized();
+                return Unauthorized("Only project manager can edit project detail!");
             }
 
             riskProject.Title = riskProjectDto.Title;
             riskProject.Start = riskProjectDto.Start;
             riskProject.End = riskProjectDto.End;
             riskProject.Description = riskProjectDto.Description;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
 
         /// <summary>
-        /// This controller method is used for initial setup of a risk project.
+        /// This method is used for initial setup of a risk project.
         /// In initial setup, project manager has to specify scale of matrix and can additionaly specify more info.
         /// </summary>
-        /// 
         /// <param name="id"> Id of the project. </param>
         /// <param name="riskProjectDto"> Updated project data. </param>
         /// <returns> Retruns DTO for project page, which will be rendered. </returns>
+        /// url: api/RiskProjects/5/InitialRiskProjectSetup
         [HttpPut("{id}/InitialRiskProjectSetup")]
         public async Task<IActionResult> InitialRiskProjectSetup(int id, RiskProjectDetailDto riskProjectDto)
         {
@@ -313,15 +285,15 @@ namespace RiskAware.Server.Controllers
             var riskProject = await _context.RiskProjects.FindAsync(id);
             if (riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project not found!");
             }
             else if (riskProject.IsBlank == false)
             {
-                return BadRequest();
+                return BadRequest("Risk project is already set!");
             }
             else if (!_riskProjectQueries.IsProjectManager(riskProject, user).Result)
             {
-                return Unauthorized();
+                return Unauthorized("User is not a project manager.");
             }
 
             riskProject.Scale = riskProjectDto.Scale;
@@ -335,13 +307,20 @@ namespace RiskAware.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for restoring deleted risk project.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/RiskProjects/5/RestoreProject
+        // TODO -> frontend
         [HttpPut("{id}/RestoreProject")]
         public async Task<IActionResult> RestoreProject(int id)
         {
             var riskProject = await _context.RiskProjects.FindAsync(id);
             if (riskProject == null || riskProject.IsValid == true)
             {
-                return NotFound();
+                return NotFound("Risk project not found!");
             }
 
             riskProject.IsValid = true;
@@ -352,25 +331,26 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// DELETE METHODS //////////////////
 
-        // DELETE: api/RiskProjects/5
+        /// <summary>
+        /// Method for deleting risk project.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/RiskProjects/5
+        // TODO -> frontend 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRiskProject(int id)
         {
             var riskProject = await _context.RiskProjects.FindAsync(id);
             if (riskProject == null || riskProject.IsValid == false)
             {
-                return NotFound();
+                return NotFound("Risk project not found!");
             }
 
             riskProject.IsValid = false; // Soft delete
             await _context.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private bool RiskProjectExists(int id)
-        {
-            return _context.RiskProjects.Any(e => e.Id == id);
         }
     }
 }

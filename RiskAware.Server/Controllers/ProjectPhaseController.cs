@@ -32,17 +32,42 @@ namespace RiskAware.Server.Controllers
         ////////////////// GET METHODS //////////////////
 
         /// <summary>
-        /// This controller method returns all phases for a specific project.
+        /// Method for getting all project phases for a specific project.
         /// </summary>
         /// 
         /// <param name="id"> Id of a RiskProject </param>
-        /// <returns>Returns DTO for risk project phases tab.</returns>
+        /// <returns> Returns DTO for risk project phases tab. </returns>
         [HttpGet("/api/RiskProject/{id}/Phases")]
         public async Task<ActionResult<IEnumerable<ProjectPhaseDto>>> GetAllRiskProjectPhases(int id)
         {
             var projectPhases = await _projectPhaseQueries.GetRiskProjectPhasesAsync(id);
 
             return Ok(projectPhases);
+        }
+
+        /// <summary>
+        /// Method for getting project phase based on id.
+        /// </summary>
+        /// <param name="id"> Id of phase. </param>
+        /// <returns> DTO for project phase edit. </returns>
+        /// url: api/ProjectPhase/{id}
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ProjectPhaseCreateDto>> GetProjectPhase(int id)
+        {
+            var projectPhase = await _context.ProjectPhases.FindAsync(id);
+
+            if (projectPhase == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new ProjectPhaseCreateDto
+            {
+                Name = projectPhase.Name,
+                Start = projectPhase.Start,
+                End = projectPhase.End,
+                RiskProjectId = projectPhase.RiskProjectId
+            });
         }
 
         ////////////////// POST METHODS //////////////////
@@ -69,12 +94,11 @@ namespace RiskAware.Server.Controllers
             });
         }
 
-
         /// <summary>
-        /// 
+        /// Method for creating project phase based on user input.
         /// </summary>
-        /// <param name="projectPhaseDto"></param>
-        /// <returns></returns>
+        /// <param name="projectPhaseDto"> DTO containing info about created phase. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
         [HttpPost("/api/RiskProject/CreateProjectPhase")]
         public async Task<IActionResult> CreateProjectPhase(ProjectPhaseCreateDto projectPhaseDto)
         {
@@ -85,9 +109,11 @@ namespace RiskAware.Server.Controllers
                 return NotFound("Risk project not found");
             }
 
-            if (projectPhaseDto.UserRoleType != RoleType.ProjectManager) // TODO -> could be attacked like this??
+            var user = await _userManager.GetUserAsync(User);
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(riskProjectId, user.Id);
+            if (!isProjectManager)
             {
-                return Unauthorized();
+                return Unauthorized("User is not project manager!");
             }
 
             var order = _context.ProjectPhases.Where(pp => pp.RiskProjectId == riskProjectId).Count() + 1;
@@ -113,7 +139,7 @@ namespace RiskAware.Server.Controllers
         /// <param name="phaseId"> Id of phase.</param>
         /// <param name="projectPhaseDto">DTO containing info about phase.</param>
         /// <returns>Returns operation result.</returns>
-        //url: api/ProjectPhase/{phaseId}
+        ///url: api/ProjectPhase/{phaseId}
         [HttpPut("{phaseId}")]
         public async Task<IActionResult> UpdateProjectPhase(int phaseId, ProjectPhaseCreateDto projectPhaseDto)
         {
@@ -124,9 +150,11 @@ namespace RiskAware.Server.Controllers
                 return NotFound("Risk project not found");
             }
 
-            if (projectPhaseDto.UserRoleType != RoleType.ProjectManager) // TODO -> could be attacked like this??
+            var user = await _userManager.GetUserAsync(User);
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(riskProjectId, user.Id);
+            if (!isProjectManager)
             {
-                return Unauthorized();
+                return Unauthorized("User is not project manager!");
             }
 
             var projectPhase = await _context.ProjectPhases.Where(pp => pp.Id == phaseId && pp.RiskProjectId == riskProjectId).FirstOrDefaultAsync();
@@ -138,7 +166,7 @@ namespace RiskAware.Server.Controllers
             projectPhase.Name = projectPhaseDto.Name;
             projectPhase.Start = projectPhaseDto.Start;
             projectPhase.End = projectPhaseDto.End;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return Ok();
         }
@@ -146,32 +174,37 @@ namespace RiskAware.Server.Controllers
         ////////////////// DELETE METHODS //////////////////
 
         /// <summary>
-        /// 
+        /// Method for deleting project phase.
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id"> Id of phase. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/ProjectPhase/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProjectPhase(int id)
         {
-            // get active user
-            // get project phase and check if it exists
-            // check if user has permission to delete phase -> projectManager, RiskManager??
-            // then check if phase is not in use -> if it is not in use delete it
-            // else return error message -> phase is in use
-            // TODO -> think about soft delete
+            var phase = await _context.ProjectPhases.FindAsync(id);
+            if (phase == null)
+            {
+                return NotFound("Project was not found!");
+            }
 
-            // TODO -> implement this method
-            //var projectPhase = await _context.ProjectPhases.FindAsync(id);
-            //if (projectPhase == null)
-            //{
-            //    return NotFound();
-            //}
+            var user = await _userManager.GetUserAsync(User);
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(phase.RiskProjectId, user.Id);
+            if (!isProjectManager)
+            {
+                return Unauthorized("User is not project manager!");
+            }
 
-            //_context.ProjectPhases.Remove(projectPhase);
-            //await _context.SaveChangesAsync();
+            var risks = await _context.Risks.Where(r => r.ProjectPhaseId == id).ToListAsync();
+            if (risks.Count > 0)
+            {
+                return BadRequest("Phase is in use!");
+            }
 
-            //return NoContent();
-            return null;
+            _context.ProjectPhases.Remove(phase);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

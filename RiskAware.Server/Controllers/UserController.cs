@@ -22,7 +22,10 @@ namespace RiskAware.Server.Controllers
             _userManager = userManager;
         }
 
-        // GET: api/User
+        /// <summary>
+        /// Method for getting all users in system.
+        /// </summary>
+        /// <returns> Returns list of User DTOs, which containt basic user info. </returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers()
         {
@@ -34,16 +37,22 @@ namespace RiskAware.Server.Controllers
             }
 
             var users = await _context.Users.Select(u => new UserDto
-            {
-                Id = u.Id,
-                FullName = u.FirstName + " " + u.LastName,
-                Email = u.Email
-            }).ToListAsync();
+                {
+                    Id = u.Id,
+                    FullName = u.FirstName + " " + u.LastName,
+                    Email = u.Email
+                })
+                .ToListAsync();
 
-            return users;
+            return Ok(users);
         }
 
-        // GET: api/User/5
+        /// <summary>
+        /// Method for getting info about user account.
+        /// </summary>
+        /// <param name="id"> Id of user we want to get. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/User/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<UserDetailDto>> GetUser(string id)
         {
@@ -65,8 +74,12 @@ namespace RiskAware.Server.Controllers
             return user;
         }
 
-        // POST: api/User
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Method for creating new user account by admin.
+        /// </summary>
+        /// <param name="userDto"> DTO containing info about new user. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/User
         [HttpPost]
         public async Task<ActionResult<User>> CreateUser(UserDetailDto userDto)
         {
@@ -83,25 +96,44 @@ namespace RiskAware.Server.Controllers
                 Email = userDto.Email,
             };
 
-            await _userManager.CreateAsync(user, "Basic123"); // TODO -> prolly cahnge this so admin can set random passwords
+            await _userManager.CreateAsync(user, "Basic123");
 
             return Ok();
         }
 
-        // PUT: api/User/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Method for updating basic info about user account.
+        /// Update can be done only by user itself or by admin.
+        /// </summary>
+        /// <param name="id"> Id of user which info we want to update. </param>
+        /// <param name="userDto"> DTO containing new info about user. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/User/{id}
+        // TODO TEST -> check testing method
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(string id, UserDetailDto userDto)
         {
-            if (id != userDto.Id)
+            var activeUser = await _userManager.GetUserAsync(User); // get logged user
+            User user;
+            if (!activeUser.SystemRole.IsAdministrator && id != activeUser.Id) // only admin / user itself can update info
             {
-                return BadRequest();
+                return BadRequest("Id of given user does not match!");
+            }
+            else
+            {
+                if (activeUser.SystemRole.IsAdministrator)
+                {
+                    user = await _context.Users.FindAsync(id);
+                }
+                else
+                {
+                    user = activeUser;
+                }
             }
 
-            var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found!");
             }
 
             user.FirstName = userDto.FirstName;
@@ -112,20 +144,49 @@ namespace RiskAware.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for changing password of user account.
+        /// </summary>
+        /// <param name="id"> Id of user which is changing its password. </param>
+        /// <param name="passwordDto"> DTO containing passwords. </param>
+        /// <returns> Returns if action was succesful or not. </returns>
+        /// url: api/User/{id}/ChangePassword
         [HttpPut("{id}/ChangePassword")]
-        public async Task<IActionResult> ChangePassword(string id)
+        public async Task<IActionResult> ChangePassword(string id, PasswordDto passwordDto)
         {
-            // TODO -> implement this method
-            return BadRequest();
+            if (string.IsNullOrEmpty(id) || passwordDto == null)
+            {
+                return BadRequest("Invalid parameters");
+            }
+
+            var activeUser = await _userManager.GetUserAsync(User);
+            if (activeUser.Id != id)
+            {
+                return NotFound("Ids dont match!");
+            }
+
+            var res = await _userManager.ChangePasswordAsync(activeUser, passwordDto.OldPassword, passwordDto.NewPassword);
+            if (!res.Succeeded)
+            {
+                return BadRequest(res.Errors);
+            }
+
+            return Ok();
         }
 
+        /// <summary>
+        /// Method for restoring user account. It only sets IsValid to true.
+        /// </summary>
+        /// <param name="id"> Id of user we want to restore. </param>
+        /// <returns> Returns if action was succesfull or not. </returns>
+        /// url: api/User/{id}/Restore
         [HttpPut("{id}/Restore")]
         public async Task<IActionResult> RestoreUser(string id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found");
             }
 
             user.IsValid = true;
@@ -134,25 +195,26 @@ namespace RiskAware.Server.Controllers
             return Ok();
         }
 
-        // DELETE: api/User/5
+        /// <summary>
+        /// Method for deleting user account. It only sets IsValid to false.
+        /// Does soft delete -> makes user account invalid.
+        /// </summary>
+        /// <param name="id"> Id of user we want to delete. </param>
+        /// <returns> Returns if action was succesfull or not. </returns>
+        /// url: api/User/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _context.Users.FindAsync(id);
             if (user == null)
             {
-                return NotFound();
+                return NotFound("User not found");
             }
 
             user.IsValid = false;
             await _context.SaveChangesAsync();
 
             return Ok();
-        }
-
-        private bool UserExists(string id)
-        {
-            return _context.Users.Any(e => e.Id == id);
         }
     }
 }
