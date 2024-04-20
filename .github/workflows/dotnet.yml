@@ -26,7 +26,7 @@ jobs:
         show-log: true
         version: 2019
     - name: Run sqlcmd
-      run: sqlcmd -S localhost -U sa -P c0MplicatedP@ssword -d tempdb -Q "SELECT @@version;"
+      run: sqlcmd -S localhost -U sa -P VUTFITez2024 -d tempdb -Q "SELECT @@version;"
     - name: Restore dependencies
       run: dotnet restore
       
