@@ -20,7 +20,6 @@ interface IProjectDetail {
   chosenRisk: IRiskDetail;
   userRole: RoleType;
   assignedPhase: IPhases;
-  //isAdmin: boolean; // TODO -> example
 }
 
 export default IProjectDetail;

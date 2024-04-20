@@ -123,7 +123,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       </Col>
                     )}
                   </Row>
-                  <PhaseList projectId={projectDetail.detail.id} fetchDataRef={this.phaseFetchDataRef} />
+                  <PhaseList projectId={projectDetail.detail.id} fetchDataRef={this.phaseFetchDataRef} reRender={this.reRender} projectDetail={projectDetail} />
                 </TabPane>
                 <TabPane tabId="risks">
                   <Row className="mb-3">

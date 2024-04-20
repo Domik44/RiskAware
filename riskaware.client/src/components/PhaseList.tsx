@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import {
   MaterialReactTable, useMaterialReactTable,
-  type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
+  type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
 import { Box, Tooltip, IconButton } from '@mui/material';
@@ -14,11 +14,16 @@ import IDtParams from './interfaces/IDtParams';
 import IDtResult from './interfaces/DtResult';
 import IPhases from './interfaces/IPhases';
 import IFetchData from '../common/IFetchData';
+import PhaseDeleteModal from './PhaseDeleteModal';
+import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
+import PhaseEditModal from './PhaseEditModal';
 
 export const PhaseList: React.FC<{
   projectId: number,
   fetchDataRef: React.MutableRefObject<IFetchData | null>,
-}> = ({ projectId, fetchDataRef }) => {
+  reRender: () => void,
+  projectDetail: IProjectDetail;
+}> = ({ projectId, fetchDataRef, reRender, projectDetail }) => {
   // Data and fetching state
   const [data, setData] = useState<IPhases[]>([]);
   const [isError, setIsError] = useState(false);
@@ -35,6 +40,47 @@ export const PhaseList: React.FC<{
     pageIndex: 0,
     pageSize: 10,
   });
+
+  // Modals
+  const [selectedPhaseId, setSelectedPhaseId] = useState<number | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState<IPhases>();
+
+  const openDeleteModal = (phaseId: number) => {
+    setSelectedPhaseId(phaseId);
+    setDeleteModalOpen(true);
+  };
+
+  const toggleDeleteModal = () => {
+    setDeleteModalOpen(!deleteModalOpen);
+  };
+
+  const fetchEditData = async (phaseId: number) => {
+    try {
+      const response = await fetch(`/api/ProjectPhase/${phaseId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json: IPhases = await response.json();
+      setEditData(json);
+      setEditModalOpen(true);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
+  const openEditModal = (phaseId: number) => {
+    setSelectedPhaseId(phaseId);
+    fetchEditData(phaseId);
+  }
+
+  const toggleEditModal = () => {
+    setEditModalOpen(!editModalOpen);
+  };
 
   const fetchData = async () => {
     if (!data.length) {
@@ -120,13 +166,6 @@ export const PhaseList: React.FC<{
     []
   );
 
-  // todo copy delete confirm modal from ITU
-  const openDeleteConfirmModal = (row: MRT_Row<IPhases>) => {
-    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.name}?`)) {
-      console.log(`Delete:${row.original.id}`); // todo post delete
-    }
-  };
-
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IPhases>(), // Add common and basic options
     columns,
@@ -147,16 +186,17 @@ export const PhaseList: React.FC<{
       showProgressBars: isRefetching,
       sorting,
     },
-    enableRowActions: true,        // Display row actions
+    enableRowActions: projectDetail.userRole === RoleType.ProjectManager,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         <Tooltip title="Upravit">
-          <IconButton onClick={() => openDeleteConfirmModal(row)}>
+        {/*TODO -> zmenit na edit*/}
+          <IconButton onClick={() => openEditModal(row.original.id)}>
             <EditIcon />
           </IconButton>
         </Tooltip>
         <Tooltip title="Vymazat">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+          <IconButton color="error" onClick={() => openDeleteModal(row.original.id)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -164,7 +204,13 @@ export const PhaseList: React.FC<{
     ),
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <div>
+      <MaterialReactTable table={table} />
+      <PhaseDeleteModal phaseId={selectedPhaseId ?? 0} isOpen={deleteModalOpen} toggle={toggleDeleteModal} fetchDataRef={fetchDataRef} reRender={reRender} />
+      <PhaseEditModal phaseId={selectedPhaseId ?? 0} isOpen={editModalOpen} toggle={toggleEditModal} data={editData} reRender={reRender} fetchDataRef={fetchDataRef} projectId={projectId} />
+    </div>
+  );
 }
 
 export default PhaseList;
