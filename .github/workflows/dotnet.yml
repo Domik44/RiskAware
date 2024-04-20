@@ -10,10 +10,8 @@ on:
     branches: [ "master" ]
 
 jobs:
-  build:
-
+  setup:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
@@ -27,8 +25,14 @@ jobs:
         sa-password: VUTFITez2024 
         show-log: true
         version: 2019
+    - name: Run sqlcmd
+      run: sqlcmd -S localhost -U sa -P c0MplicatedP@ssword -d tempdb -Q "SELECT @@version;"
     - name: Restore dependencies
       run: dotnet restore
+      
+  build:
+    runs-on: ubuntu-latest
+    steps:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
