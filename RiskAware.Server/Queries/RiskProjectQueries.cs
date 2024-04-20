@@ -91,23 +91,6 @@ namespace RiskAware.Server.Queries
                         .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
                         .FirstOrDefault()
                 });
-
-            // TODO -> seems to be faster
-            //return from projectRole in _context.ProjectRoles
-            //            where projectRole.UserId == user.Id
-            //            join riskProject in _context.RiskProjects on projectRole.RiskProjectId equals riskProject.Id
-            //            select new RiskProjectDto//(riskProject);
-            //            {
-            //                Id = riskProject.Id,
-            //                Title = riskProject.Title,
-            //                Start = riskProject.Start,
-            //                End = riskProject.End,
-            //                NumOfMembers = riskProject.ProjectRoles.Count,
-            //                ProjectManagerName = riskProject.ProjectRoles
-            //                    .Where(pr => pr.RoleType == RoleType.ProjectManager)
-            //                    .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
-            //                    .FirstOrDefault()
-            //            };
         }
 
         public async Task<IEnumerable<RiskProjectDto>> GetAllAdminRiskProjectsAsync(User user)
@@ -195,6 +178,13 @@ namespace RiskAware.Server.Queries
                 .AnyAsync(pr => pr.RiskProjectId == riskProject.Id && pr.UserId == user.Id && pr.RoleType == RoleType.ProjectManager);
         }
 
+        public async Task<bool> IsExtern(RiskProject riskProject, User user)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProject.Id && pr.UserId == user.Id && pr.RoleType == RoleType.ExternalMember);
+        }
+
         public async Task<IEnumerable<CommentDto>> GetRiskProjectCommentsAsync(int id)
         {
             var comments = await _context.Comments
@@ -225,7 +215,7 @@ namespace RiskAware.Server.Queries
                 };
                 _context.RiskCategories.Add(newRiskCategory);
             }
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             return true;
         }

@@ -97,6 +97,12 @@ namespace RiskAware.Server.Queries
                 .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId);
         }
 
+        /// <summary>
+        /// This method checks if has a role as an project manager on a project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns> Return true if user is project manager. </returns>
         public async Task<bool> IsProjectManager(int riskProjectId, string userId)
         {
             return await _context.ProjectRoles
@@ -104,11 +110,60 @@ namespace RiskAware.Server.Queries
                 .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.RoleType == RoleType.ProjectManager);
         }
 
+        /// <summary>
+        /// This method checks if has a role as an risk manager on a project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns> Return true if user is risk manager. </returns>
         public async Task<bool> IsRiskManager(int riskProjectId, string userId)
         {
             return await _context.ProjectRoles
                 .AsNoTracking()
                 .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.RoleType == RoleType.RiskManager);
+        }
+
+        /// <summary>
+        /// This method checks if has a role as an team member on a project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns> Return true if user is team member. </returns>
+        public async Task<bool> IsTeamMember(int riskProjectId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.RoleType == RoleType.TeamMember);
+        }
+
+        /// <summary>
+        /// This method checks if has a role as an extern member on a project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns> Return true if user is extern member. </returns>
+        public async Task<bool> IsExternMember(int riskProjectId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.RoleType == RoleType.ExternalMember);
+        }
+
+        /// <summary>
+        /// This method checks if user is just looking at the project without any role on it.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns> Return true if user is just a looker. </returns>
+        public async Task<bool> IsCommonUser(int riskProjectId, string userId)
+        {
+            var hasRole = await HasProjectRoleOnRiskProject(riskProjectId, userId);
+            if (hasRole)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         public async Task<bool> HasBasicEditPermissions(int riskProjectId, string userId)
@@ -123,7 +178,6 @@ namespace RiskAware.Server.Queries
             var role = await _context.ProjectRoles
                 .AsNoTracking()
                 .Where(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId)
-                //.Select(pr => pr.RoleType)
                 .FirstOrDefaultAsync();
 
             if (role == null)
