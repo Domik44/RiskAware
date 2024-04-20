@@ -29,10 +29,6 @@ jobs:
       run: sqlcmd -S localhost -U sa -P VUTFITez2024 -d tempdb -Q "SELECT @@version;"
     - name: Restore dependencies
       run: dotnet restore
-      
-  build:
-    runs-on: ubuntu-latest
-    steps:
     - name: Build
       run: dotnet build --no-restore
     - name: Test
