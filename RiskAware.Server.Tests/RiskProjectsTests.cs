@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
+    [Collection("API tests")]
     public class RiskProjectsTests : ServerTestsBase
     {
         public RiskProjectsTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
@@ -39,7 +40,6 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.AdminLogin);
 
-            // TODO not authorized with admin login
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/AdminRiskProjects");
             response.EnsureSuccessStatusCode();
 
@@ -51,30 +51,45 @@ namespace RiskAware.Server.Tests
                 p.ProjectManagerName == $"{UserSeeds.BasicUser.FirstName} {UserSeeds.BasicUser.LastName}"));
         }
 
-        [Fact]
-        public async Task GET_Risk_Project_by_Id_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public async Task GET_Risk_Project_by_Id_is_OK(int projectId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{ProjectId}");
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}");
             response.EnsureSuccessStatusCode();
 
             RiskProjectPageDto dto = (await response.Content.ReadFromJsonAsync<RiskProjectPageDto>())!;
 
-            Assert.Equal("MPR projekt", dto.Detail.Title);
+            Assert.Equal(projectId, dto.Detail.Id);
         }
 
-        [Fact]
-        public async Task GET_Risk_Project_Detail_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task GET_Risk_Project_Detail_is_OK(int projectId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{ProjectId}/Detail");
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Detail");
             response.EnsureSuccessStatusCode();
 
             RiskProjectDetailDto dto = (await response.Content.ReadFromJsonAsync<RiskProjectDetailDto>())!;
 
-            Assert.Equal("MPR projekt", dto.Title);
+            if (projectId == 1)
+            {
+                Assert.Equal("MPR projekt", dto.Title);
+            }
+            else
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
         }
 
         [Fact]
@@ -134,7 +149,6 @@ namespace RiskAware.Server.Tests
                 Email = UserSeeds.BasicUser.Email
             };
 
-            // TODO not authorized with admin login
             HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskProject", dto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -143,7 +157,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task POST_Risk_Project_Add_Comment_is_OK()
         {
-            // TODO here is a expample of auth working correctly
             await PerformLogin(UserSeeds.AdminLogin);
 
             int projectId = 1;
@@ -170,7 +183,6 @@ namespace RiskAware.Server.Tests
             StringContent content = new(newDto.ToJson(), System.Text.Encoding.UTF8, "application/json");
             TestOutputHelper.WriteLine(content.ReadAsStringAsync().Result);
 
-            // TODO not authorized with admin login
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}", newDto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -189,7 +201,6 @@ namespace RiskAware.Server.Tests
                 Email = UserSeeds.BasicUser.Email
             };
 
-            // TODO not authorized with admin login
             HttpResponseMessage response1 = await Client.PostAsJsonAsync($"{Endpoint}/RiskProject", createDto);
             response1.EnsureSuccessStatusCode();
 

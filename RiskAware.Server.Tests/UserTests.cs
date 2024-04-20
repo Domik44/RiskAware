@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
+    [Collection("API tests")]
     public class UserTests : ServerTestsBase
     {
         public UserTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
@@ -47,21 +48,16 @@ namespace RiskAware.Server.Tests
                 $"{dto.FirstName} {dto.LastName}");
         }
 
-        [Fact]
-        public async Task POST_User_is_OK()
+        [Theory]
+        [InlineData(0)]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task POST_User_is_OK(int userDetailDtoId)
         {
-            UserDetailDto userDto = new()
-            {
-                Id = Guid.NewGuid().ToString(),
-                FirstName = "František",
-                LastName = "Vomáčka",
-                Email = "vomacka@seznam.cz"
-            };
-
-            // TODO not authorized with admin login
             await PerformLogin(UserSeeds.AdminLogin);
 
-            HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/User", userDto);
+            HttpResponseMessage response =
+                await Client.PostAsJsonAsync($"{Endpoint}/User", UserSeeds.UserDetailDtos[userDetailDtoId]);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -71,21 +67,10 @@ namespace RiskAware.Server.Tests
         {
             UserDetailDto userDto = new()
             {
-                Id = UserSeeds.BasicUser.Id,
+                Id = UserSeeds.BasicUser2.Id,
                 FirstName = "František",
                 LastName = "Vomáčka",
                 Email = "vomacka@seznam.cz"
-            };
-
-            UserSeeds.BasicUser = new User
-            {
-                Id = userDto.Id,
-                UserName = userDto.Email,
-                Email = userDto.Email,
-                EmailConfirmed = true,
-                FirstName = userDto.FirstName,
-                LastName = userDto.LastName,
-                SystemRole = UserSeeds.BasicUser.SystemRole
             };
 
             await PerformLogin(UserSeeds.AdminLogin);

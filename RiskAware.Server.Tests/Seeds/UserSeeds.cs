@@ -37,6 +37,42 @@ namespace RiskAware.Server.Tests.Seeds
             SystemRole = BasicRole
         };
 
+        public static User BasicUser2 = new()
+        {
+            Id = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
+            UserName = "zb@google.com",
+            Email = "zb@google.com",
+            EmailConfirmed = true,
+            FirstName = "Zdenda",
+            LastName = "Branik",
+            SystemRole = BasicRole
+        };
+
+        public static List<UserDetailDto> UserDetailDtos = new()
+        {
+            new UserDetailDto
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = "František",
+                LastName = "Vomáčka",
+                Email = "vomacka1@seznam.cz"
+            },
+            new UserDetailDto
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = "František",
+                LastName = "Pepa",
+                Email = "vomacka2@seznam.cz"
+            },
+            new UserDetailDto
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = "František",
+                LastName = "Jednička",
+                Email = "vomacka3@seznam.cz"
+            }
+        };
+
         public static LoginDto AdminLogin = new() {Email = AdminUser.Email, Password = "Admin123"};
 
         public static LoginDto BasicLogin = new() {Email = BasicUser.Email, Password = "Basic123"};

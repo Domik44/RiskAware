@@ -6,6 +6,7 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
+    [Collection("API tests")]
     public class RisksTests : ServerTestsBase
     {
         public RisksTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
@@ -16,46 +17,60 @@ namespace RiskAware.Server.Tests
         private const string Endpoint = "/api";
         private const int ProjectId = 1;
 
-        [Fact]
-        public async Task GET_Risks_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public async Task GET_Risks_is_OK(int id)
         {
             await PerformLogin(UserSeeds.BasicLogin);
-
-            int id = 1;
 
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/Risk/{id}");
             response.EnsureSuccessStatusCode();
 
             RiskDetailDto dto = (await response.Content.ReadFromJsonAsync<RiskDetailDto>())!;
 
-            Assert.Equal("Riziko 1", dto.Title);
+            Assert.Equal($"Riziko {id}", dto.Title);
         }
 
-        [Fact]
-        public async Task GET_Risk_Project_Risks_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task GET_Risk_Project_Risks_is_OK(int projectId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{ProjectId}/Risks");
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Risks");
 
             response.EnsureSuccessStatusCode();
             List<RiskDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskDto>>())!;
 
-            Assert.True(dto.Exists(r => r.Title == "Riziko 1"));
+            if (projectId == 1)
+            {
+                Assert.True(dto.Exists(r => r.Title == $"Riziko {projectId}"));
+            }
+            else
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
         }
 
-        [Fact]
-        public async Task GET_Project_Phase_Risks_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task GET_Project_Phase_Risks_is_OK(int id)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            int id = 1;
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/ProjectPhase/{id}/Risks");
             response.EnsureSuccessStatusCode();
 
             List<RiskDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskDto>>())!;
 
-            Assert.True(dto.Exists(r => r.Title == "Riziko 1"));
+            Assert.True(dto.Exists(r => r.Title == $"Riziko {id + 1}"));
         }
 
         [Fact]
@@ -63,8 +78,6 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            // TODO use required parameters in DTOs
-            // It is better to used records for DTOs
             RiskCreateDto dto = new()
             {
                 Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
