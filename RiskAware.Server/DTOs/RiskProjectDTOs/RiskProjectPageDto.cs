@@ -11,13 +11,10 @@ namespace RiskAware.Server.DTOs.RiskProjectDTOs
     public class RiskProjectPageDto
     {
         public RiskProjectDetailDto Detail { get; set; }
-        //public IEnumerable<ProjectPhasesPanelDto> PhasesPanel { get; set; } // TODO -> Delete
         public IEnumerable<ProjectPhaseDto> Phases { get; set; }
         public IEnumerable<RiskDto> Risks { get; set; }
         public IEnumerable<ProjectRoleDto> Members { get; set; }
-        public bool IsAdmin { get; set; } // TODO -> delete this property
         public RoleType UserRole { get; set; }
         public ProjectPhaseSimpleDto AssignedPhase { get; set; }
-        //public ProjectPhaseDto UserPhase { get; set; } // TODO -> will be used later
     }
 }
