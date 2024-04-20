@@ -44,9 +44,6 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
         reRender(); // Rerender the page;
         fetchDataRef.current?.();
       }
-
-      // TODO -> fetch members again
-      // will add after the tables are implemented
     }
     catch (error: any) {
       console.error(error);

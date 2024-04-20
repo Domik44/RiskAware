@@ -21,6 +21,7 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
+import IRiskCategory from './interfaces/IRiskCategory';
 
 export const RiskList: React.FC<{
   projectId: number,
@@ -54,6 +55,26 @@ export const RiskList: React.FC<{
 
   const toggleDeleteModal = () => {
     setModalOpen(!modalOpen);
+  };
+
+  const [categories, setCategories] = useState<string[]>([]);
+  const fetchRiskCategories = async () => {
+    let categoryNames: string[];
+    try {
+      const response = await fetch(`/api/RiskProject/${projectId}/RiskCategories`);
+      if (!response.ok) {
+        throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
+      }
+      else {
+        const categories: IRiskCategory[] = await response.json();
+        categoryNames = categories.map(c => c.name);
+        setCategories(categoryNames);
+        //return categoryNames;
+      }
+    }
+    catch (error: any) {
+      console.error(error);
+    }
   };
 
   const fetchData = async () => {
@@ -95,6 +116,7 @@ export const RiskList: React.FC<{
   fetchDataRef.current = fetchData;
 
   useEffect(() => {
+    fetchRiskCategories();
     fetchDataRef.current?.();
   }, [
     columnFilters,
@@ -104,8 +126,8 @@ export const RiskList: React.FC<{
     sorting,
   ]);
 
-  const columns = useMemo<MRT_ColumnDef<IRisks>[]>(
-    () => [
+  const columns = useMemo<MRT_ColumnDef<IRisks>[]>(() => {
+    return [
       {
         id: 'title',
         accessorKey: 'title',
@@ -113,12 +135,11 @@ export const RiskList: React.FC<{
         filterFn: 'startsWith',
       },
       {
-        // todo add category dropdown selection
         id: 'categoryName',
         accessorKey: 'categoryName',
         header: 'Kategorie',
-        filterVariant: 'select',    // todo dynamically load options
-        filterSelectOptions: ["Finanční rizika", "Lidská rizika", "Operační rizika"],
+        filterVariant: 'select',
+        filterSelectOptions: categories, // Use categories state here
       },
       {
         id: 'severity',
@@ -143,16 +164,8 @@ export const RiskList: React.FC<{
         accessorKey: 'state',
         header: 'Stav',
       }
-    ],
-    []
-  );
-
-  // todo copy delete confirm modal from ITU
-  //const openDeleteConfirmModal = (row: MRT_Row<IRisks>) => {
-  //  if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
-  //    console.log(`Delete:${row.original.id}`); // todo post delete
-  //  }
-  //};
+    ];
+  }, [categories]);
 
   const exportToPDF = (rows: MRT_Row<IRisks>[]) => {
     const doc = new jsPDF();
