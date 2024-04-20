@@ -3,13 +3,15 @@ import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGrou
 import { Impact, Prevention, Probability, Status, Category } from './enums/RiskAttributesEnum';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
 import IRiskCategory from './interfaces/IRiskCategory';
+import IFetchData from '../common/IFetchData';
 
 interface AddRiskModalProps {
   projectDetail: IProjectDetail;
   reRender: () => void;
+  fetchDataRef: React.MutableRefObject<IFetchData | null>;
 }
 
-const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender }) => {
+const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fetchDataRef }) => {
   const [modal, setModal] = useState(false);
   const [categories, setCategories] = useState<IRiskCategory[]>([]);
   const scale = projectDetail.detail.scale;
@@ -77,6 +79,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender }) 
       }
       else {
         reRender(); // Rerender the page
+        fetchDataRef.current?.();
       }
     }
     catch (error: any) {

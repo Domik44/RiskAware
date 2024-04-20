@@ -1,12 +1,14 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
+import IFetchData from '../common/IFetchData';
 
 interface CreateProjectModalProps {
   // Define any props if needed
   // here will be variable from the list page which will recieve new table/row
+  fetchDataRef: React.MutableRefObject<IFetchData | null>;
 }
 
-const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
+const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ fetchDataRef }) => {
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(!modal);
@@ -38,6 +40,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
         }
       }
       else {
+        fetchDataRef.current?.();
         toggle(); // Close the modal after submission
       }
     }
@@ -49,7 +52,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = () => {
       }
     }
 
-    // TODO -> reload the table
+    fetchDataRef.current?.();
   }
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

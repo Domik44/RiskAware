@@ -1,8 +1,8 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import React, { useEffect, useMemo, useState } from 'react';
 import {
   MaterialReactTable, useMaterialReactTable,
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
-  type MRT_PaginationState, type MRT_SortingState
+  type MRT_PaginationState, type MRT_SortingState,
 } from 'material-react-table';
 import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import MUITableCommonOptions from './../common/MUITableCommonOptions';
@@ -10,6 +10,8 @@ import { formatDateForInput } from './../helpers/DateFormatter';
 import IDtParams from './interfaces/IDtParams';
 import IDtResult from './interfaces/DtResult';
 import IRisks from './interfaces/IRisks';
+import IFetchData from '../common/IFetchData';
+import RiskDeleteModal from './RiskDeleleModal';
 
 import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
@@ -19,13 +21,12 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
-import RiskDeleteModal from './RiskDeleleModal';
-
 
 export const RiskList: React.FC<{
   projectId: number,
   chooseRisk: (id: number) => void,
-}> = ({ projectId, chooseRisk }) => {
+  fetchDataRef: React.MutableRefObject<IFetchData | null>,
+}> = ({ projectId, chooseRisk, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IRisks[]>([]);
   const [isError, setIsError] = useState(false);
@@ -55,44 +56,46 @@ export const RiskList: React.FC<{
     setModalOpen(!modalOpen);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!data.length) {
-        setIsLoading(true);
-      }
-      else {
-        setIsRefetching(true);
-      }
+  const fetchData = async () => {
+    if (!data.length) {
+      setIsLoading(true);
+    }
+    else {
+      setIsRefetching(true);
+    }
 
-      const startOffset = pagination.pageIndex * pagination.pageSize;
-      let searchParams: IDtParams = {
-        start: startOffset,
-        size: pagination.pageSize,
-        filters: columnFilters ?? [],
-        sorting: sorting ?? [],
-      };
-      try {
-        const response = await fetch(`/api/RiskProject/${projectId}/Risks`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(searchParams)
-        });
-        const json: IDtResult<IRisks> = await response.json();
-        setData(json.data);
-        setRowCount(json.totalRowCount);
-      }
-      catch (error) {
-        setIsError(true);
-        console.error(error);
-        return;
-      }
-      setIsError(false);
-      setIsLoading(false);
-      setIsRefetching(false);
+    const startOffset = pagination.pageIndex * pagination.pageSize;
+    let searchParams: IDtParams = {
+      start: startOffset,
+      size: pagination.pageSize,
+      filters: columnFilters ?? [],
+      sorting: sorting ?? [],
     };
-    fetchData();
+    try {
+      const response = await fetch(`/api/RiskProject/${projectId}/Risks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchParams)
+      });
+      const json: IDtResult<IRisks> = await response.json();
+      setData(json.data);
+      setRowCount(json.totalRowCount);
+    }
+    catch (error) {
+      setIsError(true);
+      console.error(error);
+      return;
+    }
+    setIsError(false);
+    setIsLoading(false);
+    setIsRefetching(false);
+  };
+  fetchDataRef.current = fetchData;
+
+  useEffect(() => {
+    fetchDataRef.current?.();
   }, [
     columnFilters,
     globalFilter,
@@ -114,6 +117,8 @@ export const RiskList: React.FC<{
         id: 'categoryName',
         accessorKey: 'categoryName',
         header: 'Kategorie',
+        filterVariant: 'select',    // todo dynamically load options
+        filterSelectOptions: ["Finanční rizika", "Lidská rizika", "Operační rizika"],
       },
       {
         id: 'severity',
@@ -143,11 +148,11 @@ export const RiskList: React.FC<{
   );
 
   // todo copy delete confirm modal from ITU
-  const openDeleteConfirmModal = (row: MRT_Row<IRisks>) => {
-    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
-      console.log(`Delete:${row.original.id}`); // todo post delete
-    }
-  };
+  //const openDeleteConfirmModal = (row: MRT_Row<IRisks>) => {
+  //  if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
+  //    console.log(`Delete:${row.original.id}`); // todo post delete
+  //  }
+  //};
 
   const exportToPDF = (rows: MRT_Row<IRisks>[]) => {
     const doc = new jsPDF();
@@ -190,7 +195,7 @@ export const RiskList: React.FC<{
     download(csvConfig)(csv);
   };
 
-  const table = useMaterialReactTable({
+  const tableInstance = useMaterialReactTable({
     ...MUITableCommonOptions<IRisks>(), // Add common and basic options
     columns,
     data,
@@ -255,7 +260,7 @@ export const RiskList: React.FC<{
 
   return (
     <>
-      <MaterialReactTable table={table} />
+      <MaterialReactTable table={tableInstance} />
       <RiskDeleteModal riskId={selectedRiskId ?? 0} isOpen={modalOpen} toggle={toggleDeleteModal} />
     </>
   );

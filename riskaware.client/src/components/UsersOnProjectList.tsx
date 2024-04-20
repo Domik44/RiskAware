@@ -6,15 +6,18 @@ import {
 } from 'material-react-table';
 import MUITableCommonOptions from './../common/MUITableCommonOptions';
 import { Box, Tooltip, IconButton } from '@mui/material';
-import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IDtParams from './interfaces/IDtParams';
 import IDtResult from './interfaces/DtResult';
 import IMembersList from './interfaces/IMembersList';
+import IFetchData from '../common/IFetchData';
 
 
-export const UsersOnProjectList: React.FC<{ projectId: number }> = ({ projectId }) => {
+export const UsersOnProjectList: React.FC<{
+  projectId: number,
+  fetchDataRef: React.MutableRefObject<IFetchData | null>
+}> = ({ projectId, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IMembersList[]>([]);
   const [isError, setIsError] = useState(false);
@@ -31,44 +34,46 @@ export const UsersOnProjectList: React.FC<{ projectId: number }> = ({ projectId 
     pageSize: 10,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!data.length) {
-        setIsLoading(true);
-      }
-      else {
-        setIsRefetching(true);
-      }
+  const fetchData = async () => {
+    if (!data.length) {
+      setIsLoading(true);
+    }
+    else {
+      setIsRefetching(true);
+    }
 
-      const startOffset = pagination.pageIndex * pagination.pageSize;
-      let searchParams: IDtParams = {
-        start: startOffset,
-        size: pagination.pageSize,
-        filters: columnFilters ?? [],
-        sorting: sorting ?? [],
-      };
-      try {
-        const response = await fetch(`/api/RiskProject/${projectId}/Members`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(searchParams)
-        });
-        const json: IDtResult<IMembersList> = await response.json();
-        setData(json.data);
-        setRowCount(json.totalRowCount);
-      }
-      catch (error) {
-        setIsError(true);
-        console.error(error);
-        return;
-      }
-      setIsError(false);
-      setIsLoading(false);
-      setIsRefetching(false);
+    const startOffset = pagination.pageIndex * pagination.pageSize;
+    let searchParams: IDtParams = {
+      start: startOffset,
+      size: pagination.pageSize,
+      filters: columnFilters ?? [],
+      sorting: sorting ?? [],
     };
-    fetchData();
+    try {
+      const response = await fetch(`/api/RiskProject/${projectId}/Members`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchParams)
+      });
+      const json: IDtResult<IMembersList> = await response.json();
+      setData(json.data);
+      setRowCount(json.totalRowCount);
+    }
+    catch (error) {
+      setIsError(true);
+      console.error(error);
+      return;
+    }
+    setIsError(false);
+    setIsLoading(false);
+    setIsRefetching(false);
+  };
+  fetchDataRef.current = fetchData;
+
+  useEffect(() => {
+    fetchDataRef.current?.();
   }, [
     columnFilters,
     globalFilter,

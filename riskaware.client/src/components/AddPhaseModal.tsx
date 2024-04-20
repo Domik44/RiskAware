@@ -1,13 +1,15 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
 import IProjectDetail from './interfaces/IProjectDetail';
+import IFetchData from '../common/IFetchData';
 
 interface AddPhaseModalProps {
   projectDetail: IProjectDetail;
   reRender: () => void;
+  fetchDataRef: React.MutableRefObject<IFetchData | null>;
 }
 
-const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender }) =>  {
+const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender, fetchDataRef }) =>  {
   const [modal, setModal] = useState(false);
   const userRole = projectDetail.userRole;
 
@@ -35,10 +37,11 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender }
       }
       else {
         reRender(); // Rerender the page
+        fetchDataRef.current?.();
       }
     }
     catch (error: any) {
-      console.error(error);
+      console.error(error);   // todo wrap in <ErrorBoundary FallBackComponent={showError}> tag
     }
   }
 

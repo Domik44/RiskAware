@@ -1,4 +1,4 @@
-﻿import { Component } from 'react';
+﻿import React, { Component } from 'react';
 import { formatDate } from "../helpers/DateFormatter";
 import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
@@ -14,6 +14,7 @@ import Matrix from './Matrix';
 import PhaseList from './PhaseList';
 import RiskList from './RiskList';
 import UsersOnProjectList from './UsersOnProjectList';
+import IFetchData from '../common/IFetchData';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -28,6 +29,11 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
       activeTab: 'detail',
     };
   }
+
+  // Creating MutableRefObject because React.createRef is readonly
+  phaseFetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
+  riskFetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
+  memberFetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
 
   componentDidMount() {
     this.populateProjectDetail();
@@ -113,11 +119,11 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                     </Col>
                     {projectDetail.userRole === RoleType.ProjectManager && (
                       <Col className="d-flex justify-content-end">
-                        <AddPhaseModal projectDetail={projectDetail} reRender={this.reRender} />
+                        <AddPhaseModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.phaseFetchDataRef} />
                       </Col>
                     )}
                   </Row>
-                  <PhaseList projectId={projectDetail.detail.id}/>
+                  <PhaseList projectId={projectDetail.detail.id} fetchDataRef={this.phaseFetchDataRef} />
                 </TabPane>
                 <TabPane tabId="risks">
                   <Row className="mb-3">
@@ -125,10 +131,10 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <h5>Registr rizik</h5>
                     </Col>
                     <Col className="d-flex justify-content-end">
-                      <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} />
+                      <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.riskFetchDataRef} />
                     </Col>
                   </Row>
-                  <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} />
+                  <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} fetchDataRef={this.riskFetchDataRef} />
                 </TabPane>
                 <TabPane tabId="members">
                   <Row className="mb-3">
@@ -137,11 +143,11 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                     </Col>
                     <Col className="d-flex justify-content-end">
                       {projectDetail.userRole === RoleType.ProjectManager && (
-                        <AddProjectRoleModal projectDetail={projectDetail} reRender={this.reRender} />
+                        <AddProjectRoleModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.memberFetchDataRef} />
                       )}
                     </Col>
                   </Row>
-                  <UsersOnProjectList projectId={projectDetail.detail.id} />
+                  <UsersOnProjectList projectId={projectDetail.detail.id} fetchDataRef={this.memberFetchDataRef} />
                 </TabPane>
                 <TabPane tabId="matrix">
                   <Row>
@@ -161,7 +167,6 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
   }
 
   async populateProjectDetail() {
-    console.log('populateProjectDetail');
     const urlSplitted = window.location.pathname.split('/');
     const id = urlSplitted[2];
 

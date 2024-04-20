@@ -4,25 +4,23 @@ import {
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
-import { Box, Button, Tooltip, IconButton } from '@mui/material';
+import { Box, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
-import { formatDate, formatDateForInput } from '../../helpers/DateFormatter';
+import { formatDate } from '../../helpers/DateFormatter';
 import IDtParams from '../interfaces/IDtParams';
 import IDtResult from '../interfaces/DtResult';
 import IProject from '../interfaces/IProject';
-
 import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-
-import { jsPDF } from 'jspdf';
-import autoTable, { CellInput } from 'jspdf-autotable';
-import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
+import IFetchData from '../../common/IFetchData';
 
 
-export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
+export const ProjectsList: React.FC<{
+  fetchUrl: string,
+  fetchDataRef: React.MutableRefObject<IFetchData | null>,
+}> = ({ fetchUrl, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IProject[]>([]);
   const [isError, setIsError] = useState(false);
@@ -40,44 +38,46 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     pageSize: 10,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!data.length) {
-        setIsLoading(true);
-      }
-      else {
-        setIsRefetching(true);
-      }
+  const fetchData = async () => {
+    if (!data.length) {
+      setIsLoading(true);
+    }
+    else {
+      setIsRefetching(true);
+    }
 
-      const startOffset = pagination.pageIndex * pagination.pageSize;
-      let searchParams: IDtParams = {
-        start: startOffset,
-        size: pagination.pageSize,
-        filters: columnFilters ?? [],
-        sorting: sorting ?? [],
-      };
-      try {
-        const response = await fetch(fetchUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(searchParams)
-        });
-        const json: IDtResult<IProject> = await response.json();
-        setData(json.data);
-        setRowCount(json.totalRowCount);
-      }
-      catch (error) {
-        setIsError(true);
-        console.error(error);
-        return;
-      }
-      setIsError(false);
-      setIsLoading(false);
-      setIsRefetching(false);
+    const startOffset = pagination.pageIndex * pagination.pageSize;
+    let searchParams: IDtParams = {
+      start: startOffset,
+      size: pagination.pageSize,
+      filters: columnFilters ?? [],
+      sorting: sorting ?? [],
     };
-    fetchData();
+    try {
+      const response = await fetch(fetchUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchParams)
+      });
+      const json: IDtResult<IProject> = await response.json();
+      setData(json.data);
+      setRowCount(json.totalRowCount);
+    }
+    catch (error) {
+      setIsError(true);
+      console.error(error);
+      return;
+    }
+    setIsError(false);
+    setIsLoading(false);
+    setIsRefetching(false);
+  };
+  fetchDataRef.current = fetchData;
+
+  useEffect(() => {
+    fetchDataRef.current?.();
   }, [
     columnFilters,
     globalFilter,
@@ -132,47 +132,6 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
     }
   };
 
-  const exportToPDF = (rows: MRT_Row<IProject>[]) => {
-    const doc = new jsPDF();
-    const tableData = rows.map((row) => Object.values(row.original) as CellInput[]);
-    const tableHeaders = columns.map((c) => String(c.id));
-
-    autoTable(doc, {
-      head: [tableHeaders],
-      body: tableData,
-    });
-
-    const now = new Date();
-    const dateString = formatDateForInput(now);
-    doc.save(`${dateString}_registr_rizik.pdf`);
-  };
-
-  const exportToCSV = () => {
-    const tableHeaders: ColumnHeader[] = columns.map((col) => ({
-      key: String(col.id),
-      displayLabel: String(col.header)
-    }));
-    const formattedData = data.map(project => ({
-      id: project.id.toString(),
-      title: project.title,
-      start: formatDate(project.start),
-      end: formatDate(project.end),
-      numOfMembers: project.numOfMembers,
-      projectManagerName: project.projectManagerName,
-    }));
-
-    const now = new Date();
-    const dateString = formatDateForInput(now);
-    const csvConfig = mkConfig({
-      filename: `${dateString}_registr_rizik`,
-      fieldSeparator: ',',
-      decimalSeparator: '.',
-      columnHeaders: tableHeaders,
-    });
-    const csv = generateCsv(csvConfig)(formattedData);
-    download(csvConfig)(csv);
-  };
-
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IProject>(), // Add common and basic options
     columns,
@@ -209,29 +168,6 @@ export const ProjectsList: React.FC<{ fetchUrl: string }> = ({ fetchUrl }) => {
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      </Box>
-    ),
-    muiToolbarAlertBannerProps: isError
-      ? {
-        color: 'error',
-        children: 'Chyba při načítání dat',
-      }
-      : undefined,
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Box>
-        <Button
-          disabled={table.getPrePaginationRowModel().rows.length === 0}
-          onClick={() => exportToPDF(table.getPrePaginationRowModel().rows)}
-          startIcon={<FileDownloadIcon />}
-        >
-          Exportovat do PDF
-        </Button>
-        <Button
-          onClick={exportToCSV}
-          startIcon={<FileDownloadIcon />}
-        >
-          Exportovat do CSV
-        </Button>
       </Box>
     ),
   });

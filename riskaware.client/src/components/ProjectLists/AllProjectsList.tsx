@@ -2,25 +2,28 @@
 import { Col, Row } from 'reactstrap';
 import ProjectsList from './ProjectsList';
 import CreateProjectModal from '../CreateProjectModal';
+import IFetchData from '../../common/IFetchData';
+
 export class AllProjectsList extends Component<object> {
   constructor(props: object) {
     super(props);
   }
+  fetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
 
   // todo show CreateProjectModal only to admin
   render() {
     return (
-      <div>
-        <Row>
+      <>
+        <Row className="mb-3">
           <Col>
             <h4>Všechny projekty</h4>
           </Col>
           <Col className="d-flex justify-content-end">
-            <CreateProjectModal />
+            <CreateProjectModal fetchDataRef={this.fetchDataRef} />
           </Col>
         </Row>
-        <ProjectsList fetchUrl={'/api/RiskProjects'} />
-      </div>
+        <ProjectsList fetchUrl={'/api/RiskProjects'} fetchDataRef={this.fetchDataRef} />
+      </>
     );
   }
 }

@@ -13,8 +13,12 @@ import { formatDate } from './../helpers/DateFormatter';
 import IDtParams from './interfaces/IDtParams';
 import IDtResult from './interfaces/DtResult';
 import IPhases from './interfaces/IPhases';
+import IFetchData from '../common/IFetchData';
 
-export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
+export const PhaseList: React.FC<{
+  projectId: number,
+  fetchDataRef: React.MutableRefObject<IFetchData | null>,
+}> = ({ projectId, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IPhases[]>([]);
   const [isError, setIsError] = useState(false);
@@ -32,44 +36,46 @@ export const PhaseList: React.FC<{ projectId: number }> = ({ projectId }) => {
     pageSize: 10,
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (!data.length) {
-        setIsLoading(true);
-      }
-      else {
-        setIsRefetching(true);
-      }
+  const fetchData = async () => {
+    if (!data.length) {
+      setIsLoading(true);
+    }
+    else {
+      setIsRefetching(true);
+    }
 
-      const startOffset = pagination.pageIndex * pagination.pageSize;
-      let searchParams: IDtParams = {
-        start: startOffset,
-        size: pagination.pageSize,
-        filters: columnFilters ?? [],
-        sorting: sorting.length != 0 ? sorting : [initialColumnSort],
-      };
-      try {
-        const response = await fetch(`/api/RiskProject/${projectId}/Phases`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(searchParams)
-        });
-        const json: IDtResult<IPhases> = await response.json();
-        setData(json.data);
-        setRowCount(json.totalRowCount);
-      }
-      catch (error) {
-        setIsError(true);
-        console.error(error);
-        return;
-      }
-      setIsError(false);
-      setIsLoading(false);
-      setIsRefetching(false);
+    const startOffset = pagination.pageIndex * pagination.pageSize;
+    let searchParams: IDtParams = {
+      start: startOffset,
+      size: pagination.pageSize,
+      filters: columnFilters ?? [],
+      sorting: sorting.length != 0 ? sorting : [initialColumnSort],
     };
-    fetchData();
+    try {
+      const response = await fetch(`/api/RiskProject/${projectId}/Phases`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(searchParams)
+      });
+      const json: IDtResult<IPhases> = await response.json();
+      setData(json.data);
+      setRowCount(json.totalRowCount);
+    }
+    catch (error) {
+      setIsError(true);
+      console.error(error);
+      return;
+    }
+    setIsError(false);
+    setIsLoading(false);
+    setIsRefetching(false);
+  };
+  fetchDataRef.current = fetchData;
+
+  useEffect(() => {
+    fetchDataRef.current?.();
   }, [
     columnFilters,
     globalFilter,

@@ -1,13 +1,15 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input} from 'reactstrap';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
+import IFetchData from '../common/IFetchData';
 
 interface AddProjectRoleModalProps {
   projectDetail: IProjectDetail;
   reRender: () => void;
+  fetchDataRef: React.MutableRefObject<IFetchData | null>;
 }
 
-const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail, reRender }) => {
+const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail, reRender, fetchDataRef }) => {
   const [modal, setModal] = useState(false);
   const userRole = projectDetail.userRole;
 
@@ -40,6 +42,7 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
       }
       else {
         reRender(); // Rerender the page;
+        fetchDataRef.current?.();
       }
 
       // TODO -> fetch members again
