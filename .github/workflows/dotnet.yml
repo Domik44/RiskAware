@@ -20,6 +20,13 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
+    - name: mssql suite
+      uses: potatoqualitee/mssqlsuite@v1.7
+      with:
+        install: sqlengine, sqlclient, sqlpackage, localdb
+        sa-password: VUTFITez2024 
+        show-log: true
+        version: 2019
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
