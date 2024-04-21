@@ -69,7 +69,6 @@ export const RiskList: React.FC<{
         const categories: IRiskCategory[] = await response.json();
         categoryNames = categories.map(c => c.name);
         setCategories(categoryNames);
-        //return categoryNames;
       }
     }
     catch (error: any) {
@@ -139,7 +138,7 @@ export const RiskList: React.FC<{
         accessorKey: 'categoryName',
         header: 'Kategorie',
         filterVariant: 'select',
-        filterSelectOptions: categories, // Use categories state here
+        filterSelectOptions: categories,
       },
       {
         id: 'severity',

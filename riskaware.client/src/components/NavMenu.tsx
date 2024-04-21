@@ -1,9 +1,14 @@
 ﻿import { Component, ContextType } from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
+import { Collapse, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import AuthContext from '../auth/AuthContext';
 
-export class NavMenu extends Component<object, { collapsed: boolean }> {
+interface NavMenuState {
+  collapsed: boolean;
+  userDropOpen: boolean;
+}
+
+export class NavMenu extends Component<object, NavMenuState> {
   static displayName = NavMenu.name;
   static contextType = AuthContext;
   declare context: ContextType<typeof AuthContext>;
@@ -13,7 +18,8 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
 
     this.toggleNavbar = this.toggleNavbar.bind(this);
     this.state = {
-      collapsed: true
+      collapsed: true,
+      userDropOpen: false,
     };
   }
 
@@ -23,18 +29,23 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
     });
   }
 
+  toggleUserDropdown = () => {
+    this.setState((prevState: NavMenuState) => ({
+      userDropOpen: !prevState.userDropOpen,
+    }));
+  };
+
   render() {
     if (!this.context) {
       return null;
     }
-    const { isLoggedIn, logout } = this.context;
 
     return (
       <header>
         <Navbar className="navbar-expand-sm navbar-toggleable-sm ng-white border-bottom box-shadow mb-3" container light>
           <NavbarBrand tag={Link} to="/">RiskAware</NavbarBrand>
           <NavbarToggler onClick={this.toggleNavbar} className="mr-2" />
-          {isLoggedIn && (
+          {this.context.isLoggedIn && (
             <Collapse className="d-sm-inline-flex flex-sm-row" isOpen={!this.state.collapsed} navbar>
               <ul className="navbar-nav flex-grow">
                 <NavItem>
@@ -44,10 +55,16 @@ export class NavMenu extends Component<object, { collapsed: boolean }> {
                   <NavLink tag={Link} className="text-dark" to="/myProjects">Vlastní projekty</NavLink>
                 </NavItem>
               </ul>
+
               <ul className="navbar-nav ms-auto">
-                <NavItem>
-                  <NavLink tag={Link} className="text-dark" to="/login" onClick={logout}>Odhlásit se</NavLink>
-                </NavItem>
+                <Dropdown isOpen={this.state.userDropOpen} toggle={this.toggleUserDropdown}>
+                  <DropdownToggle nav caret>
+                    Přihlášen jako: {this.context.email}
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem tag={Link} onClick={this.context.logout}>Odhlásit se</DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
               </ul>
             </Collapse>
           )}

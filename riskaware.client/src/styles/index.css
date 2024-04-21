@@ -130,3 +130,7 @@ div.card {
     justify-content: center;
     font-size: 35px;
 }
+
+nav a {
+    color: black !important;
+}
