@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Build.Evaluation;
+using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
@@ -23,13 +25,12 @@ namespace RiskAware.Server.Queries
             var recentRiskHistory = await _context.RiskHistory
                 .AsNoTracking()
                 .Where(h => h.RiskId == id)
-                .OrderByDescending(h => h.Created)
+                .OrderByDescending(h => h.LastModif)
                 .FirstOrDefaultAsync();
 
             var riskDto = await _context.Risks
                 .AsNoTracking()
                 .Where(r => r.Id == id)
-                //.Include(r => r.RiskCategory)
                 .Select(r => new RiskDetailDto // TODO -> handle null values
                 {
                     Id = r.Id,
@@ -63,30 +64,31 @@ namespace RiskAware.Server.Queries
         {
             var query = _context.Risks
                 .AsNoTracking()
-                .Where(r => r.RiskProjectId == projectId)
+                //.Where(r => r.RiskProjectId == projectId) // Original
+                .Where(r => r.RiskProjectId == projectId && r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid)
                 //.Include(r => r.RiskCategory)
                 .Select(r => new RiskDto
                 {
                     Id = r.Id,
                     Title = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Title)
                         .FirstOrDefault(),
                     CategoryName = r.RiskCategory.Name,
                     Severity = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability * h.Impact)
                         .FirstOrDefault(),
                     Probability = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability)
                         .FirstOrDefault(),
                     Impact = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Impact)
                         .FirstOrDefault(),
                     State = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
                         .FirstOrDefault()
                 });
@@ -126,31 +128,31 @@ namespace RiskAware.Server.Queries
         public async Task<IEnumerable<RiskDto>> GetRiskProjectRisksAsync(int id)
         {
             var risks = await _context.Risks
-                .AsNoTracking()
-                .Where(r => r.RiskProjectId == id)
-                //.Include(r => r.RiskCategory)
+            .AsNoTracking()
+                //.Where(r => r.RiskProjectId == id)
+                .Where(r => r.RiskProjectId == id && r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid)
                 .Select(r => new RiskDto
                 {
                     Id = r.Id,
                     Title = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Title)
                         .FirstOrDefault(),
                     CategoryName = r.RiskCategory.Name,
                     Severity = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability * h.Impact)
                         .FirstOrDefault(),
                     Probability = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability)
                         .FirstOrDefault(),
                     Impact = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Impact)
                         .FirstOrDefault(),
                     State = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
                         .FirstOrDefault()
                 })
@@ -165,22 +167,23 @@ namespace RiskAware.Server.Queries
         {
             var risks = await _context.Risks
                 .AsNoTracking()
-                .Where(r => r.ProjectPhaseId == id)
+                .Where(r => r.ProjectPhaseId == id && r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid)
+                //.Where(r => r.ProjectPhaseId == id)
                 //.Include(r => r.RiskCategory)
                 .Select(r => new RiskDto
                 {
                     Id = r.Id,
                     Title = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Title)
                         .FirstOrDefault(),
                     CategoryName = r.RiskCategory.Name,
                     Severity = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability * h.Impact)
                         .FirstOrDefault(),
                     State = r.RiskHistory
-                        .OrderByDescending(h => h.Created)
+                        .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
                         .FirstOrDefault()
                 })
@@ -243,7 +246,7 @@ namespace RiskAware.Server.Queries
 
             var oldRiskHistory = await _context.RiskHistory
                 .Where(h => h.RiskId == risk.Id)
-                .OrderByDescending(h => h.Created)
+                .OrderByDescending(h => h.LastModif)
                 .FirstOrDefaultAsync();
 
             var riskHistory = new RiskHistory

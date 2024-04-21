@@ -190,7 +190,7 @@ namespace RiskAware.Server.Controllers
             _context.ProjectRoles.Add(newProjectRole);
             await _context.SaveChangesAsync();
 
-            var b = _riskProjectQueries.CreateDefaultCategories(newRiskProject);
+            var b = await _riskProjectQueries.CreateDefaultCategories(newRiskProject);
 
             return Ok();
         }

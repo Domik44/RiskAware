@@ -43,10 +43,10 @@ namespace RiskAware.Server.Queries
                     Name = pp.Name,
                     Start = pp.Start,
                     End = pp.End,
-                    Risks = pp.Risks.Select(r => new RiskUnderPhaseDto
+                    Risks = pp.Risks.Where(r => r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid).Select(r => new RiskUnderPhaseDto
                     {
                         Id = r.Id,
-                        Title = r.RiskHistory.OrderByDescending(h => h.Created).FirstOrDefault().Title, // TODO -> mby add Title to Risk entity, in this case the redudancy will be minimal and it will be easier to get the title
+                        Title = r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().Title,
                     })
                 })
                 .ToListAsync();

@@ -87,7 +87,7 @@ namespace RiskAware.Server.Controllers
         /// <returns> Filtered project's risks DTOs. </returns>
         [HttpPost("/api/RiskProject/{projectId}/Risks")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetRiskProjects(int projectId, [FromBody] DtParamsDto dtParams)
+        public async Task<IActionResult> GetRiskProjectRisks(int projectId, [FromBody] DtParamsDto dtParams)
         {
             var query = _riskQueries.QueryProjectRisks(projectId, dtParams);
             int totalRowCount = await query.CountAsync();
@@ -246,7 +246,7 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized("You are not allowed to delete this risk!");
             }
 
-            var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
+            var riskHistory = await _context.RiskHistory.Where(h => h.RiskId == id).OrderByDescending(h => h.LastModif).FirstOrDefaultAsync();
             if (riskHistory == null)
             {
                 return NotFound("Risk history not found!");
@@ -301,7 +301,7 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized("User is not allowed to approve risk!");
             }
 
-            var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
+            var riskHistory = await _context.RiskHistory.Where(h => h.RiskId == id).OrderByDescending(h => h.LastModif).FirstOrDefaultAsync();
             if (riskHistory == null)
             {
                 return NotFound("Risk history not found!");
@@ -357,7 +357,7 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized("You are not allowed to delete this risk!");
             }
 
-            var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
+            var riskHistory = await _context.RiskHistory.Where(h => h.RiskId == id).OrderByDescending(h => h.LastModif).FirstOrDefaultAsync();
             if (riskHistory == null)
             {
                 return NotFound("Risk history not found!");
