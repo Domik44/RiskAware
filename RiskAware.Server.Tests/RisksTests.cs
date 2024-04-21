@@ -111,6 +111,7 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
+            // TODO REDO -> wrong DTO format
             RiskCreateDto dto = new()
             {
                 Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
@@ -128,6 +129,7 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
+            // TODO REDO -> wrong DTO format
             RiskCreateDto dto = new()
             {
                 Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
@@ -168,13 +170,13 @@ namespace RiskAware.Server.Tests
         }
 
         [Fact]
-        public async Task PUT_Reject_Risk_is_OK()
+        public async Task DELETE_Reject_Risk_is_OK()
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
             int id = 1;
 
-            HttpResponseMessage response = await Client.PutAsync($"{Endpoint}/Risk/{id}/Reject", null);
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/Risk/{id}/Reject");
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

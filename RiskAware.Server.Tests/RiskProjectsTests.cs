@@ -1,6 +1,8 @@
-﻿using RiskAware.Server.DTOs;
+﻿using NuGet.Protocol;
+using RiskAware.Server.DTOs;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
+using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Json;
@@ -250,7 +252,9 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task POST_Risk_Project_Add_Comment_is_OK()
         {
-            await PerformLogin(UserSeeds.AdminLogin);
+            // TODO REDO -> login as user with role on project
+            //await PerformLogin(UserSeeds.AdminLogin);
+            await PerformLogin(UserSeeds.BasicLogin);
 
             int projectId = 1;
             string text = "foo";

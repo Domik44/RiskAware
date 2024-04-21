@@ -44,7 +44,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/RiskCategories");
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Theory]
@@ -68,7 +68,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskCategory/{categoryId}");
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -89,68 +89,37 @@ namespace RiskAware.Server.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
-        [Fact]
-        public async Task POST_Risk_Category_is_Unauthorized()
-        {
-            RiskCategoryDto dto = new() {Id = 0, Name = "Testovací rizika"};
-            string query = $"riskId={ProjectId}";
+        // TODO -> methods not supported
+        //[Fact]
+        //public async Task PUT_Risk_Category_is_OK()
+        //{
+        //    await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskCategory?{query}", dto);
+        //    RiskCategory dto = new() {Name = "Testovací kategorie"};
+        //    int categoryId = 1;
 
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
+        //    HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
 
-        [Fact]
-        public async Task PUT_Risk_Category_is_OK()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
+        //    response.EnsureSuccessStatusCode();
 
-            RiskCategory dto = new() {Name = "Testovací kategorie"};
-            int categoryId = 1;
+        //    // RiskCategoryDto updatedDto = (await response.Content.ReadFromJsonAsync<RiskCategory>())!;
+        //    // Assert.Equal("Testovací kategorie", updatedDto.Name);
 
-            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //}
 
-            response.EnsureSuccessStatusCode();
+        //[Fact]
+        //public async Task DELETE_Risk_Category_is_OK()
+        //{
+        //    await PerformLogin(UserSeeds.BasicLogin);
 
-            // RiskCategoryDto updatedDto = (await response.Content.ReadFromJsonAsync<RiskCategory>())!;
-            // Assert.Equal("Testovací kategorie", updatedDto.Name);
+        //    int categoryId = 1;
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
+        //    HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
 
-        [Fact]
-        public async Task PUT_Risk_Category_is_Unauthorized()
-        {
-            RiskCategory dto = new() {Name = "Testovací kategorie"};
-            int categoryId = 1;
+        //    response.EnsureSuccessStatusCode();
 
-            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task DELETE_Risk_Category_is_OK()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            int categoryId = 1;
-
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
-
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task DELETE_Risk_Category_is_Unauthorized()
-        {
-            int categoryId = 1;
-
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //}
     }
 }

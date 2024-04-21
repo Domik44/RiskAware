@@ -130,6 +130,7 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
+            // TODO REDO -> wrong DTO format
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", new { });
 

@@ -89,11 +89,18 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task POST_Risk_Project_Create_Phase_is_OK()
         {
-            await PerformLogin(UserSeeds.AdminLogin);
+            //await PerformLogin(UserSeeds.AdminLogin);
+            // TODO -> REDO -> log in as project manager on tested project
+            await PerformLogin(UserSeeds.BasicLogin);
 
+            // TODO -> REDO -> different DTO
             ProjectPhaseCreateDto dto = new()
             {
-                Name = "Test", Start = DateTime.Now, End = DateTime.Now, UserRoleType = RoleType.ProjectManager
+                RiskProjectId = ProjectId,
+                Name = "Test",
+                Start = DateTime.Now,
+                End = DateTime.Now
+                //Name = "Test", Start = DateTime.Now, End = DateTime.Now, UserRoleType = RoleType.ProjectManager
             };
 
             HttpResponseMessage response =
@@ -141,7 +148,10 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/{ProjectId}");
+            // TODO REDO -> u need to pass id of phase not risk project
+            // take care that only phases which are in use can be deleted
+            //HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/{ProjectId}");
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/4");
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
