@@ -252,8 +252,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task POST_Risk_Project_Add_Comment_is_OK()
         {
-            // TODO REDO -> login as user with role on project
-            //await PerformLogin(UserSeeds.AdminLogin);
             await PerformLogin(UserSeeds.BasicLogin);
 
             int projectId = 1;

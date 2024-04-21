@@ -96,10 +96,7 @@ namespace RiskAware.Server.Tests
             // TODO -> REDO -> different DTO
             ProjectPhaseCreateDto dto = new()
             {
-                RiskProjectId = ProjectId,
-                Name = "Test",
-                Start = DateTime.Now,
-                End = DateTime.Now
+                RiskProjectId = ProjectId, Name = "Test", Start = DateTime.Now, End = DateTime.Now
                 //Name = "Test", Start = DateTime.Now, End = DateTime.Now, UserRoleType = RoleType.ProjectManager
             };
 
@@ -143,15 +140,14 @@ namespace RiskAware.Server.Tests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
-        public async Task DELETE_Project_Phase_is_OK()
+        [Theory]
+        [InlineData(3)]
+        [InlineData(4)]
+        public async Task DELETE_Project_Phase_is_OK(int phaseId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            // TODO REDO -> u need to pass id of phase not risk project
-            // take care that only phases which are in use can be deleted
-            //HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/{ProjectId}");
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/4");
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/{phaseId}");
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -118,7 +118,9 @@ namespace RiskAware.Server.Tests
             };
 
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/AddRisk", dto);
+                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{1}/AddRisk", dto);
+
+            TestOutputHelper.WriteLine(response.Content.ReadAsStringAsync().Result);
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

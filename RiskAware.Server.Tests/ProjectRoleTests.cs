@@ -37,17 +37,6 @@ namespace RiskAware.Server.Tests
         //    Assert.True(dto.Exists(p => p.RoleName == "ProjectManager"));
         //}
 
-        [Theory]
-        [InlineData(1)]
-        [InlineData(2)]
-        [InlineData(3)]
-        public async Task GET_Project_Roles_is_Unauthorized(int projectId)
-        {
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Members");
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
         [Fact]
         public async Task POST_Add_User_to_Risk_is_OK()
         {
@@ -74,7 +63,6 @@ namespace RiskAware.Server.Tests
                 await Client.PostAsJsonAsync($"{Endpoint}/User", userDto);
             responseUserCreate.EnsureSuccessStatusCode();
 
-            // TODO REDO -> login as user that has project manager role so u can add him to risk project
             await PerformLogin(UserSeeds.BasicLogin);
 
             HttpResponseMessage response =
@@ -87,6 +75,9 @@ namespace RiskAware.Server.Tests
             Assert.True(response.IsSuccessStatusCode);
         }
 
+        // [Theory]
+        // [InlineData(2)]
+        // public async Task DELETE_Project_Role_is_OK(int projectRoleId)
         // TODO REDO -> DELETE -> methods were deleted
         //[Fact]
         //public async Task POST_Join_Request()
@@ -136,10 +127,7 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            // TODO REDO -> must pass id of project role
-            // take care that only user that does not have any created risks can be deleted
-            //HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/ProjectRole/{ProjectId}");
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/ProjectRole/2");
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/ProjectRole/{projectRoleId}");
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

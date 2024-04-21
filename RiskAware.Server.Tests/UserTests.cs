@@ -130,9 +130,13 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            // TODO REDO -> wrong DTO format
+            PasswordDto? passwordDto = new()
+            {
+                OldPassword = UserSeeds.BasicLogin.Password, NewPassword = UserSeeds.BasicLogin.Password
+            };
+
             HttpResponseMessage response =
-                await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", new { });
+                await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", passwordDto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }

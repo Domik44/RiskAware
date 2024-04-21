@@ -88,38 +88,5 @@ namespace RiskAware.Server.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
-
-        // TODO -> methods not supported
-        //[Fact]
-        //public async Task PUT_Risk_Category_is_OK()
-        //{
-        //    await PerformLogin(UserSeeds.BasicLogin);
-
-        //    RiskCategory dto = new() {Name = "Testovací kategorie"};
-        //    int categoryId = 1;
-
-        //    HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
-
-        //    response.EnsureSuccessStatusCode();
-
-        //    // RiskCategoryDto updatedDto = (await response.Content.ReadFromJsonAsync<RiskCategory>())!;
-        //    // Assert.Equal("Testovací kategorie", updatedDto.Name);
-
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //}
-
-        //[Fact]
-        //public async Task DELETE_Risk_Category_is_OK()
-        //{
-        //    await PerformLogin(UserSeeds.BasicLogin);
-
-        //    int categoryId = 1;
-
-        //    HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
-
-        //    response.EnsureSuccessStatusCode();
-
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //}
     }
 }
