@@ -44,7 +44,11 @@ namespace RiskAware.Server.Controllers
         [HttpGet("IsLoggedIn")]
         public IActionResult IsLoggedIn()
         {
-            return Ok(new { IsLoggedIn = User.Identity is { IsAuthenticated: true } });
+            return Ok(new
+            {
+                IsLoggedIn = User.Identity is { IsAuthenticated: true },
+                Email = User.Identity?.Name,
+            });
         }
     }
 }

@@ -20,17 +20,12 @@ namespace RiskAware.Server
 
             // Add services to the container.
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddScoped<RiskProjectQueries>();
             builder.Services.AddScoped<ProjectPhaseQueries>();
             builder.Services.AddScoped<RiskQueries>();
             builder.Services.AddScoped<ProjectRoleQueries>();
-
-            // Add in-memory database
-            //builder.Services.AddDbContext<AppDbContext>(options => 
-            //options.UseInMemoryDatabase("RiskAwareDb"));
 
             // MSSQL database
             builder.Services.AddDbContext<AppDbContext>(options =>

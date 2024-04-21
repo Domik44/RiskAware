@@ -9,25 +9,31 @@ interface AuthContextType {
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
-
 interface AuthProviderProps {
   children: ReactNode;
 }
+
+interface ILoginResponse {
+  isLoggedIn: boolean;
+  email: string;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [email, setEmail] = useState('abc');   // TODO: fix saving data when refresh
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     setIsLoading(true);
     const checkIsLoggedIn = async () => {
       try {
         const response = await fetch("/api/Account/IsLoggedIn");
-        const data = await response.json();
+        const data: ILoginResponse = await response.json();
         setIsLoggedIn(data.isLoggedIn);
+        setEmail(data.email);
       }
       catch (error) {
         console.error("Failed to check login status", error);
