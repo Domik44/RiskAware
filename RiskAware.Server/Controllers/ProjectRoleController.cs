@@ -11,6 +11,9 @@ using RiskAware.Server.Queries;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for handling project role related requests.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -132,7 +135,7 @@ namespace RiskAware.Server.Controllers
         //        return NotFound("Risk project not found");
         //    }
 
-        //    if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result)
+        //    if(!_riskProjectQueries.IsProjectManager(riskProject, activeUser).Result) // TODO -> switch to projectRoleQueries
         //    {
         //        return Unauthorized();
         //    }
@@ -187,26 +190,37 @@ namespace RiskAware.Server.Controllers
         ////////////////// DELETE METHODS //////////////////
 
         // DELETE: api/ProjectRole/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> RemoveUserFromRiskProject(string id) // TODO -> implement
+        [HttpDelete("{projectRoleId}")]
+        public async Task<IActionResult> RemoveUserFromRiskProject(int projectRoleId) // rn just simple delete
         {
-            // this logic will be harder
-            // will have to check if user we want to remove has created some risks/other stuff on the project
-            // if so -> we will have to reassign them to someone else
-            // if not -> we can just remove user from the project
+            var role = await _context.ProjectRoles.FindAsync(projectRoleId);
+            if (role == null)
+            {
+                return NotFound("Project role not found!");
+            }
 
-            // TODO -> implement this method
-            //var projectRole = await _context.ProjectRoles.FindAsync(id);
-            //if (projectRole == null)
-            //{
-            //    return NotFound();
-            //}
+            var activeUser = await _userManager.GetUserAsync(User);
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(role.RiskProjectId, activeUser.Id);
+            if (!isProjectManager)
+            {
+                return Unauthorized("User doesnt have premissions!");
+            }
 
-            //_context.ProjectRoles.Remove(projectRole);
-            //await _context.SaveChangesAsync();
+            if(activeUser.Id == role.UserId)
+            {
+                return BadRequest("You cant remove yourself from project!");
+            }
 
-            //return NoContent();
-            return null;
+            var hasRisks = await _context.Risks.Where(r => r.UserId == role.UserId && r.RiskProjectId == role.RiskProjectId).AnyAsync();
+            if (hasRisks)
+            {
+                return BadRequest("User has risks assigned to him!");
+            }
+
+            _context.ProjectRoles.Remove(role);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }

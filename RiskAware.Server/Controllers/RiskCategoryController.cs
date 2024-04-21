@@ -166,10 +166,5 @@ namespace RiskAware.Server.Controllers
             //return NoContent();
             return null;
         }
-
-        private bool RiskCategoryExists(int id)
-        {
-            return _context.RiskCategories.Any(e => e.Id == id);
-        }
     }
 }

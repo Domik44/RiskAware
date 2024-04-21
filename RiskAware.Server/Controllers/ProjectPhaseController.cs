@@ -179,10 +179,10 @@ namespace RiskAware.Server.Controllers
         /// <param name="id"> Id of phase. </param>
         /// <returns> Returns if action was succesful or not. </returns>
         /// url: api/ProjectPhase/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProjectPhase(int id)
+        [HttpDelete("{projectPhaseId}")]
+        public async Task<IActionResult> DeleteProjectPhase(int projectPhaseId)
         {
-            var phase = await _context.ProjectPhases.FindAsync(id);
+            var phase = await _context.ProjectPhases.FindAsync(projectPhaseId);
             if (phase == null)
             {
                 return NotFound("Project was not found!");
@@ -195,7 +195,7 @@ namespace RiskAware.Server.Controllers
                 return Unauthorized("User is not project manager!");
             }
 
-            var risks = await _context.Risks.Where(r => r.ProjectPhaseId == id).ToListAsync();
+            var risks = await _context.Risks.Where(r => r.ProjectPhaseId == projectPhaseId).ToListAsync();
             if (risks.Count > 0)
             {
                 return BadRequest("Phase is in use!");

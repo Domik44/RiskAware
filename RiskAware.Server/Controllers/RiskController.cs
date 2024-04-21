@@ -11,6 +11,10 @@ using RiskAware.Server.Queries;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for handling risk related requests.
+    /// </summary>
+    /// <author> Dominik Pop </author>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -31,7 +35,11 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// GET METHODS //////////////////
 
-        // GET: api/Risk/5
+        /// <summary>
+        /// Method for getting a specific risk detail.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns DTO containing info about risk. </returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskDetailDto>> GetRisk(int id)
         {
@@ -46,11 +54,10 @@ namespace RiskAware.Server.Controllers
         }
 
         /// <summary>
-        /// This controller method returns all risks for a specific project.
+        /// Method for getting all risks that belong to a specific risk project.
         /// </summary>
-        /// 
-        /// <param name="id">Id of a RiskProject</param>
-        /// <returns> Returns DTO for risk project risks tab. </returns>
+        /// <param name="id">Id of a risk project. </param>
+        /// <returns> Collection of DTOs containing basic info about risk. </returns>
         [HttpGet("/api/RiskProject/{id}/Risks")]
         public async Task<ActionResult<IEnumerable<RiskDto>>> GetAllRiskProjectRisks(int id)
         {
@@ -59,6 +66,11 @@ namespace RiskAware.Server.Controllers
             return Ok(risks);
         }
 
+        /// <summary>
+        /// Method for getting all risks that belong to a specific project phase.
+        /// </summary>
+        /// <param name="id"> Id of phase. </param>
+        /// <returns> Collection of DTOs containing basic info about risk. </returns>
         [HttpGet("/api/ProjectPhase/{id}/Risks")]
         public async Task<ActionResult<IEnumerable<RiskDto>>> GetAllProjectPhaseRisks(int id)
         {
@@ -69,10 +81,10 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// POST METHODS //////////////////
         /// <summary>
-        /// Get filtered project's risks
+        /// Get filtered project's risks.
         /// </summary>
-        /// <param name="dtParams">Data table filtering parameters</param>
-        /// <returns>Filtered project's risks DTOs</returns>
+        /// <param name="dtParams"> Data table filtering parameters. </param>
+        /// <returns> Filtered project's risks DTOs. </returns>
         [HttpPost("/api/RiskProject/{projectId}/Risks")]
         [Produces("application/json")]
         public async Task<IActionResult> GetRiskProjects(int projectId, [FromBody] DtParamsDto dtParams)
@@ -90,23 +102,32 @@ namespace RiskAware.Server.Controllers
             });
         }
 
-        // POST: api/Risk
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Method for creating a new risk.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="riskDto"> DTO containing info about new risk. </param>
+        /// <returns> Returns if action was successful or not. </returns>
         [HttpPost("/api/RiskProject/{riskProjectId}/AddRisk")]
-        public async Task<IActionResult> CreateRisk(int riskProjectId, RiskCreateDto riskDto) // TODO ->return risk or just action result?
+        public async Task<IActionResult> CreateRisk(int riskProjectId, RiskCreateDto riskDto)
         {
-            var activeUser = await _userManager.GetUserAsync(User);
-            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId); // TODO -> mby do better like exists or something
+            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if (riskProject == null)
             {
                 return NotFound("Risk project not found");
             }
 
-            //var activeUserRole = await _projectRoleQueries.GetUsersRoleOnRiskProjectAsync(riskProjectId, activeUser.Id);
-            var activeUserRole = riskDto.UserRoleType;
-            if(activeUserRole != RoleType.RiskManager && activeUserRole != RoleType.ProjectManager && activeUserRole != RoleType.TeamMember)
+            var projectPhase = await _context.ProjectPhases.Where(pp => pp.RiskProjectId == riskProjectId && pp.Id == riskDto.ProjectPhaseId).FirstOrDefaultAsync();
+            if (projectPhase == null)
             {
-                return Unauthorized();
+                return NotFound("Project phase not found");
+            }
+
+            var activeUser = await _userManager.GetUserAsync(User);;
+            var isAllowedToAddRisk = await _projectRoleQueries.IsAllowedToAddEditRisk(riskProjectId, projectPhase.Id, activeUser.Id);
+            if (!isAllowedToAddRisk)
+            {
+                return Unauthorized("User cannot add risk to this project!");
             }
 
             var riskCategoryId = riskDto.RiskCategory.Id;
@@ -130,15 +151,9 @@ namespace RiskAware.Server.Controllers
                 }
             }
 
-            var projectPhase = await _context.ProjectPhases.Where(pp => pp.RiskProjectId == riskProjectId && pp.Id == riskDto.ProjectPhaseId).FirstOrDefaultAsync();
-            if (projectPhase == null)
-            {
-                return NotFound("Project phase not found");
-            }
-
             riskDto.Probability = EditValue(riskDto.Probability, riskProject.Scale);
             riskDto.Impact = EditValue(riskDto.Impact, riskProject.Scale);
-            var isApproved = activeUserRole == RoleType.RiskManager || activeUserRole == RoleType.ProjectManager;
+            var isApproved = _projectRoleQueries.IsAllowedToDeclineApproveRisk(riskProjectId, activeUser.Id).Result;
 
             await _riskQueries.AddRiskAsync(riskDto, activeUser.Id, riskProjectId, riskCategoryId, isApproved);
 
@@ -147,133 +162,270 @@ namespace RiskAware.Server.Controllers
 
         ////////////////// PUT METHODS //////////////////
 
-        // PUT: api/Risk/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Method for updating a specific risk.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <param name="riskDto"> DTO containing new info about risk. </param>
+        /// <returns> Returns if action was successful or not. </returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRisk(int id, RiskCreateDto riskDto)
         {
-            var activeUser = await _userManager.GetUserAsync(User);
-            // TODO -> check if user is allowed to edit this risk
-
             var risk = await _context.Risks.FindAsync(id);
             if (risk == null)
             {
-                return NotFound();
+                return NotFound("Risk not found!");
             }
-            risk.RiskCategoryId = riskDto.RiskCategory.Id; // TODO -> check
-            risk.ProjectPhaseId = riskDto.ProjectPhaseId; /// TODO -> check
 
-            var scale = risk.RiskProject.Scale;
-            // TODO -> dates -> will have to get last history and check if something changed -> then set according dates
-            var newRiskHistory = new RiskHistory
+            var riskProject = await _context.RiskProjects.FindAsync(risk.RiskProjectId);
+            if (riskProject == null)
             {
-                Created = DateTime.Now,
-                UserId = activeUser.Id,
-                RiskId = risk.Id,
-                Title = riskDto.Title,
-                Description = riskDto.Description,
-                Probability = EditValue(riskDto.Probability, scale),
-                Impact = EditValue(riskDto.Impact, scale),
-                Status = riskDto.Status,
-                RiskEventOccured = riskDto.RiskEventOccured,
-                //IsApproved = riskDto.IsApproved // TODO 
-            };
-            // TODO -> implement this method
-            return null;
+                return NotFound("Risk project not found");
+            }
+
+            var projectPhase = await _context.ProjectPhases.Where(pp => pp.RiskProjectId == risk.RiskProjectId && pp.Id == risk.ProjectPhaseId).FirstOrDefaultAsync();
+            if (projectPhase == null)
+            {
+                return NotFound("Project phase not found");
+            }
+
+            var activeUser = await _userManager.GetUserAsync(User);
+            var isAllowedToEdit = await _projectRoleQueries.IsAllowedToAddEditRisk(risk.RiskProjectId, projectPhase.Id, activeUser.Id);
+            if (!isAllowedToEdit)
+            {
+                return Unauthorized("User in not allowed to edit this risk!");
+            }
+
+            var riskCategoryId = riskDto.RiskCategory.Id;
+            if (riskCategoryId == -1) // new type was selected
+            {
+                var newRiskCategory = new RiskCategory
+                {
+                    Name = riskDto.RiskCategory.Name,
+                    RiskProjectId = risk.RiskProjectId
+                };
+                _context.RiskCategories.Add(newRiskCategory);
+                _context.SaveChanges();
+                riskCategoryId = newRiskCategory.Id;
+            }
+            else // predefined type was selected
+            {
+                var riskCategory = await _context.RiskCategories.Where(rc => rc.RiskProjectId == riskProject.Id && rc.Id == riskCategoryId).FirstOrDefaultAsync();
+                if (riskCategory == null)
+                {
+                    return NotFound("Risk category not found");
+                }
+            }
+
+            riskDto.Probability = EditValue(riskDto.Probability, riskProject.Scale);
+            riskDto.Impact = EditValue(riskDto.Impact, riskProject.Scale);
+
+            await _riskQueries.EditRiskAsync(riskDto, activeUser.Id, risk, riskCategoryId, true);
+
+            return Ok();
         }
 
+        /// <summary>
+        /// Method for restoring a specific risk.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns if action was successful or not. </returns>
         [HttpPut("{id}/Restore")]
         public async Task<IActionResult> RestoreRisk(int id)
         {
-            // TODO -> implement this method
             var risk = await _context.Risks.FindAsync(id);
             if (risk == null)
             {
-                return NotFound();
+                return NotFound("Risk not found!");
             }
 
-            //risk.IsValid = true; // TODO -> rn is in RiskHistory, maybe I will move it so I can do it like this
-            //await _context.SaveChangesAsync();
-
-            return null;
-            //return Ok();
-        }
-
-        [HttpPut("{id}/Approve")]
-        public async Task<IActionResult> ApproveRisk(int id)
-        {
             var activeUser = await _userManager.GetUserAsync(User);
-            // TODO -> implement this method
-            var risk = await _context.Risks.FindAsync(id);
-            if (risk == null)
+            var isAllowedToDelete = await _projectRoleQueries.IsAllowedToDeleteRestoreRisk(risk, activeUser.Id);
+            if (!isAllowedToDelete)
             {
-                return NotFound();
+                return Unauthorized("You are not allowed to delete this risk!");
             }
 
             var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
-            var newRiskHistory = new RiskHistory // TODO -> copy from old and change only isApproved
+            if (riskHistory == null)
             {
-                Created = DateTime.Now,
-                UserId = riskHistory.UserId,
+                return NotFound("Risk history not found!");
+            }
+
+            var newRiskHistory = new RiskHistory
+            {
                 RiskId = risk.Id,
+                UserId = activeUser.Id,
+                Created = riskHistory.Created,
                 Title = riskHistory.Title,
                 Description = riskHistory.Description,
                 Probability = riskHistory.Probability,
                 Impact = riskHistory.Impact,
+                Threat = riskHistory.Threat,
+                Indicators = riskHistory.Indicators,
+                Prevention = riskHistory.Prevention,
                 Status = riskHistory.Status,
+                PreventionDone = riskHistory.PreventionDone,
                 RiskEventOccured = riskHistory.RiskEventOccured,
-                IsApproved = true
+                LastModif = DateTime.Now,
+                StatusLastModif = riskHistory.StatusLastModif,
+                End = riskHistory.End,
+                IsValid = true, // Undo soft delete
+                IsApproved = riskHistory.IsApproved
             };
 
-            return null;
+            _context.RiskHistory.Add(newRiskHistory);
+            await _context.SaveChangesAsync();
+
             return Ok();
         }
 
-        [HttpPut("{id}/Reject")]
-        public async Task<IActionResult> RejectRisk(int id)
+        /// <summary>
+        /// Method for approving a specific risk.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns if action was successful or not. </returns>
+        [HttpPut("{id}/Approve")]
+        public async Task<IActionResult> ApproveRisk(int id)
         {
-            // TODO -> implement this method
-            var activeUser = await _userManager.GetUserAsync(User);
-            // TODO -> check user premissions
             var risk = await _context.Risks.FindAsync(id);
             if (risk == null)
             {
-                return NotFound();
+                return NotFound("Risk not found!");
+            }
+
+            var activeUser = await _userManager.GetUserAsync(User);
+            var isAllowedToApprove = await _projectRoleQueries.IsAllowedToDeclineApproveRisk(id, activeUser.Id);
+            if (!isAllowedToApprove)
+            {
+                return Unauthorized("User is not allowed to approve risk!");
             }
 
             var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
-            // TODO -> should delete risk
-            return null;
+            if (riskHistory == null)
+            {
+                return NotFound("Risk history not found!");
+            }
+
+            var newRiskHistory = new RiskHistory
+            {
+                RiskId = risk.Id,
+                UserId = activeUser.Id,
+                Created = riskHistory.Created,
+                Title = riskHistory.Title,
+                Description = riskHistory.Description,
+                Probability = riskHistory.Probability,
+                Impact = riskHistory.Impact,
+                Threat = riskHistory.Threat,
+                Indicators = riskHistory.Indicators,
+                Prevention = riskHistory.Prevention,
+                Status = riskHistory.Status,
+                PreventionDone = riskHistory.PreventionDone,
+                RiskEventOccured = riskHistory.RiskEventOccured,
+                LastModif = DateTime.Now,
+                StatusLastModif = riskHistory.StatusLastModif,
+                End = riskHistory.End,
+                IsValid = riskHistory.IsValid,
+                IsApproved = true
+            };
+            _context.RiskHistory.Add(newRiskHistory);
+            await _context.SaveChangesAsync();
+
             return Ok();
         }
 
         ////////////////// DELETE METHODS //////////////////
 
-        // DELETE: api/Risk/5
+        /// <summary>
+        /// Method for deleting a specific risk.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns if action was successful or not. </returns>
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRisk(int id)
+        public async Task<IActionResult> DeleteRisk(int id) // Delete is basically edit -> set isValid to false
         {
-            // TODO -> implement this method
             var risk = await _context.Risks.FindAsync(id);
             if (risk == null)
             {
-                return NotFound();
+                return NotFound("Risk not found!");
+            }
+
+            var activeUser = await _userManager.GetUserAsync(User);
+            var isAllowedToDelete = await _projectRoleQueries.IsAllowedToDeleteRestoreRisk(risk, activeUser.Id);
+            if (!isAllowedToDelete)
+            {
+                return Unauthorized("You are not allowed to delete this risk!");
             }
 
             var riskHistory = await _context.RiskHistory.Where(rh => rh.RiskId == id).OrderByDescending(rh => rh.Created).FirstOrDefaultAsync();
-            // TODO -> should create new history and soft delete
-            //risk.IsValid = false;
-            //await _context.SaveChangesAsync();
+            if (riskHistory == null)
+            {
+                return NotFound("Risk history not found!");
+            }
 
-            return null;
+            var newRiskHistory = new RiskHistory
+            {
+                RiskId = risk.Id,
+                UserId = activeUser.Id,
+                Created = riskHistory.Created,
+                Title = riskHistory.Title,
+                Description = riskHistory.Description,
+                Probability = riskHistory.Probability,
+                Impact = riskHistory.Impact,
+                Threat = riskHistory.Threat,
+                Indicators = riskHistory.Indicators,
+                Prevention = riskHistory.Prevention,
+                Status = riskHistory.Status,
+                PreventionDone = riskHistory.PreventionDone,
+                RiskEventOccured = riskHistory.RiskEventOccured,
+                LastModif = DateTime.Now,
+                StatusLastModif = riskHistory.StatusLastModif,
+                End = riskHistory.End,
+                IsValid = false, // Soft delete
+                IsApproved = riskHistory.IsApproved
+            };
+
+            _context.RiskHistory.Add(newRiskHistory);
+            await _context.SaveChangesAsync();
+
             return Ok();
         }
 
-        private bool RiskExists(int id)
+        /// <summary>
+        /// Method for rejecting a specific risk.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns if action was successful or not. </returns>
+        [HttpDelete("{id}/Reject")]
+        public async Task<IActionResult> RejectRisk(int id)
         {
-            return _context.Risks.Any(e => e.Id == id);
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound("Risk not found!");
+            }
+
+            var activeUser = await _userManager.GetUserAsync(User);
+            var isAllowedToDecline = await _projectRoleQueries.IsAllowedToDeclineApproveRisk(id, activeUser.Id);
+            if (!isAllowedToDecline)
+            {
+                return Unauthorized("User is not allowed to approve risk!");
+            }
+
+            _context.Risks.Remove(risk);
+            await _context.SaveChangesAsync();
+
+            return Ok();
         }
 
+        ////////////////// PRIVATE METHODS //////////////////
+        
+        /// <summary>
+        /// Method for editing the value of probability or impact based on the scale of the project.
+        /// </summary>
+        /// <param name="value"> Value taken from frontend. </param>
+        /// <param name="scale"> Scale of project. </param>
+        /// <returns></returns>
         private int EditValue(int value, int scale)
         {
             switch (scale)

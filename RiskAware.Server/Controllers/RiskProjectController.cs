@@ -283,6 +283,7 @@ namespace RiskAware.Server.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(id);
+            var isProjectManager = await _projectRoleQueries.IsProjectManager(riskProject.Id, user.Id);
             if (riskProject == null)
             {
                 return NotFound("Risk project not found!");
@@ -291,7 +292,7 @@ namespace RiskAware.Server.Controllers
             {
                 return BadRequest("Risk project is already set!");
             }
-            else if (!_riskProjectQueries.IsProjectManager(riskProject, user).Result)
+            else if (!isProjectManager)
             {
                 return Unauthorized("User is not a project manager.");
             }
