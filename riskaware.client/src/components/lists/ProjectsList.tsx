@@ -145,8 +145,6 @@ export const ProjectsList: React.FC<{
     fetchDataRef.current?.();
   };
 
-  console.log(authContext);
-
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IProject>(), // Add common and basic options
     columns,
