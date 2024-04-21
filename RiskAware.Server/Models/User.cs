@@ -4,6 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
+    /// <summary>
+    /// Class representing a user entity in the database.
+    /// Inherits from IdentityUser class.
+    /// </summary>
     public class User : IdentityUser
     {
         [Required]
@@ -14,22 +18,21 @@ namespace RiskAware.Server.Models
         public bool IsValid { get; set; }
 
         /// <summary>
-        /// Many to one relationship, where one user is given one role.
-        /// One-to-many without navigation to dependents
+        /// Foreign key to the system role the user belongs to.
         /// </summary>
         [Required]
         public int SystemRoleId { get; set; }
         [ForeignKey(nameof(SystemRoleId))]
         public SystemRole SystemRole { get; set; }
 
-        ///// <summary>
-        ///// One to many relationship, where one user (admin) created this project.
-        ///// </summary>
+        /// <summary>
+        /// Collection of risk projects created by the user.
+        /// </summary>
         public ICollection<RiskProject> RiskProjects { get; set; }
 
-        ///// <summary>
-        ///// 
-        ///// </summary>
+        /// <summary>
+        /// Collection of ProjectRoles associated with the user.
+        /// </summary>
         public ICollection<ProjectRole> ProjectRoles { get; set; }
     }
 }

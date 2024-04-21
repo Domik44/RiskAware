@@ -3,6 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RiskAware.Server.Models
 {
+    /// <summary>
+    /// Class representing a risk history entity in the database.
+    /// </summary>
+    /// <author> Dominik Pop </author>
     public class RiskHistory
     {
         public int Id { get; set; }
@@ -27,14 +31,14 @@ namespace RiskAware.Server.Models
         public DateTime End { get; set; }
 
         /// <summary>
-        /// 
+        /// Foreign key to the risk the history entry belongs to.
         /// </summary>
         public int RiskId { get; set; }
         [ForeignKey(nameof(RiskId))]
         public Risk Risk { get; set; }
 
         /// <summary>
-        /// 
+        /// Foreign key to the user who created the history entry.
         /// </summary>
         [Required]
         public string UserId { get; set; }
