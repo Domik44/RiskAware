@@ -13,7 +13,7 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8",
                     RiskProjectId = 1,
-                    Name = RoleType.ProjectManager.ToString(),
+                    Name = "Projektový manažer",
                     RoleType = RoleType.ProjectManager,
                     IsReqApproved = true
                 },
@@ -21,7 +21,7 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2",
                     RiskProjectId = 1,
-                    Name = RoleType.RiskManager.ToString(),
+                    Name = "Rizikový manažer",
                     RoleType = RoleType.RiskManager,
                     IsReqApproved = true
                 },
