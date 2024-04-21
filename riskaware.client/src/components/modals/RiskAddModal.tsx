@@ -3,12 +3,12 @@ import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGrou
 import { Impact, Prevention, Probability, Status, Category } from '../enums/RiskAttributesEnum';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import IRiskCategory from '../interfaces/IRiskCategory';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 interface AddRiskModalProps {
   projectDetail: IProjectDetail;
   reRender: () => void;
-  fetchDataRef: React.MutableRefObject<IFetchData | null>;
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
 }
 
 const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fetchDataRef }) => {

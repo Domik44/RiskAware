@@ -1,5 +1,5 @@
 ﻿import React, { Component } from 'react';
-import { formatDate } from "../helpers/DateFormatter";
+import { formatDate } from "../common/DateFormatter";
 import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
@@ -14,7 +14,7 @@ import Matrix from './matrix/Matrix';
 import PhaseList from './lists/PhaseList';
 import RiskList from './lists/RiskList';
 import UsersOnProjectList from './lists/UsersOnProjectList';
-import IFetchData from '../common/IFetchData';
+import IDtFetchData from './interfaces/IDtFetchData';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -31,9 +31,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
   }
 
   // Creating MutableRefObject because React.createRef is readonly
-  phaseFetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
-  riskFetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
-  memberFetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
+  phaseFetchDataRef: React.MutableRefObject<IDtFetchData | null> = { current: null };
+  riskFetchDataRef: React.MutableRefObject<IDtFetchData | null> = { current: null };
+  memberFetchDataRef: React.MutableRefObject<IDtFetchData | null> = { current: null };
 
   componentDidMount() {
     this.populateProjectDetail();

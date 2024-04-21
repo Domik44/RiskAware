@@ -2,13 +2,13 @@
 import { Col, Row } from 'reactstrap';
 import ProjectsList from './ProjectsList';
 import CreateProjectModal from '../modals/CreateProjectModal';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 export class AllProjectsList extends Component<object> {
   constructor(props: object) {
     super(props);
   }
-  fetchDataRef: React.MutableRefObject<IFetchData | null> = { current: null };
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null> = { current: null };
 
   // todo show CreateProjectModal only to admin
   render() {

@@ -9,14 +9,14 @@ import { Box, Tooltip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IDtParams from '../interfaces/IDtParams';
-import IDtResult from '../interfaces/DtResult';
+import IDtResult from '../interfaces/IDtResult';
 import IMembersList from '../interfaces/IMembersList';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 
 export const UsersOnProjectList: React.FC<{
   projectId: number,
-  fetchDataRef: React.MutableRefObject<IFetchData | null>
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>
 }> = ({ projectId, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IMembersList[]>([]);

@@ -1,11 +1,11 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 interface CreateProjectModalProps {
   // Define any props if needed
   // here will be variable from the list page which will recieve new table/row
-  fetchDataRef: React.MutableRefObject<IFetchData | null>;
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
 }
 
 const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ fetchDataRef }) => {

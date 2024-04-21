@@ -2,7 +2,7 @@
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import { useNavigate } from "react-router-dom";
-import { formatDateForInput } from "../../helpers/DateFormatter";
+import { formatDateForInput } from "../../common/DateFormatter";
 
 interface InitialSetupModalProps {
   projectDetail: IProjectDetail;

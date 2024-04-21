@@ -1,5 +1,5 @@
 ﻿import { ChangeEvent, Component, FormEvent } from 'react';
-import { formatDate } from "../../helpers/DateFormatter";
+import { formatDate } from "../../common/DateFormatter";
 import { Form, Button, ButtonGroup, Row, Col } from 'reactstrap';
 import CommentCard from '../CommentCard';
 import IComments from '../interfaces/IComments';

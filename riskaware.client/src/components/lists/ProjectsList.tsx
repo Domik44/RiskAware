@@ -7,19 +7,19 @@ import {
 import { Box, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
-import { formatDate } from '../../helpers/DateFormatter';
+import { formatDate } from '../../common/DateFormatter';
 import IDtParams from '../interfaces/IDtParams';
-import IDtResult from '../interfaces/DtResult';
+import IDtResult from '../interfaces/IDtResult';
 import IProject from '../interfaces/IProject';
 import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 
 export const ProjectsList: React.FC<{
   fetchUrl: string,
-  fetchDataRef: React.MutableRefObject<IFetchData | null>,
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>,
 }> = ({ fetchUrl, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IProject[]>([]);

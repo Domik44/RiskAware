@@ -6,11 +6,11 @@ import {
 } from 'material-react-table';
 import { Box, Button, Tooltip, IconButton } from '@mui/material';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
-import { formatDateForInput } from '../../helpers/DateFormatter';
+import { formatDateForInput } from '../../common/DateFormatter';
 import IDtParams from '../interfaces/IDtParams';
-import IDtResult from '../interfaces/DtResult';
+import IDtResult from '../interfaces/IDtResult';
 import IRisks from '../interfaces/IRisks';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 import RiskDeleteModal from '../modals/RiskDeleleModal';
 
 import DetailIcon from '@mui/icons-material/VisibilityOutlined';
@@ -26,7 +26,7 @@ import IRiskCategory from '../interfaces/IRiskCategory';
 export const RiskList: React.FC<{
   projectId: number,
   chooseRisk: (id: number) => void,
-  fetchDataRef: React.MutableRefObject<IFetchData | null>,
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>,
 }> = ({ projectId, chooseRisk, fetchDataRef }) => {
   // Data and fetching state
   const [data, setData] = useState<IRisks[]>([]);

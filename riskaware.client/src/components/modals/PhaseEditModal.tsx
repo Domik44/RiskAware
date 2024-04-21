@@ -1,15 +1,15 @@
 ﻿import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Form, Row, Col, FormGroup, Label, Input } from 'reactstrap';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 import IPhases from '../interfaces/IPhases';
-import { formatDateForInput } from "../../helpers/DateFormatter";
+import { formatDateForInput } from "../../common/DateFormatter";
 
 interface PhaseEditModalProps {
   phaseId: number;
   isOpen: boolean;
   toggle: () => void;
   reRender: () => void;
-  fetchDataRef: React.MutableRefObject<IFetchData | null>;
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
   data: IPhases | undefined;
   projectId: number;
 }

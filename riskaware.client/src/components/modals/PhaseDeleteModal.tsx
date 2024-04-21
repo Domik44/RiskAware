@@ -1,13 +1,13 @@
 ﻿import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 interface PhaseDeleteModalProps {
   phaseId: number;
   isOpen: boolean;
   toggle: () => void;
   reRender: () => void;
-  fetchDataRef: React.MutableRefObject<IFetchData | null>;
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
 }
 
 const PhaseDeleteModal: React.FC<PhaseDeleteModalProps> = ({ phaseId, isOpen, toggle, reRender, fetchDataRef }) => {

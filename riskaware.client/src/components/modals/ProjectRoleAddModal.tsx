@@ -1,12 +1,12 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input} from 'reactstrap';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 interface AddProjectRoleModalProps {
   projectDetail: IProjectDetail;
   reRender: () => void;
-  fetchDataRef: React.MutableRefObject<IFetchData | null>;
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
 }
 
 const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail, reRender, fetchDataRef }) => {

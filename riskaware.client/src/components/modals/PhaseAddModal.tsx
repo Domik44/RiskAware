@@ -1,12 +1,12 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
 import IProjectDetail from '../interfaces/IProjectDetail';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 
 interface AddPhaseModalProps {
   projectDetail: IProjectDetail;
   reRender: () => void;
-  fetchDataRef: React.MutableRefObject<IFetchData | null>;
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
 }
 
 const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender, fetchDataRef }) =>  {

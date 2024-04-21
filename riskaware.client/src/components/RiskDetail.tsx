@@ -1,7 +1,7 @@
 ﻿//import React from 'react';
 import { Col, Row, TabPane } from 'reactstrap';
 import IProjectDetail from './interfaces/IProjectDetail';
-import { formatDate } from "../helpers/DateFormatter";
+import { formatDate } from '../common/DateFormatter';
 
 interface IRiskDetailProps {
   activeTab: string;

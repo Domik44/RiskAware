@@ -9,18 +9,18 @@ import { ColumnSort } from '@tanstack/react-table';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
-import { formatDate } from '../../helpers/DateFormatter';
+import { formatDate } from '../../common/DateFormatter';
 import IDtParams from '../interfaces/IDtParams';
-import IDtResult from '../interfaces/DtResult';
+import IDtResult from '../interfaces/IDtResult';
 import IPhases from '../interfaces/IPhases';
-import IFetchData from '../../common/IFetchData';
+import IDtFetchData from '../interfaces/IDtFetchData';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import PhaseDeleteModal from '../modals/PhaseDeleteModal';
 import PhaseEditModal from '../modals/PhaseEditModal';
 
 export const PhaseList: React.FC<{
   projectId: number,
-  fetchDataRef: React.MutableRefObject<IFetchData | null>,
+  fetchDataRef: React.MutableRefObject<IDtFetchData | null>,
   reRender: () => void,
   projectDetail: IProjectDetail;
 }> = ({ projectId, fetchDataRef, reRender, projectDetail }) => {
