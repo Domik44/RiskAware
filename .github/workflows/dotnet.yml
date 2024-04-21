@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2019-latest
+        image: mcr.microsoft.com/mssql/server:2022-latest
         env:
           SA_PASSWORD: "VUTFITez2024"
           ACCEPT_EULA: "Y"
@@ -46,5 +46,6 @@ jobs:
         dotnet run delete-db
         dotnet ef database update
         dotnet run seed
+        cd ..
     - name: Test
       run: dotnet test --no-build --verbosity normal
