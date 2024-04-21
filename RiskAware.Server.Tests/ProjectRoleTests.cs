@@ -36,6 +36,17 @@ namespace RiskAware.Server.Tests
             Assert.True(dto.Exists(p => p.RoleName == "ProjectManager"));
         }
 
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public async Task GET_Project_Roles_is_Unauthorized(int projectId)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Members");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
         [Fact]
         public async Task POST_Add_User_to_Risk_is_OK()
         {
@@ -73,7 +84,34 @@ namespace RiskAware.Server.Tests
         }
 
         [Fact]
-        public async Task POST_Join_Request()
+        public async Task POST_Add_User_to_Risk_is_Unauthorized()
+        {
+            UserDetailDto userDto = new()
+            {
+                Id = Guid.NewGuid().ToString(),
+                FirstName = "František",
+                LastName = "Vomáčka",
+                Email = "vomacka@test.cz"
+            };
+
+            ProjectRoleCreateDto dto = new()
+            {
+                Name = Guid.NewGuid().ToString(),
+                RoleType = RoleType.CommonUser,
+                Email = userDto.Email,
+                UserRoleType = RoleType.ProjectManager,
+                ProjectPhaseId = 1
+            };
+
+            await PerformLogin(UserSeeds.BasicLogin);
+            HttpResponseMessage response =
+                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/AddUserToRiskProject", dto);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task POST_Join_Request_is_OK()
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
@@ -86,9 +124,20 @@ namespace RiskAware.Server.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
+        [Fact]
+        public async Task POST_Join_Request_is_Unauthorized()
+        {
+            int notAssigned = 2;
+
+            HttpResponseMessage response =
+                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{notAssigned}/JoinRequest", new { });
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
         // TODO What should the latter entry be?
         [Fact]
-        public async Task PUT_Approve_Join_Request()
+        public async Task PUT_Approve_Join_Request_is_OK()
         {
             await PerformLogin(UserSeeds.AdminLogin);
 
@@ -100,6 +149,19 @@ namespace RiskAware.Server.Tests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
+        // TODO What should the latter entry be?
+        [Fact]
+        public async Task PUT_Approve_Join_Request_is_Unauthorized()
+        {
+            await PerformLogin(UserSeeds.BasicLogin);
+
+            HttpResponseMessage response =
+                await Client.PutAsJsonAsync(
+                    $"{Endpoint}/RiskProject/{ProjectId}/ApproveJoinRequest/{RoleType.TeamMember}", new { });
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
         [Fact]
         public async Task DELETE_Project_Role_is_OK()
         {
@@ -109,6 +171,14 @@ namespace RiskAware.Server.Tests
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DELETE_Project_Role_is_Unauthorized()
+        {
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/ProjectRole/{ProjectId}");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         // TODO What should the latter entry be?
@@ -123,6 +193,17 @@ namespace RiskAware.Server.Tests
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        // TODO What should the latter entry be?
+        [Fact]
+        public async Task DELETE_Decline_Project_Join_Request_is_Unauthorized()
+        {
+            HttpResponseMessage response =
+                await Client.DeleteAsync(
+                    $"{Endpoint}/RiskProject/{ProjectId}/DeclineJoinRequest/{RoleType.TeamMember}");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 }

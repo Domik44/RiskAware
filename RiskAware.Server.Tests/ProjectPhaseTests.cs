@@ -50,6 +50,19 @@ namespace RiskAware.Server.Tests
             }
         }
 
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public async Task GET_RiskProject_Project_Phases_is_Unauthorized(int projectId)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"/api/RiskProject/{projectId}/Phases");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
         [Fact]
         public async Task POST_Project_Phase_is_OK()
         {
@@ -65,6 +78,20 @@ namespace RiskAware.Server.Tests
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task POST_Project_Phase_is_Unauthorized()
+        {
+            DtParamsDto dto = new()
+            {
+                Start = 0, Size = 1, Filters = new List<ColumnFilter>(), Sorting = new List<Sorting>()
+            };
+
+            HttpResponseMessage response =
+                await Client.PostAsJsonAsync($"api/RiskProject/{ProjectId}/Phases", dto);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -107,6 +134,14 @@ namespace RiskAware.Server.Tests
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task PUT_Project_Phase_is_Unauthorized()
+        {
+            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/{ProjectId}", new { });
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]

@@ -38,6 +38,18 @@ namespace RiskAware.Server.Tests
 
         [Theory]
         [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        public async Task GET_Risk_Categories_is_Unauthorized(int projectId)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/RiskCategories");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1)]
         public async Task GET_Risk_Category_is_OK(int categoryId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
@@ -49,6 +61,15 @@ namespace RiskAware.Server.Tests
             RiskCategoryDto dto = (await response.Content.ReadFromJsonAsync<RiskCategoryDto>())!;
 
             Assert.Equal("Finanční rizika", dto.Name);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        public async Task GET_Risk_Category_is_Unauthorized(int categoryId)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskCategory/{categoryId}");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
@@ -70,6 +91,17 @@ namespace RiskAware.Server.Tests
         }
 
         [Fact]
+        public async Task POST_Risk_Category_is_Unauthorized()
+        {
+            RiskCategoryDto dto = new() {Id = 0, Name = "Testovací rizika"};
+            string query = $"riskId={ProjectId}";
+
+            HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskCategory?{query}", dto);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
         public async Task PUT_Risk_Category_is_OK()
         {
             await PerformLogin(UserSeeds.BasicLogin);
@@ -88,6 +120,17 @@ namespace RiskAware.Server.Tests
         }
 
         [Fact]
+        public async Task PUT_Risk_Category_is_Unauthorized()
+        {
+            RiskCategory dto = new() {Name = "Testovací kategorie"};
+            int categoryId = 1;
+
+            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
         public async Task DELETE_Risk_Category_is_OK()
         {
             await PerformLogin(UserSeeds.BasicLogin);
@@ -99,6 +142,16 @@ namespace RiskAware.Server.Tests
             response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task DELETE_Risk_Category_is_Unauthorized()
+        {
+            int categoryId = 1;
+
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 }

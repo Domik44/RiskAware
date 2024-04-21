@@ -39,6 +39,19 @@ namespace RiskAware.Server.Tests
         [InlineData(1)]
         [InlineData(2)]
         [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public async Task GET_Risks_is_Unauthorized(int id)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/Risk/{id}");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
         public async Task GET_Risk_Project_Risks_is_OK(int projectId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
@@ -61,6 +74,17 @@ namespace RiskAware.Server.Tests
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
+        [InlineData(3)]
+        public async Task GET_Risk_Project_Risks_is_Unauthorized(int projectId)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Risks");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
         public async Task GET_Project_Phase_Risks_is_OK(int id)
         {
             await PerformLogin(UserSeeds.BasicLogin);
@@ -71,6 +95,16 @@ namespace RiskAware.Server.Tests
             List<RiskDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskDto>>())!;
 
             Assert.True(dto.Exists(r => r.Title == $"Riziko {id + 1}"));
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        public async Task GET_Project_Phase_Risks_is_Unauthorized(int id)
+        {
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/ProjectPhase/{id}/Risks");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
         [Fact]
