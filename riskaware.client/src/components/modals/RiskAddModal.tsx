@@ -51,6 +51,8 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
       name: (document.getElementById("newCategoryName") as HTMLInputElement).value
     }
     try {
+      const preventionDone = (document.getElementById("preventionDone") as HTMLInputElement).value;
+      const riskOccured = (document.getElementById("riskOccured") as HTMLInputElement).value;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -65,8 +67,8 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
           indicators: (document.getElementById("indicators") as HTMLInputElement).value,
           prevention: (document.getElementById("prevention") as HTMLInputElement).value,
           status: (document.getElementById("status") as HTMLInputElement).value,
-          preventionDone: (document.getElementById("preventionDone") as HTMLInputElement).value,
-          riskEventOccured: (document.getElementById("riskOccured") as HTMLInputElement).value,
+          preventionDone: preventionDone === "" ? "0001-01-01" : preventionDone,
+          riskEventOccured: riskOccured === "" ? "0001-01-01" : riskOccured,
           end: (document.getElementById("end") as HTMLInputElement).value,
           projectPhaseId: parseInt((document.getElementById("phase") as HTMLInputElement).value),
           riskCategory: category,
@@ -284,7 +286,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
               <Col>
                 <FormGroup>
                   <Label>Prevence provedena:</Label>
-                  <Input required id="preventionDone" name="preventionDone" type="date" />
+                  <Input id="preventionDone" name="preventionDone" type="date" />
                 </FormGroup>
               </Col>
             </Row>
