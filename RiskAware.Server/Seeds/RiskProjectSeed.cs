@@ -73,11 +73,21 @@ namespace RiskAware.Server.Seeds
                     Scale = 5,
                     UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 },
+                new RiskProject()
+                {
+                    Title = "Proj7 Neplatny",
+                    Description = "Popis7",
+                    Start = DateTime.Parse("2024-04-05"),
+                    End = DateTime.Parse("2024-09-21"),
+                    IsValid = false,
+                    Scale = 5,
+                    UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
+                },
             };
 
             DateTime start = DateTime.Parse("2024-08-01");
             DateTime end = DateTime.Parse("2024-10-30");
-            for (int i = 7; i < 55; i++)
+            for (int i = 8; i < 55; i++)
             {
                 start = start.AddDays(7);
                 end = end.AddDays(7);

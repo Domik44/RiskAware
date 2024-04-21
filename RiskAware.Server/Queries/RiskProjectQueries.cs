@@ -80,6 +80,7 @@ namespace RiskAware.Server.Queries
                         Title = u.Title,
                         Start = u.Start,
                         End = u.End,
+                        IsValid = u.IsValid,
                         NumOfMembers = u.ProjectRoles.Count,
                         ProjectManagerName = u.ProjectRoles
                             .Where(pr => pr.RoleType == RoleType.ProjectManager)

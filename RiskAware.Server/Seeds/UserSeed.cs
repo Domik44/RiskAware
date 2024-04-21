@@ -6,7 +6,8 @@ namespace RiskAware.Server.Seeds
 {
     public static class UserSeed
     {
-        public static async Task Seed(UserManager<User> userManager, AppDbContext context)
+        public static async Task Seed(UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager, AppDbContext context)
         {
             const string adminId = "d6f46418-2c21-43f8-b167-162fb5e3a999";
             if (await userManager.FindByIdAsync(adminId) == null)
@@ -26,6 +27,15 @@ namespace RiskAware.Server.Seeds
                 };
 
                 await userManager.CreateAsync(adminUser, "Admin123");
+
+                string roleAdmin = "Admin";
+                await roleManager.CreateAsync(new IdentityRole(roleAdmin));
+
+                var admin = await userManager.FindByEmailAsync(adminEmail);
+                if (admin is not null)
+                {
+                    await userManager.AddToRoleAsync(admin, roleAdmin);
+                }
             }
 
             var systemRoleIdBase = 2;

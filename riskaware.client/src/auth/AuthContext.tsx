@@ -5,6 +5,7 @@ interface AuthContextType {
   isLoggedIn: boolean;
   isLoading: boolean;
   email: string;
+  isAdmin: boolean;
   login: (email: string, password: string, rememberMe: boolean) => Promise<void>;
   logout: () => void;
 }
@@ -16,6 +17,7 @@ interface AuthProviderProps {
 interface ILoginResponse {
   isLoggedIn: boolean;
   email: string;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -25,6 +27,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [email, setEmail] = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -34,6 +37,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         const data: ILoginResponse = await response.json();
         setIsLoggedIn(data.isLoggedIn);
         setEmail(data.email);
+        setIsAdmin(data.isAdmin);
       }
       catch (error) {
         console.error("Failed to check login status", error);
@@ -65,12 +69,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     });
 
     if (response.ok) {
+      const data = await response.json();
       setIsLoggedIn(true);
       setEmail(email);
+      setIsAdmin(data.isAdmin);
       navigate('/');
     }
     else {
-      throw new Error('Login failed');
+      console.error('Login failed');
     }
     setIsLoading(false);
   };
@@ -86,7 +92,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
       if (response.ok) {
         setIsLoggedIn(false);
-        setEmail(email);
+        setEmail('');
+        setIsAdmin(false);
         navigate('/login');
       }
       else {
@@ -102,7 +109,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, isLoading, email, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, isLoading, email, isAdmin, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

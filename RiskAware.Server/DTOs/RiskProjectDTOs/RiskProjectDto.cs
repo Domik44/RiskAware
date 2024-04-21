@@ -12,5 +12,6 @@
         public DateTime End { get; set; }
         public int NumOfMembers { get; set; }
         public string ProjectManagerName { get; set; }
+        public bool IsValid { get; set; }
     }
 }

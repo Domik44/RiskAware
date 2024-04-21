@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
+using System.Security.Claims;
 
 namespace RiskAware.Server.Controllers
 {
@@ -24,7 +25,10 @@ namespace RiskAware.Server.Controllers
                 var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
-                    return Ok();
+                    bool isAdmin = false;
+                    if (User.Identity is { IsAuthenticated: true })
+                        isAdmin = User.IsInRole("Admin");
+                    return Ok(new { isAdmin });
                 }
                 else
                 {
@@ -48,6 +52,7 @@ namespace RiskAware.Server.Controllers
             {
                 IsLoggedIn = User.Identity is { IsAuthenticated: true },
                 Email = User.Identity?.Name,
+                IsAdmin = User.IsInRole("Admin")
             });
         }
     }

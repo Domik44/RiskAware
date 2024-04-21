@@ -134,3 +134,7 @@ div.card {
 nav a {
     color: black !important;
 }
+
+.invalid-item td {
+    color: red !important;
+}

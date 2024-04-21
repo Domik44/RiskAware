@@ -5,6 +5,7 @@
   end: Date;
   numOfMembers: string;
   projectManagerName: string;
+  isValid: boolean;
 }
 
 export default IProject;

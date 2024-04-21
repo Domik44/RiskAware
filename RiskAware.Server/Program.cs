@@ -38,7 +38,8 @@ namespace RiskAware.Server
             // User authentication
             builder.Services.AddIdentity<User, IdentityRole>(IdentityConfiguration.ConfigureIdentityOptions)
                 .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddRoles<IdentityRole>();
 
             // Cookies settings
             builder.Services.ConfigureApplicationCookie(options =>

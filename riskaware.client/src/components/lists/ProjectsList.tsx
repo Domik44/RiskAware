@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from 'react';
+﻿import { useEffect, useMemo, useState, useContext } from 'react';
 import {
   MaterialReactTable, useMaterialReactTable,
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
@@ -8,19 +8,24 @@ import { Box, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
 import { formatDate } from '../../common/DateFormatter';
+import IDtFetchData from '../interfaces/IDtFetchData';
 import IDtParams from '../interfaces/IDtParams';
 import IDtResult from '../interfaces/IDtResult';
 import IProject from '../interfaces/IProject';
 import DetailIcon from '@mui/icons-material/VisibilityOutlined';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import IDtFetchData from '../interfaces/IDtFetchData';
+import RestoreIcon from '@mui/icons-material/Restore';
+import AuthContext from '../../auth/AuthContext';
+
 
 
 export const ProjectsList: React.FC<{
   fetchUrl: string,
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>,
 }> = ({ fetchUrl, fetchDataRef }) => {
+  const authContext = useContext(AuthContext);
+
   // Data and fetching state
   const [data, setData] = useState<IProject[]>([]);
   const [isError, setIsError] = useState(false);
@@ -132,6 +137,16 @@ export const ProjectsList: React.FC<{
     }
   };
 
+  const restoreProject = async (row: MRT_Row<IProject>) => {
+    const response = await fetch(`/api/RiskProject/${row.original.id}/Restore`);
+    if (!response.ok) {
+      throw new Error(`Restore failed for projectId: ${row.original.id}`);
+    }
+    fetchDataRef.current?.();
+  };
+
+  console.log(authContext);
+
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IProject>(), // Add common and basic options
     columns,
@@ -151,25 +166,37 @@ export const ProjectsList: React.FC<{
       sorting,
     },
     enableRowActions: true,        // Display row actions
-    renderRowActions: ({ row }) => (
-      <Box sx={{ display: 'flex', gap: '1rem' }}>
-        <Tooltip title="Zobrazit detail">
-          <IconButton href={`/project/${row.original.id}`}>
-            <DetailIcon />
+    renderRowActions: ({ row }) => row.original.isValid ?
+      (
+        <Box sx={{ display: 'flex', gap: '1rem' }}>
+          <Tooltip title="Zobrazit detail projektu">
+            <IconButton href={`/project/${row.original.id}`}>
+              <DetailIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Upravit projekt">
+            <IconButton onClick={() => openDeleteConfirmModal(row)}>
+              <EditIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Vymazat projekt">
+            <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+              <DeleteIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )
+      :
+      (authContext?.isAdmin && (
+        <Tooltip title="Obnovit projekt ze smazaných">
+          <IconButton onClick={() => restoreProject(row)}>
+            <RestoreIcon />
           </IconButton>
-        </Tooltip>
-        <Tooltip title="Upravit">
-          <IconButton onClick={() => openDeleteConfirmModal(row)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Vymazat">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    ),
+        </Tooltip>)
+      ),
+    muiTableBodyRowProps: (table) => ({
+      className: table.row.original.isValid ? 'valid-item' : 'invalid-item',
+    }),
   });
 
   return <MaterialReactTable table={table} />;

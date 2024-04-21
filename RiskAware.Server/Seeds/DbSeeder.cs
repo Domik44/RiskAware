@@ -16,7 +16,8 @@ namespace RiskAware.Server.Seeds
 
             // Asynchronous seeding
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
-            await UserSeed.Seed(userManager, context);
+            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            await UserSeed.Seed(userManager, roleManager, context);
 
             RiskProjectSeed.Seed(context);
             ProjectPhaseSeed.Seed(context);
