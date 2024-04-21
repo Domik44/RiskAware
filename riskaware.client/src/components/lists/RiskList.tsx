@@ -22,12 +22,17 @@ import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 import IRiskCategory from '../interfaces/IRiskCategory';
+import IProjectDetail from '../interfaces/IProjectDetail';
+import RiskEditModal from '../modals/RiskEditModal';
+import IRiskDetail from '../interfaces/IRiskDetail';
 
 export const RiskList: React.FC<{
   projectId: number,
   chooseRisk: (id: number) => void,
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>,
-}> = ({ projectId, chooseRisk, fetchDataRef }) => {
+  reRender: () => void,
+  projectDetail: IProjectDetail
+}> = ({ projectId, chooseRisk, fetchDataRef, reRender, projectDetail }) => {
   // Data and fetching state
   const [data, setData] = useState<IRisks[]>([]);
   const [isError, setIsError] = useState(false);
@@ -44,19 +49,49 @@ export const RiskList: React.FC<{
     pageSize: 10,
   });
 
-  // Delete modal state
+  // Modals
   const [selectedRiskId, setSelectedRiskId] = useState<number | null>(null);
-  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editData, setEditData] = useState<IRiskDetail>();
 
   const openDeleteModal = (riskId: number) => {
     setSelectedRiskId(riskId);
-    setModalOpen(true);
+    setDeleteModalOpen(true);
   };
 
   const toggleDeleteModal = () => {
-    setModalOpen(!modalOpen);
+    setDeleteModalOpen(!deleteModalOpen);
   };
 
+  const fetchEditData = async (riskId: number) => {
+    try {
+      const response = await fetch(`/api/Risk/${riskId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const json: IRiskDetail = await response.json();
+      setEditData(json);
+      setEditModalOpen(true);
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
+  const openEditModal = (riskId: number) => {
+    fetchRiskCategories();
+    setSelectedRiskId(riskId);
+    fetchEditData(riskId);
+  }
+
+  const toggleEditModal = () => {
+    setEditModalOpen(!editModalOpen);
+  };
+
+  const [categoriesM, setCategoriesM] = useState<IRiskCategory[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const fetchRiskCategories = async () => {
     let categoryNames: string[];
@@ -67,6 +102,7 @@ export const RiskList: React.FC<{
       }
       else {
         const categories: IRiskCategory[] = await response.json();
+        setCategoriesM(categories);
         categoryNames = categories.map(c => c.name);
         setCategories(categoryNames);
       }
@@ -234,7 +270,7 @@ export const RiskList: React.FC<{
           </IconButton>
         </Tooltip>
         <Tooltip title="Upravit">
-          <IconButton onClick={() => openDeleteModal(row.original.id)}>
+          <IconButton onClick={() => openEditModal(row.original.id)}>
             <EditIcon />
           </IconButton>
         </Tooltip>
@@ -273,7 +309,8 @@ export const RiskList: React.FC<{
   return (
     <>
       <MaterialReactTable table={tableInstance} />
-      <RiskDeleteModal riskId={selectedRiskId ?? 0} isOpen={modalOpen} toggle={toggleDeleteModal} />
+      <RiskDeleteModal riskId={selectedRiskId ?? 0} isOpen={deleteModalOpen} toggle={toggleDeleteModal} reRender={reRender} fetchDataRef={fetchDataRef} />
+      <RiskEditModal riskId={selectedRiskId ?? 0} isOpen={editModalOpen} toggle={toggleEditModal} data={editData} reRender={reRender} fetchDataRef={fetchDataRef} projectId={projectId} projectDetail={projectDetail} categories={categoriesM} />
     </>
   );
 };

@@ -134,7 +134,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.riskFetchDataRef} />
                     </Col>
                   </Row>
-                  <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} fetchDataRef={this.riskFetchDataRef} />
+                  <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} fetchDataRef={this.riskFetchDataRef} reRender={this.reRender} projectDetail={projectDetail} />
                 </TabPane>
                 <TabPane tabId="members">
                   <Row className="mb-3">

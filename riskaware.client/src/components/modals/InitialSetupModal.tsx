@@ -19,7 +19,7 @@ const InitialSetupModal: React.FC<InitialSetupModalProps> = ({ projectDetail }) 
   const toggle = () => setModal(!modal);
 
   /***
-   * Close the modal and navigate back handler.
+   * Close the modal and navigate back to main page handler.
    */
   const exit = () => {
     toggle();
@@ -39,11 +39,11 @@ const InitialSetupModal: React.FC<InitialSetupModalProps> = ({ projectDetail }) 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          title: (document.getElementById("title") as HTMLInputElement).value,
-          description: (document.getElementById("description") as HTMLInputElement).value,
-          start: (document.getElementById("start") as HTMLInputElement).value,
-          end: (document.getElementById("end") as HTMLInputElement).value,
-          scale: (document.getElementById("scale") as HTMLInputElement).value
+          title: (document.getElementById("InitialSetupTitle") as HTMLInputElement).value,
+          description: (document.getElementById("InitialSetupDescription") as HTMLInputElement).value,
+          start: (document.getElementById("InitialSetupStart") as HTMLInputElement).value,
+          end: (document.getElementById("InitialSetupEnd") as HTMLInputElement).value,
+          scale: (document.getElementById("InitialSetupScale") as HTMLInputElement).value
         })
       });
 
@@ -70,13 +70,13 @@ const InitialSetupModal: React.FC<InitialSetupModalProps> = ({ projectDetail }) 
         {/*TODO -> predvyplnit s daty z projektu*/}
         <FormGroup>
           <Label> Název projektu:</Label>
-          <Input required id="title" name="title" type="text" defaultValue={projectDetail.detail.title} />
+          <Input required id="InitialSetupTitle" name="InitialSetupTitle" type="text" defaultValue={projectDetail.detail.title} />
         </FormGroup>
       </Row>
       <Row>
         <FormGroup>
           <Label> Popis projektu:</Label>
-          <Input id="description" name="description" type="textarea" />
+          <Input id="InitialSetupDescription" name="InitialSetupDescription" type="textarea" />
         </FormGroup>
       </Row>
       <Row>
@@ -84,20 +84,20 @@ const InitialSetupModal: React.FC<InitialSetupModalProps> = ({ projectDetail }) 
         <Col>
           <FormGroup>
             <Label> Začátek:</Label>
-            <Input required id="start" name="start" type="date" defaultValue={formatDateForInput(projectDetail.detail.start)} />
+            <Input required id="InitialSetupStart" name="InitialSetupStart" type="date" defaultValue={formatDateForInput(projectDetail.detail.start)} />
           </FormGroup>
         </Col>
         <Col>
           <FormGroup>
             <Label> Konec:</Label>
-            <Input required id="end" name="end" type="date" defaultValue={formatDateForInput(projectDetail.detail.end)} />
+            <Input required id="InitialSetupEnd" name="InitialSetupEnd" type="date" defaultValue={formatDateForInput(projectDetail.detail.end)} />
           </FormGroup>
         </Col>
       </Row>
       <Row>
         <FormGroup>
           <Label> Škála matice:</Label>
-          <Input required id="scale" name="scale" type="select">
+          <Input required id="InitialSetupScale" name="InitialSetupScale" type="select">
             <option>
               3
             </option>

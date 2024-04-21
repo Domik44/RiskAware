@@ -21,10 +21,10 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ fetchDataRef })
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          title: (document.getElementById("title") as HTMLInputElement).value,
-          start: (document.getElementById("start") as HTMLInputElement).value,
-          end: (document.getElementById("end") as HTMLInputElement).value,
-          email: (document.getElementById("email") as HTMLInputElement).value
+          title: (document.getElementById("CreateProjectTitle") as HTMLInputElement).value,
+          start: (document.getElementById("CreateProjectStart") as HTMLInputElement).value,
+          end: (document.getElementById("CreateProjectEnd") as HTMLInputElement).value,
+          email: (document.getElementById("CreateProjectEmail") as HTMLInputElement).value
         })
       });
 
@@ -72,20 +72,20 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ fetchDataRef })
               <Row>
                 <FormGroup>
                   <Label> Název projektu:</Label>
-                  <Input required id="title" name="title" type="text" />
+                  <Input required id="CreateProjectTitle" name="CreateProjectTitle" type="text" />
                 </FormGroup>
               </Row>
               <Row>
                 <Col>
                   <FormGroup>
                     <Label> Začátek:</Label>
-                  <Input required id="start" name="start" type="date" />
+                  <Input required id="CreateProjectStart" name="CreateProjectStart" type="date" />
                   </FormGroup>
                 </Col>
                 <Col>
                   <FormGroup>
                     <Label> Konec:</Label>
-                  <Input required id="end" name="end" type="date" />
+                  <Input required id="CreateProjectEnd" name="CreateProjectEnd" type="date" />
                   </FormGroup>
                 </Col>
               </Row>
@@ -93,7 +93,7 @@ const CreateProjectModal: React.FC<CreateProjectModalProps> = ({ fetchDataRef })
                 <FormGroup>
                   <Label> Projektový manažer:</Label>
                   {/*TODO -> change this later?*/}
-                <Input required id="email" name="email" type="email" />
+                <Input required id="CreateProjectEmail" name="CreateProjectEmail" type="email" />
                 </FormGroup>
               </Row>
               <Row>

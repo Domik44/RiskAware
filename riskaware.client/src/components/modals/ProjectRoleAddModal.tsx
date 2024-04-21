@@ -18,9 +18,9 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
     const id = projectDetail.detail.id;
     const apiUrl = `/api/RiskProject/${id}/AddUserToRiskProject`;
     let phaseId = null;
-    const roleType = parseInt((document.getElementById("roleType") as HTMLInputElement).value);
+    const roleType = parseInt((document.getElementById("ProjectRoleAddRoleType") as HTMLInputElement).value);
     if(roleType == RoleType.TeamMember) {
-      phaseId = parseInt((document.getElementById("phaseSelect") as HTMLInputElement).value);
+      phaseId = parseInt((document.getElementById("ProjectRoleAddPhaseSelect") as HTMLInputElement).value);
     }
     try { 
       const response = await fetch(apiUrl, {
@@ -29,9 +29,9 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          email: (document.getElementById("email") as HTMLInputElement).value,
+          email: (document.getElementById("ProjectRoleAddEmail") as HTMLInputElement).value,
           roleType: roleType,
-          name: (document.getElementById("name") as HTMLInputElement).value,
+          name: (document.getElementById("ProjectRoleAddName") as HTMLInputElement).value,
           userRoleType: userRole,
           projectPhaseId: phaseId
         })
@@ -58,8 +58,8 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
   }
 
   const selectFill = (selectedRole: number) => {
-    const nameInput = document.getElementById("name") as HTMLInputElement;
-    const phaseSelect = document.getElementById("phaseSelectGroup") as HTMLInputElement;
+    const nameInput = document.getElementById("ProjectRoleAddName") as HTMLInputElement;
+    const phaseSelect = document.getElementById("ProjectRoleAddPhaseSelectGroup") as HTMLInputElement;
 
     phaseSelect.classList.add("hidden");
     if (selectedRole == RoleType.RiskManager) {
@@ -89,13 +89,13 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
             <Row>
               <FormGroup>
                 <Label>Výběr uživatele:</Label>
-                <Input required id="email" name="email" type="text" />
+                <Input required id="ProjectRoleAddEmail" name="ProjectRoleAddEmail" type="text" />
               </FormGroup>
             </Row>
             <Row>
               <FormGroup>
                 <Label>Typ role:</Label>
-                <Input required id="roleType" name="roleType" type="select" onChange={handleSelectChange}>
+                <Input required id="ProjectRoleAddRoleType" name="ProjectRoleAddRoleType" type="select" onChange={handleSelectChange}>
                   <option value={RoleType.RiskManager}>
                     Rizikový manažer
                   </option>
@@ -111,13 +111,13 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
             <Row>
               <FormGroup>
                 <Label>Pojmenování role:</Label>
-                <Input required id="name" name="name" type="text" defaultValue="Rizikový manažer" />
+                <Input required id="ProjectRoleAddName" name="ProjectRoleAddName" type="text" defaultValue="Rizikový manažer" />
               </FormGroup>
             </Row>
             <Row>
-              <FormGroup id="phaseSelectGroup" className="hidden">
+              <FormGroup id="ProjectRoleAddPhaseSelectGroup" className="hidden">
                 <Label>Přiřazená fáze:</Label>
-                <Input id="phaseSelect" name="select" type="select">
+                <Input id="ProjectRoleAddPhaseSelect" name="ProjectRoleAddPhaseSelect" type="select">
                   {/*TODO -> FIX -> fetch phases again? -> mby not needed cuz only PM is doing this*/}
                   {projectDetail.phases.map((phase) => (
                     <option key={phase.id} value={phase.id}>

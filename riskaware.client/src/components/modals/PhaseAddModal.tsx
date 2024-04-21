@@ -24,9 +24,9 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender, 
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: (document.getElementById("name") as HTMLInputElement).value,
-          start: (document.getElementById("start") as HTMLInputElement).value,
-          end: (document.getElementById("end") as HTMLInputElement).value,
+          name: (document.getElementById("PhaseAddName") as HTMLInputElement).value,
+          start: (document.getElementById("PhaseAddStart") as HTMLInputElement).value,
+          end: (document.getElementById("PhaseAddEnd") as HTMLInputElement).value,
           userRoleType: userRole,
           riskProjectId: id
         })
@@ -61,20 +61,20 @@ const AddPhaseModal: React.FC<AddPhaseModalProps> = ({ projectDetail, reRender, 
             <Row>
               <FormGroup>
                 <Label> Název:</Label>
-                <Input required id="name" name="name" type="text" />
+                <Input required id="PhaseAddName" name="PhaseAddName" type="text" />
               </FormGroup>
             </Row>
             <Row>
               <Col>
                 <FormGroup>
                   <Label> Začátek:</Label>
-                  <Input required id="start" name="start" type="date" />
+                  <Input required id="PhaseAddStart" name="PhaseAddStart" type="date" />
                 </FormGroup>
               </Col>
               <Col>
                 <FormGroup>
                   <Label> Konec:</Label>
-                  <Input required id="end" name="end" type="date" />
+                  <Input required id="PhaseAddEnd" name="PhaseAddEnd" type="date" />
                 </FormGroup>
               </Col>
             </Row>

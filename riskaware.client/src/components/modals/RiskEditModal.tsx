@@ -1,78 +1,44 @@
-﻿import React, { useState } from 'react';
+﻿import React from 'react';
+import IDtFetchData from "../interfaces/IDtFetchData";
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
 import { Impact, Prevention, Probability, Status, Category } from '../enums/RiskAttributesEnum';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import IRiskCategory from '../interfaces/IRiskCategory';
-import IDtFetchData from '../interfaces/IDtFetchData';
+import IRiskDetail from '../interfaces/IRiskDetail';
 
-interface AddRiskModalProps {
-  projectDetail: IProjectDetail;
+
+interface RiskEditModalProps {
+  riskId: number;
+  isOpen: boolean;
+  toggle: () => void;
   reRender: () => void;
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
+  data: IRiskDetail | undefined;
+  projectId: number;
+  projectDetail: IProjectDetail;
+  categories: IRiskCategory[];
 }
 
-const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fetchDataRef }) => {
-  const [modal, setModal] = useState(false);
-  const [categories, setCategories] = useState<IRiskCategory[]>([]);
+const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, reRender, fetchDataRef, data, projectId, projectDetail, categories }) => {
   const scale = projectDetail.detail.scale;
   const userRole = projectDetail.userRole;
   const assignedPhase = projectDetail.assignedPhase;
+  //const [categories, setCategories] = useState<IRiskCategory[]>([]);
 
-  const open = async () => {
-    const id = projectDetail.detail.id;
-    const apiUrl = `/api/RiskProject/${id}/RiskCategories`;
+  const editRisk = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     try {
-      const response = await fetch(apiUrl);
-
-      if (!response.ok) {
-        throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
-      }
-      else {
-        const data = await response.json();
-        setCategories(data);
-        console.log(categories);
-      }
-    }
-    catch (error: any) {
-      console.error(error);
-    }
-    toggle();
-  };
-
-  const toggle = () => {
-    setModal(!modal);
-  };
-
-  const submit = async () => {
-    const id = projectDetail.detail.id;
-    const apiUrl = `/api/RiskProject/${id}/AddRisk`;
-    const category = {
-      id: parseInt((document.getElementById("RiskAddCategory") as HTMLInputElement).value),
-      name: (document.getElementById("newCategoryName") as HTMLInputElement).value
-    }
-    try {
-      const preventionDone = (document.getElementById("RiskAddPreventionDone") as HTMLInputElement).value;
-      const riskOccured = (document.getElementById("RiskAddRiskOccured") as HTMLInputElement).value;
-      const response = await fetch(apiUrl, {
-        method: 'POST',
+      const response = await fetch(`/api/Risk/${riskId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          title: (document.getElementById("RiskAddTitle") as HTMLInputElement).value,
-          description: (document.getElementById("RiskAddDescription") as HTMLInputElement).value,
-          probability: parseInt((document.getElementById("RiskAddPropability") as HTMLInputElement).value),
-          impact: parseInt((document.getElementById("RiskAddImpact") as HTMLInputElement).value),
-          threat: (document.getElementById("RiskAddThreat") as HTMLInputElement).value,
-          indicators: (document.getElementById("RiskAddIndicators") as HTMLInputElement).value,
-          prevention: (document.getElementById("RiskAddPrevention") as HTMLInputElement).value,
-          status: (document.getElementById("RiskAddStatus") as HTMLInputElement).value,
-          preventionDone: preventionDone === "" ? "0001-01-01" : preventionDone,
-          riskEventOccured: riskOccured === "" ? "0001-01-01" : riskOccured,
-          end: (document.getElementById("RiskAddEnd") as HTMLInputElement).value,
-          projectPhaseId: parseInt((document.getElementById("RiskAddPhase") as HTMLInputElement).value),
-          riskCategory: category,
-          userRoleType: userRole
+          //name: (document.getElementById("editRiskName") as HTMLInputElement).value,
+          //description: (document.getElementById("editRiskDescription") as HTMLInputElement).value,
+          //probability: parseInt((document.getElementById("editRiskProbability") as HTMLInputElement).value),
+          //impact: parseInt((document.getElementById("editRiskImpact") as HTMLInputElement).value),
+          //riskProjectId: projectId
         })
       });
 
@@ -80,20 +46,15 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
         throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
       }
       else {
-        reRender(); // Rerender the page
-        fetchDataRef.current?.();
+        reRender(); // Rerender the page -> for phase accordion
+        fetchDataRef.current?.(); // Fetch table data
+        toggle(); // Close the modal after submission
       }
-    }
-    catch (error: any) {
-      console.error(error);
-    }
-  }
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // Prevent default form submission
-    submit(); // Call the submit function
-    toggle(); // Close the modal after submission
-  }
+    } catch (error) {
+      //document.getElementById('editRiskModalError')?.classList.remove('hidden');
+    }
+  };
 
   const selectShow = (selectedCategory: number) => {
     const categoryGroup = document.getElementById("newCategoryGroup") as HTMLInputElement;
@@ -116,46 +77,45 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
 
   return (
     <div>
-      <Button color="success" onClick={open}> Přidat riziko </Button>
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Přidání rizika</ModalHeader>
-        <Form id="addRiskForm" onSubmit={handleSubmit}>
+      <Modal isOpen={isOpen} toggle={toggle}>
+        <ModalHeader toggle={toggle}>Úprava rizika</ModalHeader>
+        <Form id="editRiskForm" onSubmit={editRisk}>
           <ModalBody>
             <Row>
               <FormGroup>
                 <Label> Fáze:</Label>
                 {userRole === RoleType.TeamMember ?
-                 (
-                    <Input id="RiskAddPhase" name="RiskAddPhase" type="text" value={assignedPhase.name} readOnly />
-                 ) : 
-                 (
-                    <Input id="RiskAddPhase" name="RiskAddPhase" type="select">
-                    {projectDetail.phases.map((phase) => (
-                      <option key={phase.id} value={phase.id}>
-                        {phase.name}
-                      </option>
-                    ))}
-                  </Input>
-                 )
-               }
+                  (
+                    <Input id="RiskEditPhase" name="RiskEditPhase" type="text" value={assignedPhase.name} readOnly />
+                  ) :
+                  (
+                    <Input id="RiskEditPhase" name="RiskEditPhase" type="select" defaultValue={data?.projectPhaseId}>
+                      {projectDetail.phases.map((phase) => (
+                        <option key={phase.id} value={phase.id}>
+                          {phase.name}
+                        </option>
+                      ))}
+                    </Input>
+                  )
+                }
               </FormGroup>
             </Row>
             <Row>
               <FormGroup>
                 <Label> Název:</Label>
-                <Input required id="RiskAddTitle" name="RiskAddTitle" type="text" />
+                <Input required id="RiskEditTitle" name="RiskEditTitle" type="text" defaultValue={data?.title} />
               </FormGroup>
             </Row>
             <Row>
               <FormGroup>
                 <Label> Popis:</Label>
-                <Input id="RiskAddDescription" name="RiskAddDescription" type="textarea" />
+                <Input id="RiskEditDescription" name="RiskEditDescription" type="textarea" defaultValue={data?.description} />
               </FormGroup>
             </Row>
             <Row>
               <FormGroup>
                 <Label> Kategorie:</Label>
-                <Input id="RiskAddCategory" name="RiskAddCategory" type="select" onChange={handleSelectChange}>
+                <Input id="RiskEditCategory" name="RiskEditCategory" type="select" onChange={handleSelectChange} defaultValue={data?.riskCategoryName}>
                   <option id="newCategoryOption" value={Category.New}>
                     Nová kategorie
                   </option>
@@ -175,8 +135,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
               <Col>
                 <FormGroup>
                   <Label> Pravděpodobnost:</Label>
-                  <Input id="RiskAddPropability" name="RiskAddPropability" type="select">
-                    {/*TODO -> fetch options from backend */}
+                  <Input id="RiskEditPropability" name="RiskEditPropability" type="select" defaultValue={data?.probability}>
                     <option value={Probability.Insignificant}>
                       Nepatrná
                     </option>
@@ -202,7 +161,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
               <Col>
                 <FormGroup>
                   <Label> Dopad:</Label>
-                  <Input id="RiskAddImpact" name="RiskAddImpact" type="select">
+                  <Input id="RiskEditImpact" name="RiskEditImpact" type="select">
                     <option value={Impact.Insignificant}>
                       Nepatrný
                     </option>
@@ -229,20 +188,20 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
             <Row>
               <FormGroup>
                 <Label>Hrozba:</Label>
-                <Input id="RiskAddThreat" name="RiskAddThreat" type="textarea" />
+                <Input id="RiskEditThreat" name="RiskEditThreat" type="textarea" defaultValue={data?.threat} />
               </FormGroup>
             </Row>
             <Row>
               <FormGroup>
                 <Label>Spouštěče:</Label>
-                <Input id="RiskAddIndicators" name="RiskAddIndicators" type="textarea" />
+                <Input id="RiskEditIndicators" name="RiskEditIndicators" type="textarea" defaultValue={data?.indicators} />
               </FormGroup>
             </Row>
             <Row>
               <Col>
                 <FormGroup>
                   <Label> Stav:</Label>
-                  <Input id="RiskAddStatus" name="RiskAddStatus" type="select">
+                  <Input id="RiskEditStatus" name="RiskEditStatus" type="select">
                     <option value={Status.Concept}>
                       Koncept
                     </option>
@@ -261,7 +220,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
               <Col>
                 <FormGroup>
                   <Label>Prevence:</Label>
-                  <Input id="RiskAddPrevention" name="RiskAddPrevention" type="select">
+                  <Input id="RiskEditPrevention" name="RiskEditPrevention" type="select">
                     <option value={Prevention.Neglect}>
                       Zanedbání
                     </option>
@@ -279,27 +238,27 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
               <Col>
                 <FormGroup>
                   {/*TODO -> handle na nevyplnene riziko*/}
-                  <Label>Riziko nastalo:</Label> 
-                  <Input id="RiskAddRiskOccured" name="RiskAddRiskOccured" type="date" />
+                  <Label>Riziko nastalo:</Label>
+                  <Input id="RiskEditRiskOccured" name="RiskEditRiskOccured" type="date" />
                 </FormGroup>
               </Col>
               <Col>
                 <FormGroup>
                   <Label>Prevence provedena:</Label>
-                  <Input id="RiskAddPreventionDone" name="RiskAddPreventionDone" type="date" />
+                  <Input id="RiskEditPreventionDone" name="RiskEditPreventionDone" type="date" />
                 </FormGroup>
               </Col>
             </Row>
-              <FormGroup>
-                <Label>Platnost rizika:</Label>
-              <Input required id="RiskAddEnd" name="RiskAddEnd" type="date" />
-              </FormGroup>
+            <FormGroup>
+              <Label>Platnost rizika:</Label>
+              <Input required id="RiskEditEnd" name="RiskEditEnd" type="date" />
+            </FormGroup>
             <Row>
             </Row>
           </ModalBody>
           <ModalFooter>
             <Button color="primary" type="submit">
-              Přidat
+              Upravit
             </Button>
             <Button color="secondary" onClick={toggle}>
               Zrušit
@@ -311,4 +270,4 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
   );
 }
 
-export default AddRiskModal;
+export default RiskEditModal;

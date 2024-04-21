@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreIcon from '@mui/icons-material/Restore';
 import AuthContext from '../../auth/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -25,6 +26,7 @@ export const ProjectsList: React.FC<{
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>,
 }> = ({ fetchUrl, fetchDataRef }) => {
   const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Data and fetching state
   const [data, setData] = useState<IProject[]>([]);
@@ -145,6 +147,10 @@ export const ProjectsList: React.FC<{
     fetchDataRef.current?.();
   };
 
+  const goTo = (projectId: number) => {
+    navigate(`/project/${projectId}`);
+  }
+
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IProject>(), // Add common and basic options
     columns,
@@ -168,7 +174,8 @@ export const ProjectsList: React.FC<{
       (
         <Box sx={{ display: 'flex', gap: '1rem' }}>
           <Tooltip title="Zobrazit detail projektu">
-            <IconButton href={`/project/${row.original.id}`}>
+            {/*<IconButton href={`/project/${row.original.id}`}>*/}
+            <IconButton onClick={() => goTo(row.original.id)}>
               <DetailIcon />
             </IconButton>
           </Tooltip>
