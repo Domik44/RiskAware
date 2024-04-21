@@ -3,20 +3,32 @@ using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.RiskDTOs;
-using RiskAware.Server.DTOs.RiskProjectDTOs;
 using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
+    /// <summary>
+    /// Class containing queries for project phases.
+    /// </summary>
+    /// <author> Dominik Pop </author>
     public class ProjectPhaseQueries
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Constructor for ProjectPhaseQueries.
+        /// </summary>
+        /// <param name="context"> Application DB context. </param>
         public ProjectPhaseQueries(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Method for getting project phases of a risk project with the given id.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> List of DTOs containing basic info about project phase. </returns>
         public async Task<IEnumerable<ProjectPhaseDto>> GetRiskProjectPhasesAsync(int id)
         {
             var projectPhases = await _context.ProjectPhases
@@ -41,6 +53,14 @@ namespace RiskAware.Server.Queries
             return projectPhases;
         }
 
+        /// <summary>
+        /// Method for getting project phases of a risk project with the given id.
+        /// Filtered by the given datatable parameters.
+        /// </summary>
+        /// <param name="projectId"> Id of risk project. </param>
+        /// <param name="dtParams"> Datatable parametres. </param>
+        /// <returns> Returns a list of DTOs containing basic info about project phase. </returns>
+        /// <author> David Drtil </author>
         public IQueryable<ProjectPhaseDto> QueryProjectPhases(int projectId, DtParamsDto dtParams)
         {
             var query = _context.ProjectPhases

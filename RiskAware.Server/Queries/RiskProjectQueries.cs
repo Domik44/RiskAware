@@ -8,6 +8,11 @@ using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
+    /// <summary>
+    /// Class containing queries for RiskProject entity.
+    /// </summary>
+    /// <param name="context"> Application DB context. </param>
+    /// <author> Dominik Pop </author>
     public class RiskProjectQueries(AppDbContext context)
     {
         private readonly AppDbContext _context = context;
@@ -15,6 +20,12 @@ namespace RiskAware.Server.Queries
         private readonly RiskQueries _riskQueries = new RiskQueries(context);
         private readonly ProjectRoleQueries _projectRoleQueries = new ProjectRoleQueries(context);
 
+        /// <summary>
+        /// Query for filtering and sorting projects.
+        /// </summary>
+        /// <param name="query"> Input query. </param>
+        /// <param name="dtParams"> Datatable parametres. </param>
+        /// <returns> Returns collection of DTOs containing basic info about risk project. </returns>
         public IQueryable<RiskProjectDto> ApplyFilterQueryProjects(
             IQueryable<RiskProjectDto> query, DtParamsDto dtParams)
         {
@@ -54,6 +65,10 @@ namespace RiskAware.Server.Queries
             return query;
         }
 
+        /// <summary>
+        /// Query for getting all risk projects in the system.
+        /// </summary>
+        /// <returns> Collection of DTOs containing basic info about risk project. </returns>
         public IQueryable<RiskProjectDto> QueryAllProjects()
         {
             return _context.RiskProjects
@@ -74,6 +89,11 @@ namespace RiskAware.Server.Queries
                 );
         }
 
+        /// <summary>
+        /// Query for getting all risk projects of a logged user.
+        /// </summary>
+        /// <param name="user"> User whos projects we want to get. </param>
+        /// <returns> Collection of DTOs containing basic info about risk project. </returns>
         public IQueryable<RiskProjectDto> QueryUsersProjects(User user)
         {
             return _context.RiskProjects
@@ -93,28 +113,11 @@ namespace RiskAware.Server.Queries
                 });
         }
 
-        public async Task<IEnumerable<RiskProjectDto>> GetAllAdminRiskProjectsAsync(User user)
-        {
-            var projects = await _context.RiskProjects
-                .AsNoTracking()
-                .Where(rp => rp.UserId == user.Id)
-                .Select(rp => new RiskProjectDto
-                {
-                    Id = rp.Id,
-                    Title = rp.Title,
-                    Start = rp.Start,
-                    End = rp.End,
-                    NumOfMembers = rp.ProjectRoles.Count,
-                    ProjectManagerName = rp.ProjectRoles
-                        .Where(pr => pr.RoleType == RoleType.ProjectManager)
-                        .Select(pr => pr.User.FirstName + " " + pr.User.LastName)
-                        .FirstOrDefault()
-                })
-                .ToListAsync();
-
-            return projects;
-        }
-
+        /// <summary>
+        /// Query for getting a risk project detail.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> Returns DTO containing basic detail about risk project. </returns>
         public async Task<RiskProjectDetailDto> GetRiskProjectDetailAsync(int id)
         {
             var comments = await GetRiskProjectCommentsAsync(id);
@@ -144,6 +147,13 @@ namespace RiskAware.Server.Queries
             return riskProject;
         }
 
+        /// <summary>
+        /// Query for getting a risk project page.
+        /// It includes all necessary data for the page.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <param name="userId"> Id of logged user. </param>
+        /// <returns> Returns DTO containing all possible information associated to a risk project. </returns>
         public async Task<RiskProjectPageDto> GetRiskProjectPageAsync(int id, string userId)
         {
             var detail = await GetRiskProjectDetailAsync(id);
@@ -153,12 +163,16 @@ namespace RiskAware.Server.Queries
                 return null;
             }
 
+            // Queries for all nav tabs.
             var phases = await _projectPhaseQueries.GetRiskProjectPhasesAsync(id);
             var risks = await _riskQueries.GetRiskProjectRisksAsync(id);
             var members = await _projectRoleQueries.GetRiskProjectMembersAsync(id);
+
+            // Query for getting role of logged user on the project.
             var userRole = await _projectRoleQueries.GetUsersRoleOnRiskProjectAsync(id, userId);
 
-            var assignedPhase = await _projectRoleQueries.GetUsersAssignedPhaseAsync(id, userId); // TODO
+            // Query for getting assigned phase of logged user on the project.
+            var assignedPhase = await _projectRoleQueries.GetUsersAssignedPhaseAsync(id, userId);
 
             return new RiskProjectPageDto
             {
@@ -171,20 +185,11 @@ namespace RiskAware.Server.Queries
             };
         }
 
-        public async Task<bool> IsProjectManager(RiskProject riskProject, User user)
-        {
-            return await _context.ProjectRoles
-                .AsNoTracking()
-                .AnyAsync(pr => pr.RiskProjectId == riskProject.Id && pr.UserId == user.Id && pr.RoleType == RoleType.ProjectManager);
-        }
-
-        public async Task<bool> IsExtern(RiskProject riskProject, User user)
-        {
-            return await _context.ProjectRoles
-                .AsNoTracking()
-                .AnyAsync(pr => pr.RiskProjectId == riskProject.Id && pr.UserId == user.Id && pr.RoleType == RoleType.ExternalMember);
-        }
-
+        /// <summary>
+        /// Query for getting all comments posted on a risk project.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> Returns collection of DTOs containing comment info. </returns>
         public async Task<IEnumerable<CommentDto>> GetRiskProjectCommentsAsync(int id)
         {
             var comments = await _context.Comments
@@ -204,6 +209,11 @@ namespace RiskAware.Server.Queries
             return comments;
         }
 
+        /// <summary>
+        /// Query for getting all risk categories of a risk project.
+        /// </summary>
+        /// <param name="riskProject"> Risk project entity. </param>
+        /// <returns> Returns true if creation was successful. </returns>
         public async Task<bool> CreateDefaultCategories(RiskProject riskProject) {
             ICollection<string> names = [ "Finanční rizika","Lidská rizika","Operační rizika","Legislativní rizika","Technická rizika"];
             foreach (var name in names)

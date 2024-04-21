@@ -202,7 +202,7 @@ namespace RiskAware.Server.Queries
                 RiskCategoryId = riskCategoryId
             };
             _context.Risks.Add(risk);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             var riskHistory = new RiskHistory
             {
@@ -217,14 +217,61 @@ namespace RiskAware.Server.Queries
                 Indicators = riskDto.Indicators,
                 Prevention = riskDto.Prevention,
                 Status = riskDto.Status,
-                PreventionDone = riskDto.PreventionDone,
-                RiskEventOccured = riskDto.RiskEventOccured,
+                PreventionDone = (DateTime)riskDto.PreventionDone,
+                RiskEventOccured = (DateTime)riskDto.RiskEventOccured,
                 LastModif = DateTime.Now,
                 StatusLastModif = DateTime.Now,
                 End = riskDto.End,
                 IsValid = true,
                 IsApproved = isApproved
             };
+
+            _context.RiskHistory.Add(riskHistory);
+            _context.SaveChanges();
+
+            return true;
+        }
+
+        public async Task<bool> EditRiskAsync(RiskCreateDto riskDto, string userId, Risk risk, int riskCategoryId, bool isApproved)
+        {
+            if(risk.RiskCategoryId != riskCategoryId || risk.ProjectPhaseId != riskDto.ProjectPhaseId)
+            {
+                risk.ProjectPhaseId = riskDto.ProjectPhaseId;
+                risk.RiskCategoryId = riskCategoryId;
+                await _context.SaveChangesAsync();
+            }
+
+            var oldRiskHistory = await _context.RiskHistory
+                .Where(h => h.RiskId == risk.Id)
+                .OrderByDescending(h => h.Created)
+                .FirstOrDefaultAsync();
+
+            var riskHistory = new RiskHistory
+            {
+                RiskId = risk.Id,
+                UserId = userId,
+                Created = oldRiskHistory.Created,
+                Title = riskDto.Title,
+                Description = riskDto.Description,
+                Probability = riskDto.Probability,
+                Impact = riskDto.Impact,
+                Threat = riskDto.Threat,
+                Indicators = riskDto.Indicators,
+                Prevention = riskDto.Prevention,
+                Status = riskDto.Status,
+                PreventionDone = (DateTime)riskDto.PreventionDone,
+                RiskEventOccured = (DateTime)riskDto.RiskEventOccured,
+                LastModif = DateTime.Now,
+                StatusLastModif = oldRiskHistory.StatusLastModif,
+                End = riskDto.End,
+                IsValid = oldRiskHistory.IsValid,
+                IsApproved = oldRiskHistory.IsApproved // TODO
+            };
+
+            if(riskHistory.Status != oldRiskHistory.Status)
+            {
+                riskHistory.StatusLastModif = DateTime.Now;
+            }
 
             _context.RiskHistory.Add(riskHistory);
             _context.SaveChanges();

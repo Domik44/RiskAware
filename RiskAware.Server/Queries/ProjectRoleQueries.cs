@@ -166,6 +166,64 @@ namespace RiskAware.Server.Queries
             return true;
         }
 
+        public async Task<bool> IsAssignedToPhase(int riskProjectId, int phaseId, string userId)
+        {
+            return await _context.ProjectRoles
+                .AsNoTracking()
+                .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.ProjectPhaseId == phaseId);
+        }
+
+        public async Task<bool> IsAllowedToDeclineApproveRisk(int riskId, string userId)
+        {
+            var isProjectManager = await IsProjectManager(riskId, userId);
+            var isRiskManager = await IsRiskManager(riskId, userId);
+
+            if (isProjectManager || isRiskManager)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> IsAllowedToAddEditRisk(int riskId, int phaseId, string userId)
+        {
+            var isProjectManager = await IsProjectManager(riskId, userId);
+            var isRiskManager = await IsRiskManager(riskId, userId);
+            var isTeamMember = await IsTeamMember(riskId, userId);
+            var isAssignedToPhase = await IsAssignedToPhase(riskId, phaseId, userId);
+
+            if (isProjectManager || isRiskManager)
+            {
+                return true;
+            }
+
+            if (isTeamMember && isAssignedToPhase)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public async Task<bool> IsAllowedToDeleteRestoreRisk(Risk risk, string userId)
+        {
+            var isProjectManager = await IsProjectManager(risk.RiskProjectId, userId);
+            var isRiskManager = await IsRiskManager(risk.RiskProjectId, userId);
+
+            if (isProjectManager || isRiskManager)
+            {
+                return true;
+            }
+
+            if(risk.UserId == userId)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public async Task<bool> HasBasicEditPermissions(int riskProjectId, string userId)
         {
             return await _context.ProjectRoles
