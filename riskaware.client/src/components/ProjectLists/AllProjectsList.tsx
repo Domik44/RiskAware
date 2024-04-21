@@ -1,7 +1,7 @@
 ﻿import { Component } from 'react';
 import { Col, Row } from 'reactstrap';
 import ProjectsList from './ProjectsList';
-import CreateProjectModal from '../CreateProjectModal';
+import CreateProjectModal from '../modals/CreateProjectModal';
 import IFetchData from '../../common/IFetchData';
 
 export class AllProjectsList extends Component<object> {

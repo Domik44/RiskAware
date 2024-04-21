@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
-import IProjectDetail from './interfaces/IProjectDetail';
-import IFetchData from '../common/IFetchData';
+import IProjectDetail from '../interfaces/IProjectDetail';
+import IFetchData from '../../common/IFetchData';
 
 interface AddPhaseModalProps {
   projectDetail: IProjectDetail;

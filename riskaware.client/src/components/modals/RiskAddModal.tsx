@@ -1,9 +1,9 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
-import { Impact, Prevention, Probability, Status, Category } from './enums/RiskAttributesEnum';
-import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
-import IRiskCategory from './interfaces/IRiskCategory';
-import IFetchData from '../common/IFetchData';
+import { Impact, Prevention, Probability, Status, Category } from '../enums/RiskAttributesEnum';
+import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
+import IRiskCategory from '../interfaces/IRiskCategory';
+import IFetchData from '../../common/IFetchData';
 
 interface AddRiskModalProps {
   projectDetail: IProjectDetail;

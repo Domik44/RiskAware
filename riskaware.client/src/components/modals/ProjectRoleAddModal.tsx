@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input} from 'reactstrap';
-import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
-import IFetchData from '../common/IFetchData';
+import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
+import IFetchData from '../../common/IFetchData';
 
 interface AddProjectRoleModalProps {
   projectDetail: IProjectDetail;

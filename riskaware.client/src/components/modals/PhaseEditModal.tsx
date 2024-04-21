@@ -1,8 +1,8 @@
 ﻿import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Form, Row, Col, FormGroup, Label, Input } from 'reactstrap';
-import IFetchData from '../common/IFetchData';
-import IPhases from './interfaces/IPhases';
-import { formatDateForInput } from "../helpers/DateFormatter";
+import IFetchData from '../../common/IFetchData';
+import IPhases from '../interfaces/IPhases';
+import { formatDateForInput } from "../../helpers/DateFormatter";
 
 interface PhaseEditModalProps {
   phaseId: number;
@@ -33,23 +33,16 @@ const PhaseEditModal: React.FC<PhaseEditModalProps> = ({ phaseId, isOpen, toggle
       });
 
       if (!response.ok) {
-        //if (response.status === 400) {
-        //  document.getElementById('notEditd')?.classList.remove('hidden');
-        //  throw new Error('Fáze obsahuje rizika!');
-        //}
-        //else {
-        //}
         throw new Error('Něco se pokazilo! Zkuste to prosím znovu.');
       }
       else {
-        reRender(); // Rerender the page
-        fetchDataRef.current?.();
-        toggle();
-        //document.getElementById('notEditd')?.classList.add('hidden');
+        reRender(); // Rerender the page -> for phase accordion
+        fetchDataRef.current?.(); // Fetch table data
+        toggle(); // Close the modal after submission
       }
 
     } catch (error) {
-      console.error(error);
+      document.getElementById('editPhaseModalError')?.classList.remove('hidden');
     }
   };
 
@@ -60,6 +53,9 @@ const PhaseEditModal: React.FC<PhaseEditModalProps> = ({ phaseId, isOpen, toggle
         <ModalHeader toggle={toggle}>Upravit fázi</ModalHeader>
         <Form id="editPhaseForm" onSubmit={editPhase}>
           <ModalBody>
+            <Alert className="hidden alert alert-danger" id="editPhaseModalError">
+              <p id="editPhaseModalErrorMsg"> Editace fáze se nezdařila! </p>
+            </Alert>
             <Row>
               <FormGroup>
                 <Label> Název:</Label>

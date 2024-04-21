@@ -1,6 +1,6 @@
 ﻿import { Component } from 'react';
-import IProjectDetail from './interfaces/IProjectDetail';
-import IRisks from './interfaces/IRisks';
+import IProjectDetail from '../interfaces/IProjectDetail';
+import IRisks from '../interfaces/IRisks';
 import MatrixCell from './MatrixCell';
 
 interface IMatrix {

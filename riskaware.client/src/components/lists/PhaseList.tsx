@@ -8,15 +8,15 @@ import { Box, Tooltip, IconButton } from '@mui/material';
 import { ColumnSort } from '@tanstack/react-table';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import MUITableCommonOptions from './../common/MUITableCommonOptions';
-import { formatDate } from './../helpers/DateFormatter';
-import IDtParams from './interfaces/IDtParams';
-import IDtResult from './interfaces/DtResult';
-import IPhases from './interfaces/IPhases';
-import IFetchData from '../common/IFetchData';
-import PhaseDeleteModal from './PhaseDeleteModal';
-import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
-import PhaseEditModal from './PhaseEditModal';
+import MUITableCommonOptions from '../../common/MUITableCommonOptions';
+import { formatDate } from '../../helpers/DateFormatter';
+import IDtParams from '../interfaces/IDtParams';
+import IDtResult from '../interfaces/DtResult';
+import IPhases from '../interfaces/IPhases';
+import IFetchData from '../../common/IFetchData';
+import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
+import PhaseDeleteModal from '../modals/PhaseDeleteModal';
+import PhaseEditModal from '../modals/PhaseEditModal';
 
 export const PhaseList: React.FC<{
   projectId: number,

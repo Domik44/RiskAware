@@ -4,14 +4,14 @@ import {
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
-import MUITableCommonOptions from './../common/MUITableCommonOptions';
+import MUITableCommonOptions from '../../common/MUITableCommonOptions';
 import { Box, Tooltip, IconButton } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import IDtParams from './interfaces/IDtParams';
-import IDtResult from './interfaces/DtResult';
-import IMembersList from './interfaces/IMembersList';
-import IFetchData from '../common/IFetchData';
+import IDtParams from '../interfaces/IDtParams';
+import IDtResult from '../interfaces/DtResult';
+import IMembersList from '../interfaces/IMembersList';
+import IFetchData from '../../common/IFetchData';
 
 
 export const UsersOnProjectList: React.FC<{

@@ -1,5 +1,5 @@
-﻿import { AllProjectsList } from "./components/ProjectLists/AllProjectsList";
-import { MyProjectsList } from "./components/ProjectLists/MyProjectsList";
+﻿import { AllProjectsList } from "./components/projectLists/AllProjectsList";
+import { MyProjectsList } from "./components/projectLists/MyProjectsList";
 import { ProjectDetail } from "./components/ProjectDetail";
 import Login from './components/Login';
 

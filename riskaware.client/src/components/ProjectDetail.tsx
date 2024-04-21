@@ -3,17 +3,17 @@ import { formatDate } from "../helpers/DateFormatter";
 import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
-import AddPhaseModal from './AddPhaseModal';
-import AddProjectRoleModal from './AddProjectRoleModal';
-import AddRiskModal from './AddRiskModal';
-import RiskDetail from './RiskDetail'; // Import the RiskDetail component
+import AddPhaseModal from './modals/PhaseAddModal';
+import AddProjectRoleModal from './modals/ProjectRoleAddModal';
+import AddRiskModal from './modals/RiskAddModal';
+import RiskDetail from './RiskDetail';
 import IRiskDetail from './interfaces/IRiskDetail';
-import CommentList from './CommentList';
-import InitialSetupModal from './InitialSetupModal';
-import Matrix from './Matrix';
-import PhaseList from './PhaseList';
-import RiskList from './RiskList';
-import UsersOnProjectList from './UsersOnProjectList';
+import CommentList from './lists/CommentList';
+import InitialSetupModal from './modals/InitialSetupModal';
+import Matrix from './matrix/Matrix';
+import PhaseList from './lists/PhaseList';
+import RiskList from './lists/RiskList';
+import UsersOnProjectList from './lists/UsersOnProjectList';
 import IFetchData from '../common/IFetchData';
 
 interface IProjectDetailState {

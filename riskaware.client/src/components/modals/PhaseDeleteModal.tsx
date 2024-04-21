@@ -1,6 +1,6 @@
 ﻿import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
-import IFetchData from '../common/IFetchData';
+import IFetchData from '../../common/IFetchData';
 
 interface PhaseDeleteModalProps {
   phaseId: number;

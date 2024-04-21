@@ -2,7 +2,6 @@
 import { Col, Row, TabPane } from 'reactstrap';
 import IProjectDetail from './interfaces/IProjectDetail';
 import { formatDate } from "../helpers/DateFormatter";
-//import IRiskDetail from './interfaces/IRiskDetail';
 
 interface IRiskDetailProps {
   activeTab: string;
@@ -156,11 +155,6 @@ function RiskDetail(props: IRiskDetailProps) {
             </dd>
           </Row>
         </dl>
-        //<div>
-        //  <p>Title: {projectDetail.chosenRisk.title}</p>
-        //  <p>Category: {projectDetail.chosenRisk.categoryName}</p>
-        //  <p>Severity: {projectDetail.chosenRisk.severity}</p>
-        //</div>
       ) : (
         <p>No risk selected.</p>
       )}

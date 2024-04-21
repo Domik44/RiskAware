@@ -1,6 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGroup, Label, Input, Col } from 'reactstrap';
-import IFetchData from '../common/IFetchData';
+import IFetchData from '../../common/IFetchData';
 
 interface CreateProjectModalProps {
   // Define any props if needed

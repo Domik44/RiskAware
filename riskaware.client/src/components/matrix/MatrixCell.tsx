@@ -1,5 +1,5 @@
 ﻿import { Component } from 'react';
-import IRisks from './interfaces/IRisks';
+import IRisks from '../interfaces/IRisks';
 import { PopoverBody, PopoverHeader, UncontrolledPopover } from 'reactstrap';
 
 interface IMatrix {
