@@ -94,9 +94,15 @@ namespace RiskAware.Server.Controllers
                 FirstName = userDto.FirstName,
                 LastName = userDto.LastName,
                 Email = userDto.Email,
+                UserName = userDto.Email,
+                SystemRoleId = 2
             };
 
-            await _userManager.CreateAsync(user, "Basic123");
+            var result = await _userManager.CreateAsync(user, "Basic123");
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
 
             return Ok();
         }
