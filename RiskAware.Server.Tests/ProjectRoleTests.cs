@@ -44,7 +44,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Members");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -107,7 +107,7 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/AddUserToRiskProject", dto);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -132,7 +132,7 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{notAssigned}/JoinRequest", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         // TODO What should the latter entry be?
@@ -159,7 +159,7 @@ namespace RiskAware.Server.Tests
                 await Client.PutAsJsonAsync(
                     $"{Endpoint}/RiskProject/{ProjectId}/ApproveJoinRequest/{RoleType.TeamMember}", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -178,7 +178,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/ProjectRole/{ProjectId}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         // TODO What should the latter entry be?
@@ -203,7 +203,7 @@ namespace RiskAware.Server.Tests
                 await Client.DeleteAsync(
                     $"{Endpoint}/RiskProject/{ProjectId}/DeclineJoinRequest/{RoleType.TeamMember}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

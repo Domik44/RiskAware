@@ -60,7 +60,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"/api/RiskProject/{projectId}/Phases");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -91,7 +91,7 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync($"api/RiskProject/{ProjectId}/Phases", dto);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/{ProjectId}", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]

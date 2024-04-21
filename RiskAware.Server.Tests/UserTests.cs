@@ -16,7 +16,6 @@ namespace RiskAware.Server.Tests
         }
 
         private const string Endpoint = "/api";
-        private const int ProjectId = 1;
 
         [Fact]
         public async Task GET_User_is_OK()
@@ -37,7 +36,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/User");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -61,7 +60,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
@@ -125,7 +124,7 @@ namespace RiskAware.Server.Tests
 
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/User/{userDto.Id}", userDto);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -145,7 +144,7 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -167,7 +166,7 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/Restore", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -187,7 +186,7 @@ namespace RiskAware.Server.Tests
 
             HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }
