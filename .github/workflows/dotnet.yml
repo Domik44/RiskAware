@@ -8,10 +8,10 @@ on:
 
 jobs:
   setup:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     services:
       mssql:
-        image: mcr.microsoft.com/mssql/server:2022-preview-ubuntu-22.04
+        image: mcr.microsoft.com/mssql/server:2019-latest
         env:
           SA_PASSWORD: "VUTFITez2024"
           ACCEPT_EULA: "Y"
