@@ -15,6 +15,7 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
+    [Collection("API tests")]
     public class ProjectPhaseTests : ServerTestsBase
     {
         public ProjectPhaseTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
@@ -25,16 +26,28 @@ namespace RiskAware.Server.Tests
         private const string Endpoint = "/api/ProjectPhase";
         private const int ProjectId = 1;
 
-        [Fact]
-        public async Task GET_RiskProject_Project_Phases_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        [InlineData(5)]
+        public async Task GET_RiskProject_Project_Phases_is_OK(int projectId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
-            HttpResponseMessage response = await Client.GetAsync($"/api/RiskProject/{ProjectId}/Phases");
+            HttpResponseMessage response = await Client.GetAsync($"/api/RiskProject/{projectId}/Phases");
 
             response.EnsureSuccessStatusCode();
             List<ProjectPhaseDto>? dto = (await response.Content.ReadFromJsonAsync<List<ProjectPhaseDto>>())!;
 
-            Assert.Equal("Úvodní studie, analýza a specifikace požadavků", dto.First(p => p.Id == 1).Name);
+            if (projectId == 1)
+            {
+                Assert.Equal("Úvodní studie, analýza a specifikace požadavků", dto.First(p => p.Id == 1).Name);
+            }
+            else
+            {
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
         }
 
         [Fact]

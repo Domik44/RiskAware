@@ -1,20 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Castle.Core.Configuration;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using Respawn;
-using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.UserDTOs;
-using RiskAware.Server.Models;
-using RiskAware.Server.Tests.Seeds;
-using System.Net;
-using System.Net.Http.Headers;
+using RiskAware.Server.Seeds;
 using System.Net.Http.Json;
-using System.Text;
 using Xunit.Abstractions;
+using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
 
 namespace RiskAware.Server.Tests
 {
@@ -26,6 +20,8 @@ namespace RiskAware.Server.Tests
     {
         private readonly ApiWebApplicationFactory Factory;
         protected readonly HttpClient Client;
+        private SqlConnection? _connection;
+        private Respawner? _respawner;
 
         public ITestOutputHelper TestOutputHelper;
 
@@ -33,17 +29,40 @@ namespace RiskAware.Server.Tests
         {
             TestOutputHelper = testOutputHelper;
             Factory = fixture;
-            Client = Factory.CreateClient(
-                new WebApplicationFactoryClientOptions {AllowAutoRedirect = true});
+            Client = Factory.CreateClient();
         }
 
         public async Task InitializeAsync()
         {
+            string? connectionString =
+                Factory.Services.GetRequiredService<IConfiguration>().GetConnectionString("TestConnection");
+            _connection = new SqlConnection(connectionString);
+            await _connection.OpenAsync();
+
+            _respawner = await Respawner.CreateAsync(_connection,
+                new RespawnerOptions
+                {
+                    SchemasToInclude = new[] {"dbo"}, DbAdapter = DbAdapter.SqlServer, WithReseed = true
+                });
+
+            await _respawner.ResetAsync(_connection);
+
+            await DbSeeder.SeedAll(Factory.Services);
         }
 
         public async Task DisposeAsync()
         {
             Client.Dispose();
+
+            if (_connection != null)
+            {
+                if (_respawner != null)
+                {
+                    await _respawner.ResetAsync(_connection);
+                }
+
+                await _connection.CloseAsync();
+            }
         }
 
         public async Task PerformLogin(LoginDto loginDto)

@@ -7,6 +7,7 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
+    [Collection("API tests")]
     public class RiskCategoryTests : ServerTestsBase
     {
         public RiskCategoryTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
@@ -17,12 +18,16 @@ namespace RiskAware.Server.Tests
         private const string Endpoint = "/api";
         private const int ProjectId = 1;
 
-        [Fact]
-        public async Task GET_Risk_Categories_is_OK()
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        [InlineData(4)]
+        public async Task GET_Risk_Categories_is_OK(int projectId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{ProjectId}/RiskCategories");
+            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/RiskCategories");
 
             response.EnsureSuccessStatusCode();
 
@@ -31,12 +36,11 @@ namespace RiskAware.Server.Tests
             Assert.True(dto.Exists(p => p.Name == "Finanční rizika"));
         }
 
-        [Fact]
-        public async Task GET_Risk_Category_is_OK()
+        [Theory]
+        [InlineData(1)]
+        public async Task GET_Risk_Category_is_OK(int categoryId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
-
-            int categoryId = 1;
 
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskCategory/{categoryId}");
 
