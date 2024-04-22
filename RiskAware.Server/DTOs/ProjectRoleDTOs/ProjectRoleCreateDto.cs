@@ -2,14 +2,17 @@
 
 namespace RiskAware.Server.DTOs.ProjectRoleDTOs
 {
+    /// <summary>
+    /// DTO used for transferring project role data between the server and the client.
+    /// This DTO is used for creating a new project role.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     public class ProjectRoleCreateDto
     {
         public string Name { get; set; }
         public RoleType RoleType { get; set; }
-        //public string UserId { get; set; } // TODO -> delete if only adding by email is ok
         public string Email { get; set; }
         public RoleType UserRoleType { get; set; }
-        //public int RiskProjectId { get; set; }
-        public int? ProjectPhaseId { get; set; } // TODO -> when user is assigned to phase
+        public int? ProjectPhaseId { get; set; }
     }
 }

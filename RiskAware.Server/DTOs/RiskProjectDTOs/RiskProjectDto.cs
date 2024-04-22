@@ -1,7 +1,8 @@
 ﻿namespace RiskAware.Server.DTOs.RiskProjectDTOs
 {
     /// <summary>
-    /// Data transfer object for collections of RiskProject entities.
+    /// DTO used for transferring risk project data between the server and the client.
+    /// This DTO is used for showing risk projects in the risk project table.
     /// </summary>
     /// <author>Dominik Pop</author>
     public class RiskProjectDto

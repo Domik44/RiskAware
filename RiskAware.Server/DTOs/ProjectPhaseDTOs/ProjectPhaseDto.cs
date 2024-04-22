@@ -3,7 +3,8 @@
 namespace RiskAware.Server.DTOs.ProjectPhaseDTOs
 {
     /// <summary>
-    /// This data transfer object represents a project phase listed in RiskProject table.
+    /// DTO used for transferring project phase data between the server and the client.
+    /// This DTO is used for displaying project phases in the phase pannel and tables.
     /// </summary>
     public class ProjectPhaseDto
     {

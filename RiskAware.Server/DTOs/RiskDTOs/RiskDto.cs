@@ -1,8 +1,10 @@
 ﻿namespace RiskAware.Server.DTOs.RiskDTOs
 {
     /// <summary>
-    /// This data transfer object represents a risk listed in RiskProject phases pannel and table.
+    /// DTO used for transferring risk data between the server and the client.
+    /// This DTO is used for displaying risks in table.
     /// </summary>
+    /// <author>Dominik Pop</author>
     public class RiskDto
     {
         public int Id { get; set; }

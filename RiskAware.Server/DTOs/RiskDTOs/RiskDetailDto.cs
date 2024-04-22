@@ -1,5 +1,10 @@
 ﻿namespace RiskAware.Server.DTOs.RiskDTOs
 {
+    /// <summary>
+    /// DTO used for transferring risk data between the server and the client.
+    /// This DTO is used for displaying risk detail.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     public class RiskDetailDto
     {
         public int Id { get; set; }

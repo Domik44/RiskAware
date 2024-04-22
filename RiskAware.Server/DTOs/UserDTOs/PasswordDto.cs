@@ -2,6 +2,11 @@
 
 namespace RiskAware.Server.DTOs.UserDTOs
 {
+    /// <summary>
+    /// DTO used for transferring password data between the server and the client.
+    /// This DTO is used for changing a user's password.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     public class PasswordDto
     {
         [Required]

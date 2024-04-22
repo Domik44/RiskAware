@@ -2,6 +2,11 @@
 
 namespace RiskAware.Server.DTOs.ProjectPhaseDTOs
 {
+    /// <summary>
+    /// DTO used for transferring project phase data between the server and the client.
+    /// This DTO is used for creating a new project phase and editing old ones.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     public class ProjectPhaseCreateDto
     {
         public string Name { get; set; }

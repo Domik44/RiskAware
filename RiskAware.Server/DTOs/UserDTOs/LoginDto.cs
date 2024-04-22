@@ -2,6 +2,11 @@
 
 namespace RiskAware.Server.DTOs.UserDTOs;
 
+/// <summary>
+/// DTO used for transferring login data between the server and the client.
+/// This DTO is used for logging in a user.
+/// </summary>
+/// <author>Dominik Pop</author>
 public class LoginDto
 {
     [Required]

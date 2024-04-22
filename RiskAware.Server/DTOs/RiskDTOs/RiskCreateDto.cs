@@ -2,6 +2,11 @@
 
 namespace RiskAware.Server.DTOs.RiskDTOs
 {
+    /// <summary>
+    /// DTO used for transferring risk data between the server and the client.
+    /// This DTO is used for creating a new risk and editing old ones.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     public class RiskCreateDto
     {
         public string Title { get; set; }
