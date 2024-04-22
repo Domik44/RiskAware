@@ -48,3 +48,8 @@ export function formatDateForInput(date: Date) {
   // Ensure that the parts are in "yyyy-MM-dd" format
   return `${year}-${month}-${day}`;
 }
+
+export function parseCzechDate(dateString: string) {
+  const [day, month, year] = dateString.split('.');
+  return `${year}-${month}-${day}`;
+}

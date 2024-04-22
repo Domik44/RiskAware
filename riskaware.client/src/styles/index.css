@@ -138,3 +138,9 @@ nav a {
 .invalid-item td {
     color: red !important;
 }
+
+.MuiInputBase-input {
+    --padding: 7px;
+    padding-top: var(--padding) !important;
+    padding-bottom: var(--padding) !important;
+}
