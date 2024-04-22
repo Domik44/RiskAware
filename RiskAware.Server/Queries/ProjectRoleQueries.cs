@@ -12,15 +12,28 @@ using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Queries
 {
+    /// <summary>
+    /// Class containing queries for project roles.
+    /// </summary>
+    /// <author> Dominik Pop </author>
     public class ProjectRoleQueries
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Constructor for ProjectRoleQueries.
+        /// </summary>
+        /// <param name="context"> Application DB context. </param>
         public ProjectRoleQueries(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Method for getting project roles of a risk project with the given id.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> Returns collection of DTOs containing basic info about project role. </returns>
         public async Task<IEnumerable<ProjectRoleDto>> GetRiskProjectMembersAsync(int id)
         {
             var projectRoles = await _context.ProjectRoles
@@ -44,6 +57,13 @@ namespace RiskAware.Server.Queries
             return projectRoles;
         }
 
+        /// <summary>
+        /// Query for getting project roles of a risk project with the given id.
+        /// Filtered by the given datatable parameters.
+        /// </summary>
+        /// <param name="projectId"> Id of risk project. </param>
+        /// <param name="dtParams"> Datatable parametres. </param>
+        /// <returns> Returns collection of DTOs containing basic info about project role. </returns>
         public IQueryable<ProjectRoleListDto> QueryRiskProjectMembers(int projectId, DtParamsDto dtParams)
         {
             var query = _context.ProjectRoles
@@ -166,6 +186,13 @@ namespace RiskAware.Server.Queries
             return true;
         }
 
+        /// <summary>
+        /// Method for checking if user is assigned to the phase.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="phaseId"> Id of phase. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns></returns>
         public async Task<bool> IsAssignedToPhase(int riskProjectId, int phaseId, string userId)
         {
             return await _context.ProjectRoles
@@ -173,6 +200,12 @@ namespace RiskAware.Server.Queries
                 .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && pr.ProjectPhaseId == phaseId);
         }
 
+        /// <summary>
+        /// Method for checking if user is allowed to approve/decline risk.
+        /// </summary>
+        /// <param name="riskId"> Id of risk. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns></returns>
         public async Task<bool> IsAllowedToDeclineApproveRisk(int riskId, string userId)
         {
             var isProjectManager = await IsProjectManager(riskId, userId);
@@ -186,6 +219,13 @@ namespace RiskAware.Server.Queries
             return false;
         }
 
+        /// <summary>
+        /// Method for checking if user is allowed to add/edit risk.
+        /// </summary>
+        /// <param name="riskId"> Id of risk. </param>
+        /// <param name="phaseId"> Id of phase we are adding/editing to. </param>
+        /// <param name="userId"> Id of user adding/editing risk. </param>
+        /// <returns> Returns true if user is allowed to add/edit. </returns>
         public async Task<bool> IsAllowedToAddEditRisk(int riskId, int phaseId, string userId)
         {
             var isProjectManager = await IsProjectManager(riskId, userId);
@@ -206,6 +246,12 @@ namespace RiskAware.Server.Queries
             return false;
         }
 
+        /// <summary>
+        /// Method for checking if user is allowed to delete/restore risk.
+        /// </summary>
+        /// <param name="risk"> Entity representing risk. </param>
+        /// <param name="userId"> Id of user trying to delete/restore risk. </param>
+        /// <returns> Returns true if user can delete/restore risk. </returns>
         public async Task<bool> IsAllowedToDeleteRestoreRisk(Risk risk, string userId)
         {
             var isProjectManager = await IsProjectManager(risk.RiskProjectId, userId);
@@ -224,6 +270,12 @@ namespace RiskAware.Server.Queries
             return false;
         }
 
+        /// <summary>
+        /// Method for checking if user has basic editing premissions on certain risk project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user. </param>
+        /// <returns> Returns true if user has basic edit premissions. </returns>
         public async Task<bool> HasBasicEditPermissions(int riskProjectId, string userId)
         {
             return await _context.ProjectRoles
@@ -231,6 +283,13 @@ namespace RiskAware.Server.Queries
                 .AnyAsync(pr => pr.RiskProjectId == riskProjectId && pr.UserId == userId && (pr.RoleType == RoleType.ProjectManager || pr.RoleType == RoleType.RiskManager || pr.RoleType == RoleType.TeamMember));
         }
 
+        /// <summary>
+        /// Method for getting what role user has on a risk project.
+        /// What RoleTypes see RoleType enum in Models.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> Id of user, which role we want to get. </param>
+        /// <returns> Return what type of role user has on project. </returns>
         public async Task<RoleType> GetUsersRoleOnRiskProjectAsync(int riskProjectId, string userId)
         {
             var role = await _context.ProjectRoles
@@ -246,6 +305,12 @@ namespace RiskAware.Server.Queries
             return role.RoleType;
         }
 
+        /// <summary>
+        /// Method for getting what phase user is assigned to on a risk project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="userId"> id of user. </param>
+        /// <returns> Returns DTO containing basic info about assigned project phase, or null in case of no phase assigned or no role. </returns>
         public async Task<ProjectPhaseSimpleDto> GetUsersAssignedPhaseAsync(int riskProjectId, string userId)
         {
             var role = await _context.ProjectRoles

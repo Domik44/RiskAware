@@ -1,25 +1,41 @@
 ﻿using Microsoft.Build.Evaluation;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using RiskAware.Server.Data;
+using RiskAware.Server.DTOs;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
 using RiskAware.Server.Models;
 using System.Linq.Dynamic.Core;
+using System.Reflection.Metadata.Ecma335;
 
 namespace RiskAware.Server.Queries
 {
+    /// <summary>
+    /// Class containing queries for risks.
+    /// </summary>
+    /// <author> Dominik Pop </author>
     public class RiskQueries
     {
         private readonly AppDbContext _context;
 
+        /// <summary>
+        /// Constructor for RiskQueries.
+        /// </summary>
+        /// <param name="context"> Application DB context. </param>
         public RiskQueries(AppDbContext context)
         {
             _context = context;
         }
 
+        /// <summary>
+        /// Method for getting risk detail with the given id.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns DTO containing all important info about risk. </returns>
         public async Task<RiskDetailDto> GetRiskDetailAsync(int id)
         {
             var recentRiskHistory = await _context.RiskHistory
@@ -60,6 +76,77 @@ namespace RiskAware.Server.Queries
             return riskDto;
         }
 
+        /// <summary>
+        /// Method for editing value back to the original FE value based on scale.
+        /// </summary>
+        /// <param name="scale"> Scale of risk project. </param>
+        /// <param name="value"> Value to be edited. </param>
+        /// <returns> Returns new value based on given scale. </returns>
+        public int EditValueBack(int scale, int value)
+        {
+            switch (scale)
+            {
+                case 3 when value == 3:
+                    return 5;
+                case 3 when value == 2:
+                    return 3;
+                default:
+                    return value;
+            }
+        }
+
+        /// <summary>
+        /// Method for getting risk information needed for edit modal in FE.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <param name="scale"> Scale of risk project risk is in. </param>
+        /// <returns> Returns DTO containing info needed for risk edit. </returns>
+        public async Task<RiskCreateDto> GetRiskEditAsync(int id, int scale)
+        {
+            var recentRiskHistory = await _context.RiskHistory
+                .AsNoTracking()
+                .Where(h => h.RiskId == id)
+                .OrderByDescending(h => h.LastModif)
+                .FirstOrDefaultAsync();
+
+            var probability = EditValueBack(scale, recentRiskHistory.Probability);
+            var impact = EditValueBack(scale, recentRiskHistory.Impact);
+
+            var risk = await _context.Risks
+                .AsNoTracking()
+                .Where(r => r.Id == id)
+                .Select(r => new RiskCreateDto
+                {
+                    Title = recentRiskHistory.Title,
+                    Description = recentRiskHistory.Description,
+                    Probability = probability,
+                    Impact = impact,
+                    Threat = recentRiskHistory.Threat,
+                    Indicators = recentRiskHistory.Indicators,
+                    Prevention = recentRiskHistory.Prevention,
+                    Status = recentRiskHistory.Status,
+                    PreventionDone = recentRiskHistory.PreventionDone,
+                    RiskEventOccured = recentRiskHistory.RiskEventOccured,
+                    End = recentRiskHistory.End,
+                    ProjectPhaseId = r.ProjectPhaseId,
+                    RiskCategory = new RiskCategoryDto
+                    {
+                        Id = r.RiskCategory.Id,
+                        Name = r.RiskCategory.Name
+                    },
+                })
+                .FirstOrDefaultAsync();
+
+            return risk;
+        }
+
+        /// <summary>
+        /// Method for getting risks of a project with the given id.
+        /// Filtered by the given datatable parameters.
+        /// </summary>
+        /// <param name="projectId"> Id of risk project. </param>
+        /// <param name="dtParams"> Datatable parametres. </param>
+        /// <returns> Return collection of DTOs containing basic info about risk. </returns>
         public IQueryable<RiskDto> QueryProjectRisks(int projectId, DtParamsDto dtParams)
         {
             var query = _context.Risks
@@ -125,11 +212,15 @@ namespace RiskAware.Server.Queries
             return query;
         }
 
+        /// <summary>
+        /// Method for getting risks of risk project with the given id.
+        /// </summary>
+        /// <param name="id"> Id of risk project. </param>
+        /// <returns> Return collection of DTOs containing basic info about risk. </returns>
         public async Task<IEnumerable<RiskDto>> GetRiskProjectRisksAsync(int id)
         {
             var risks = await _context.Risks
             .AsNoTracking()
-                //.Where(r => r.RiskProjectId == id)
                 .Where(r => r.RiskProjectId == id && r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid)
                 .Select(r => new RiskDto
                 {
@@ -158,18 +249,19 @@ namespace RiskAware.Server.Queries
                 })
                 .ToListAsync();
 
-            // TODO -> mby check if null return empty list?
-
             return risks;
         }
 
+        /// <summary>
+        /// Method for getting risks of project phase with the given id.
+        /// </summary>
+        /// <param name="id"> Id of project  phase. </param>
+        /// <returns> Returns collection of DTOs containing basic info about risk. </returns>
         public async Task<IEnumerable<RiskDto>> GetProjectPhaseRisksAsync(int id)
         {
             var risks = await _context.Risks
                 .AsNoTracking()
                 .Where(r => r.ProjectPhaseId == id && r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid)
-                //.Where(r => r.ProjectPhaseId == id)
-                //.Include(r => r.RiskCategory)
                 .Select(r => new RiskDto
                 {
                     Id = r.Id,
@@ -189,11 +281,18 @@ namespace RiskAware.Server.Queries
                 })
                 .ToListAsync();
 
-            // TODO -> mby check if null return empty list?
-
             return risks;
         }
 
+        /// <summary>
+        /// Method for adding new risk to the database.
+        /// </summary>
+        /// <param name="riskDto"> DTO containing info about new risk. </param>
+        /// <param name="userId"> Id of user creating risk. </param>
+        /// <param name="riskProjectId"> Id of risk project risk belongs to. </param>
+        /// <param name="riskCategoryId"> Id of risk category assigned to risk. </param>
+        /// <param name="isApproved"> Boolean deciding if risk should be approved or not. </param>
+        /// <returns> Returns true if action was successful. </returns>
         public async Task<bool> AddRiskAsync(RiskCreateDto riskDto, string userId, int riskProjectId, int riskCategoryId, bool isApproved)
         {
             var risk = new Risk
@@ -235,6 +334,15 @@ namespace RiskAware.Server.Queries
             return true;
         }
 
+        /// <summary>
+        /// Method for editing risk in the database.
+        /// </summary>
+        /// <param name="riskDto"> DTO containing info what should be edited on risk. </param>
+        /// <param name="userId"> Id of user editing risk. </param>
+        /// <param name="risk"> Entity representing risk in DB.1 </param>
+        /// <param name="riskCategoryId"> Id of risk category assigned to risk. </param>
+        /// <param name="isApproved"> Boolean deciding if risk should be approved or not. </param>
+        /// <returns> Returns true if action was successful. </returns>
         public async Task<bool> EditRiskAsync(RiskCreateDto riskDto, string userId, Risk risk, int riskCategoryId, bool isApproved)
         {
             if(risk.RiskCategoryId != riskCategoryId || risk.ProjectPhaseId != riskDto.ProjectPhaseId)
