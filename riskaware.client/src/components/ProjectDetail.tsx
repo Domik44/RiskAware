@@ -147,7 +147,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       )}
                     </Col>
                   </Row>
-                  <UsersOnProjectList projectId={projectDetail.detail.id} fetchDataRef={this.memberFetchDataRef} />
+                  <UsersOnProjectList projectId={projectDetail.detail.id} fetchDataRef={this.memberFetchDataRef} projectDetail={projectDetail} />
                 </TabPane>
                 <TabPane tabId="matrix">
                   <Row>

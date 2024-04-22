@@ -24,7 +24,8 @@ import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 import IRiskCategory from '../interfaces/IRiskCategory';
 import IProjectDetail from '../interfaces/IProjectDetail';
 import RiskEditModal from '../modals/RiskEditModal';
-import IRiskDetail from '../interfaces/IRiskDetail';
+import IRiskEdit from '../interfaces/IRiskEdit';
+//import IRiskDetail from '../interfaces/IRiskDetail';
 
 export const RiskList: React.FC<{
   projectId: number,
@@ -53,7 +54,7 @@ export const RiskList: React.FC<{
   const [selectedRiskId, setSelectedRiskId] = useState<number | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [editData, setEditData] = useState<IRiskDetail>();
+  const [editData, setEditData] = useState<IRiskEdit>();
 
   const openDeleteModal = (riskId: number) => {
     setSelectedRiskId(riskId);
@@ -66,13 +67,13 @@ export const RiskList: React.FC<{
 
   const fetchEditData = async (riskId: number) => {
     try {
-      const response = await fetch(`/api/Risk/${riskId}`, {
+      const response = await fetch(`/api/Risk/${riskId}/GetEdit`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
         }
       });
-      const json: IRiskDetail = await response.json();
+      const json: IRiskEdit = await response.json();
       setEditData(json);
       setEditModalOpen(true);
     }

@@ -4,7 +4,9 @@ import { Form, Button, Modal, ModalHeader, ModalBody, ModalFooter, Row, FormGrou
 import { Impact, Prevention, Probability, Status, Category } from '../enums/RiskAttributesEnum';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import IRiskCategory from '../interfaces/IRiskCategory';
-import IRiskDetail from '../interfaces/IRiskDetail';
+import IRiskEdit from '../interfaces/IRiskEdit';
+import { formatDateForInput } from '../../common/DateFormatter';
+//import IRiskDetail from '../interfaces/IRiskDetail';
 
 
 interface RiskEditModalProps {
@@ -13,7 +15,8 @@ interface RiskEditModalProps {
   toggle: () => void;
   reRender: () => void;
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
-  data: IRiskDetail | undefined;
+  data: IRiskEdit | undefined;
+  //data: IRiskDetail | undefined;
   projectId: number;
   projectDetail: IProjectDetail;
   categories: IRiskCategory[];
@@ -34,11 +37,22 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          //name: (document.getElementById("editRiskName") as HTMLInputElement).value,
-          //description: (document.getElementById("editRiskDescription") as HTMLInputElement).value,
-          //probability: parseInt((document.getElementById("editRiskProbability") as HTMLInputElement).value),
-          //impact: parseInt((document.getElementById("editRiskImpact") as HTMLInputElement).value),
-          //riskProjectId: projectId
+          title: (document.getElementById("RiskEditTitle") as HTMLInputElement).value,
+          description: (document.getElementById("RiskEditDescription") as HTMLInputElement).value,
+          probability: parseInt((document.getElementById("RiskEditPropability") as HTMLInputElement).value),
+          impact: parseInt((document.getElementById("RiskEditImpact") as HTMLInputElement).value),
+          threat: (document.getElementById("RiskEditThreat") as HTMLInputElement).value,
+          indicators: (document.getElementById("RiskEditIndicators") as HTMLInputElement).value,
+          prevention: (document.getElementById("RiskEditPrevention") as HTMLInputElement).value,
+          status: (document.getElementById("RiskEditStatus") as HTMLInputElement).value,
+          preventionDone: (document.getElementById("RiskEditPreventionDone") as HTMLInputElement).value,
+          riskEventOccured: (document.getElementById("RiskEditRiskOccured") as HTMLInputElement).value,
+          end: (document.getElementById("RiskEditEnd") as HTMLInputElement).value,
+          riskCategory: {
+            id: parseInt((document.getElementById("RiskEditCategory") as HTMLInputElement).value),
+            name: (document.getElementById("newCategoryName") as HTMLInputElement).value
+          },
+          projectPhaseId: parseInt((document.getElementById("RiskEditPhase") as HTMLInputElement).value)
         })
       });
 
@@ -73,6 +87,28 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
   const handleSelectChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedCategory = parseInt(event.target.value);
     selectShow(selectedCategory);
+  };
+
+  const handleDateInput = (date: Date | string | undefined) => {
+    if (date) {
+      // Check if date is a string
+      if (typeof date === "string") {
+        // Parse the string to a Date object
+        date = new Date(date);
+      }
+
+      // Check if date is a valid Date object
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        const zeroDate = new Date("0001-01-01T00:00:00");
+
+        if (date.getTime() === zeroDate.getTime()) {
+          return undefined;
+        }
+      }
+      return formatDateForInput(date);
+    }
+
+    return undefined;
   };
 
   return (
@@ -115,7 +151,7 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
             <Row>
               <FormGroup>
                 <Label> Kategorie:</Label>
-                <Input id="RiskEditCategory" name="RiskEditCategory" type="select" onChange={handleSelectChange} defaultValue={data?.riskCategoryName}>
+                <Input id="RiskEditCategory" name="RiskEditCategory" type="select" onChange={handleSelectChange} defaultValue={data?.riskCategory.id}>
                   <option id="newCategoryOption" value={Category.New}>
                     Nová kategorie
                   </option>
@@ -126,9 +162,9 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
                   ))}
                 </Input>
               </FormGroup>
-              <FormGroup id="newCategoryGroup">
+              <FormGroup id="newCategoryGroup" className="hidden">
                 <Label> Název kategorie:</Label>
-                <Input required id="newCategoryName" name="newCategoryName" type="text" />
+                <Input required id="newCategoryName" name="newCategoryName" type="text" defaultValue="New" />
               </FormGroup>
             </Row>
             <Row>
@@ -161,7 +197,7 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
               <Col>
                 <FormGroup>
                   <Label> Dopad:</Label>
-                  <Input id="RiskEditImpact" name="RiskEditImpact" type="select">
+                  <Input id="RiskEditImpact" name="RiskEditImpact" type="select" defaultValue={data?.impact}>
                     <option value={Impact.Insignificant}>
                       Nepatrný
                     </option>
@@ -201,7 +237,7 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
               <Col>
                 <FormGroup>
                   <Label> Stav:</Label>
-                  <Input id="RiskEditStatus" name="RiskEditStatus" type="select">
+                  <Input id="RiskEditStatus" name="RiskEditStatus" type="select" defaultValue={data?.status}>
                     <option value={Status.Concept}>
                       Koncept
                     </option>
@@ -220,7 +256,7 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
               <Col>
                 <FormGroup>
                   <Label>Prevence:</Label>
-                  <Input id="RiskEditPrevention" name="RiskEditPrevention" type="select">
+                  <Input id="RiskEditPrevention" name="RiskEditPrevention" type="select" defaultValue={data?.prevention}>
                     <option value={Prevention.Neglect}>
                       Zanedbání
                     </option>
@@ -239,19 +275,19 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
                 <FormGroup>
                   {/*TODO -> handle na nevyplnene riziko*/}
                   <Label>Riziko nastalo:</Label>
-                  <Input id="RiskEditRiskOccured" name="RiskEditRiskOccured" type="date" />
+                  <Input id="RiskEditRiskOccured" name="RiskEditRiskOccured" type="date" defaultValue={handleDateInput(data?.riskEventOccured)} />
                 </FormGroup>
               </Col>
               <Col>
                 <FormGroup>
                   <Label>Prevence provedena:</Label>
-                  <Input id="RiskEditPreventionDone" name="RiskEditPreventionDone" type="date" />
+                  <Input id="RiskEditPreventionDone" name="RiskEditPreventionDone" type="date" defaultValue={handleDateInput(data?.preventionDone)} />
                 </FormGroup>
               </Col>
             </Row>
             <FormGroup>
               <Label>Platnost rizika:</Label>
-              <Input required id="RiskEditEnd" name="RiskEditEnd" type="date" />
+              <Input required id="RiskEditEnd" name="RiskEditEnd" type="date" defaultValue={handleDateInput(data?.end)} />
             </FormGroup>
             <Row>
             </Row>

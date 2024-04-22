@@ -12,12 +12,14 @@ import IDtParams from '../interfaces/IDtParams';
 import IDtResult from '../interfaces/IDtResult';
 import IMembersList from '../interfaces/IMembersList';
 import IDtFetchData from '../interfaces/IDtFetchData';
+import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 
 
 export const UsersOnProjectList: React.FC<{
   projectId: number,
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>
-}> = ({ projectId, fetchDataRef }) => {
+  projectDetail: IProjectDetail;
+}> = ({ projectId, fetchDataRef, projectDetail }) => {
   // Data and fetching state
   const [data, setData] = useState<IMembersList[]>([]);
   const [isError, setIsError] = useState(false);
@@ -144,7 +146,7 @@ export const UsersOnProjectList: React.FC<{
       showProgressBars: isRefetching,
       sorting,
     },
-    enableRowActions: true,        // Display row actions
+    enableRowActions: projectDetail.userRole === RoleType.ProjectManager,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
         {/*<Tooltip title="Zobrazit detail">*/}
