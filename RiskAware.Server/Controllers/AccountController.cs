@@ -6,6 +6,10 @@ using System.Security.Claims;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for managing user accounts related requests.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     [Route("api/[controller]")]
     [ApiController]
     public class AccountController : ControllerBase
@@ -17,6 +21,11 @@ namespace RiskAware.Server.Controllers
             _signInManager = signInManager;
         }
 
+        /// <summary>
+        /// Method for logging in user.
+        /// </summary>
+        /// <param name="model"> DTO containing login info. </param>
+        /// <returns> Returns if login was successful or not. </returns>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto model)
         {
@@ -38,6 +47,10 @@ namespace RiskAware.Server.Controllers
             return BadRequest(ModelState);
         }
 
+        /// <summary>
+        /// Method for logging out user.
+        /// </summary>
+        /// <returns> Returns is user was logout or not. </returns>
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
@@ -45,6 +58,10 @@ namespace RiskAware.Server.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Method for checking if user is logged in.
+        /// </summary>
+        /// <returns> Returns true if user is logged in. </returns>
         [HttpGet("IsLoggedIn")]
         public IActionResult IsLoggedIn()
         {

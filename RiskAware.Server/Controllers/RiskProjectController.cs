@@ -12,6 +12,10 @@ using System.Linq.Dynamic.Core;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for managing risk projects.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -127,7 +131,6 @@ namespace RiskAware.Server.Controllers
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                //TODO -> user is not logged in
                 return NoContent();
             }
 
@@ -240,7 +243,6 @@ namespace RiskAware.Server.Controllers
         /// <param name="riskProjectDto"> DTO containing basic info about risk project. </param>
         /// <returns> Returns if action was succesful or not. </returns>
         /// url: api/RiskProjects/5
-        // TODO -> frontend
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRiskProject(int id, RiskProjectDetailDto riskProjectDto)
         {
@@ -314,7 +316,6 @@ namespace RiskAware.Server.Controllers
         /// <param name="id"> Id of risk project. </param>
         /// <returns> Returns if action was succesful or not. </returns>
         /// url: api/RiskProjects/5/RestoreProject
-        // TODO -> frontend
         [HttpPut("{id}/RestoreProject")]
         public async Task<IActionResult> RestoreProject(int id)
         {
@@ -338,7 +339,6 @@ namespace RiskAware.Server.Controllers
         /// <param name="id"> Id of risk project. </param>
         /// <returns> Returns if action was succesful or not. </returns>
         /// url: api/RiskProjects/5
-        // TODO -> frontend 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRiskProject(int id)
         {

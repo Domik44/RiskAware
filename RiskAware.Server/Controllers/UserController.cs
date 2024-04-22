@@ -8,6 +8,10 @@ using RiskAware.Server.Models;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for managing user accounts.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]

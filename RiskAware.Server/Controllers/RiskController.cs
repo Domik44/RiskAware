@@ -44,13 +44,33 @@ namespace RiskAware.Server.Controllers
         public async Task<ActionResult<RiskDetailDto>> GetRisk(int id)
         {
             var risk = await _riskQueries.GetRiskDetailAsync(id);
-
+            
             if (risk == null)
             {
                 return NotFound();
             }
 
             return Ok(risk);
+        }
+
+        /// <summary>
+        /// Method for getting risk information for edit modal.
+        /// </summary>
+        /// <param name="id"> Id of risk. </param>
+        /// <returns> Returns DTO used for editing risk. </returns>
+        [HttpGet("{id}/GetEdit")]
+        public async Task<ActionResult<RiskCreateDto>> GetRiskForEdit(int id)
+        {
+            var risk = await _context.Risks.FindAsync(id);
+            if (risk == null)
+            {
+                return NotFound();
+            }
+
+            var scale = await _context.RiskProjects.Where(rp => rp.Id == risk.RiskProjectId).Select(rp => rp.Scale).FirstOrDefaultAsync();
+            var riskDto = await _riskQueries.GetRiskEditAsync(id, scale);
+
+            return Ok(riskDto);
         }
 
         /// <summary>

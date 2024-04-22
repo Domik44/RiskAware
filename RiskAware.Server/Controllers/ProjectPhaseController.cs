@@ -11,6 +11,10 @@ using RiskAware.Server.Queries;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for managing project phase related requests.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -71,6 +75,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// POST METHODS //////////////////
+       
         /// <summary>
         /// Get filtered project phases
         /// </summary>
@@ -133,6 +138,7 @@ namespace RiskAware.Server.Controllers
         }
 
         ////////////////// PUT METHODS //////////////////
+        
         /// <summary>
         /// Method for updating project phase based on user input.
         /// </summary>

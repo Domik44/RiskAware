@@ -9,6 +9,10 @@ using RiskAware.Server.Queries;
 
 namespace RiskAware.Server.Controllers
 {
+    /// <summary>
+    /// Controller for managing risk categories related requests.
+    /// </summary>
+    /// <author>Dominik Pop</author>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
@@ -25,7 +29,11 @@ namespace RiskAware.Server.Controllers
             _projectRoleQueries = projectRoleQueries;
         }
 
-        // GET: api/RiskCategory
+        /// <summary>
+        /// Get all risk categories for a specific risk project.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <returns> Returns collection of DTOs containing basic info about risk category. </returns>
         [HttpGet("/api/RiskProject/{riskProjectId}/RiskCategories")]
         public async Task<ActionResult<IEnumerable<RiskCategoryDto>>> GetRiskCategories(int riskProjectId)
         {
@@ -48,11 +56,14 @@ namespace RiskAware.Server.Controllers
             return Ok(riskCategories);
         }
 
-        // GET: api/RiskCategory/5
+        /// <summary>
+        /// Method for getting info about risk category.
+        /// </summary>
+        /// <param name="id"> Id of risk category. </param>
+        /// <returns> Returns DTO containing basic info about risk category. </returns>
         [HttpGet("{id}")]
         public async Task<ActionResult<RiskCategoryDto>> GetRiskCategory(int id)
         {
-            // TODO -> implement this method
             var riskCategory = await _context.RiskCategories.FindAsync(id);
 
             if (riskCategory == null)
@@ -69,39 +80,32 @@ namespace RiskAware.Server.Controllers
             return riskCategoryDto;
         }
 
-        // POST: api/RiskCategory
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<int>> CreateRiskCategory(int riskId, RiskCategoryDto riskCategoryDto)
+        /// <summary>
+        /// Method for creating new risk category.
+        /// </summary>
+        /// <param name="riskProjectId"> Id of risk project. </param>
+        /// <param name="riskCategoryDto"> DTO containing basic info about risk category. </param>
+        /// <returns> Returns id of new risk category. </returns>
+        [HttpPost("{riskprojectId}")]
+        public async Task<ActionResult<int>> CreateRiskCategory(int riskProjectId, RiskCategoryDto riskCategoryDto)
         {
-            // risk category will be created when a risk is created
-            // user will either select an existing risk category or create a new one
-            // if user creates a new one, this method will be called
-
-            // in fronted we will need to check if risk category is being created or selected
-            // if it is being created, we will call this method and retrieve the risk category
-            // then new risk can be created by calling proper controller method
-
-            // risk category is assgined to a risk project so we need to know the risk project id
-            // then we get the risk project and check if it exists
-            var riskProject = await _context.RiskProjects.FindAsync(riskId);
+            var riskProject = await _context.RiskProjects.FindAsync(riskProjectId);
             if (riskProject == null)
             {
-                return NotFound();
+                return NotFound("Risk project not found!");
             }
 
-            // then we need to check if the user has permission to create a risk category for that risk project -> project manager or risk manager or team member
             var activeUser = await _userManager.GetUserAsync(User);
-            if (!_projectRoleQueries.HasBasicEditPermissions(riskId, activeUser.Id).Result)
+            var hasBasicEditPermissions = await _projectRoleQueries.HasBasicEditPermissions(riskProjectId, activeUser.Id);
+            if (!hasBasicEditPermissions)
             {
                 return Unauthorized();
             }
 
-            // then we create the risk category and assign it to the risk project
             var newRiskCategory = new RiskCategory
             {
                 Name = riskCategoryDto.Name,
-                RiskProjectId = riskId
+                RiskProjectId = riskProjectId
             };
 
             _context.RiskCategories.Add(newRiskCategory);
@@ -110,61 +114,18 @@ namespace RiskAware.Server.Controllers
             return newRiskCategory.Id;
         }
 
-        // PUT: api/RiskCategory/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateRiskCategory(int id, RiskCategory riskCategory)
-        {
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateRiskCategory(int id, RiskCategory riskCategory)
+        //{
+        //    // TODO -> implement
+        //    return null;
+        //}
 
-
-            // TODO -> implement this method
-            //if (id != riskCategory.Id)
-            //{
-            //    return BadRequest();
-            //}
-
-            //_context.Entry(riskCategory).State = EntityState.Modified;
-
-            //try
-            //{
-            //    await _context.SaveChangesAsync();
-            //}
-            //catch (DbUpdateConcurrencyException)
-            //{
-            //    if (!RiskCategoryExists(id))
-            //    {
-            //        return NotFound();
-            //    }
-            //    else
-            //    {
-            //        throw;
-            //    }
-            //}
-
-            //return NoContent();
-            return null;
-        }
-
-        // DELETE: api/RiskCategory/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRiskCategory(int id)
-        {
-            // logic here will be harder as we need to check if there are any risks that are using this risk category
-            // if there are, we need to reassign them to another risk category or delete them
-            // we also need to check if user has permission to delete the risk category
-
-            // TODO -> implement this method
-            //var riskCategory = await _context.RiskCategories.FindAsync(id);
-            //if (riskCategory == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //_context.RiskCategories.Remove(riskCategory);
-            //await _context.SaveChangesAsync();
-
-            //return NoContent();
-            return null;
-        }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteRiskCategory(int id)
+        //{
+        //    // TODO -> implement
+        //    return null;
+        //}
     }
 }
