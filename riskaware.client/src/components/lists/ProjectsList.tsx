@@ -151,6 +151,8 @@ export const ProjectsList: React.FC<{
     navigate(`/project/${projectId}`);
   }
 
+  console.log(authContext);
+
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IProject>(), // Add common and basic options
     columns,
@@ -174,21 +176,18 @@ export const ProjectsList: React.FC<{
       (
         <Box sx={{ display: 'flex', gap: '1rem' }}>
           <Tooltip title="Zobrazit detail projektu">
-            {/*<IconButton href={`/project/${row.original.id}`}>*/}
             <IconButton onClick={() => goTo(row.original.id)}>
               <DetailIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Upravit projekt">
-            <IconButton onClick={() => openDeleteConfirmModal(row)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Vymazat projekt">
-            <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
+          {/*TODO USE AUTHCONTEXT HERE*/}
+          {authContext?.isAdmin && ( 
+            <Tooltip title="Vymazat projekt">
+              <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          )}
         </Box>
       )
       :
