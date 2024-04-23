@@ -37,6 +37,19 @@ namespace RiskAware.Server.Controllers
         ////////////////// GET METHODS //////////////////
 
         /// <summary>
+        /// This controller method return all projects that are stored in database.
+        /// </summary>
+        /// 
+        /// <returns> Returns DTOs used for showing info about projects in a table. </returns>
+        /// url : /api/RiskProjects
+        [HttpGet("/api/RiskProjects")]
+        public async Task<ActionResult<IEnumerable<RiskProjectDto>>> GetRiskProjects()
+        {
+            var projects = _riskProjectQueries.QueryAllProjects();
+            return Ok(await projects.ToListAsync());
+        }
+
+        /// <summary>
         /// Method for getting risk project page.
         /// </summary>
         /// <param name="id"> Id of a RiskProject. </param>
