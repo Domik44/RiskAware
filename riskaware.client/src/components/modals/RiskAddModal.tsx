@@ -4,8 +4,6 @@ import { Impact, Prevention, Probability, Status, Category } from '../enums/Risk
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import IRiskCategory from '../interfaces/IRiskCategory';
 import IDtFetchData from '../interfaces/IDtFetchData';
-import { DatePicker } from '@mui/x-date-pickers';
-import { parseCzechDate } from '../../common/DateFormatter';
 
 interface AddRiskModalProps {
   projectDetail: IProjectDetail;
@@ -53,9 +51,8 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
       name: (document.getElementById("newCategoryName") as HTMLInputElement).value
     }
     try {
-      const preventionDone = (document.querySelector('input[name="RiskAddPreventionDone"]') as HTMLInputElement).value;
-      const riskOccured = (document.querySelector('input[name="RiskAddRiskOccured"]') as HTMLInputElement).value;
-      const end = (document.querySelector('input[name="RiskAddEnd"]') as HTMLInputElement).value;
+      const preventionDone = (document.getElementById("RiskAddPreventionDone") as HTMLInputElement).value;
+      const riskOccured = (document.getElementById("RiskAddRiskOccured") as HTMLInputElement).value;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -70,9 +67,9 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
           indicators: (document.getElementById("RiskAddIndicators") as HTMLInputElement).value,
           prevention: (document.getElementById("RiskAddPrevention") as HTMLInputElement).value,
           status: (document.getElementById("RiskAddStatus") as HTMLInputElement).value,
-          preventionDone: preventionDone === "" ? "0001-01-01" : parseCzechDate(preventionDone),
-          riskEventOccured: riskOccured === "" ? "0001-01-01" : parseCzechDate(riskOccured),
-          end: end === "" ? "0001-01-01" : parseCzechDate(end),
+          preventionDone: preventionDone === "" ? "0001-01-01" : preventionDone,
+          riskEventOccured: riskOccured === "" ? "0001-01-01" : riskOccured,
+          end: (document.getElementById("RiskAddEnd") as HTMLInputElement).value,
           projectPhaseId: parseInt((document.getElementById("RiskAddPhase") as HTMLInputElement).value),
           riskCategory: category,
           userRoleType: userRole
@@ -286,26 +283,19 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
                 <FormGroup>
                   {/*TODO -> handle na nevyplnene riziko*/}
                   <Label>Riziko nastalo:</Label>
-                  <DatePicker className="form-control" name="RiskAddRiskOccured" />
+                  <Input id="RiskAddRiskOccured" name="RiskAddRiskOccured" type="date" />
                 </FormGroup>
               </Col>
               <Col>
                 <FormGroup>
                   <Label>Prevence provedena:</Label>
-                  <DatePicker className="form-control" name="RiskAddPreventionDone" />
+                  <Input id="RiskAddPreventionDone" name="RiskAddPreventionDone" type="date" />
                 </FormGroup>
               </Col>
             </Row>
             <FormGroup>
               <Label>Platnost rizika:</Label>
-              <DatePicker
-                className="form-control"
-                name="RiskAddEnd"
-                slotProps={{
-                  textField: {
-/*                    required: true,*/
-                  },
-                }} />
+              <Input id="RiskAddEnd" name="RiskAddEnd" type="date" />
             </FormGroup>
             <Row>
             </Row>

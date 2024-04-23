@@ -2,7 +2,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../auth/useAuth';
 
-// todo fix error on login
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -27,7 +26,6 @@ const Login = () => {
     }
   };
 
-  // todo split to Login a LoginForm
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">

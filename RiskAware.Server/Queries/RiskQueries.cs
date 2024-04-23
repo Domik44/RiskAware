@@ -155,7 +155,7 @@ namespace RiskAware.Server.Queries
                 .Where(f => f.PropertyName == "RiskHistoryDate")
                 .First();
             var historyDate = DtParamsDto.ParseClientDate(filterHistoryDate.Value, DateTime.Now);
-
+            historyDate = historyDate.Date.AddDays(1).AddMilliseconds(-1);
             var query = _context.Risks
                 .AsNoTracking()
                 //.Where(r => r.RiskProjectId == projectId) // Original
