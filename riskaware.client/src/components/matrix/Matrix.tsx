@@ -52,27 +52,49 @@ export class Matrix extends Component<IMatrix, IMatrixState> {
       }
       cells.unshift(...row);
     }
+    let scaleName = "matrixScale5";
+    let scaleNameH = "matrixScale5H";
+    if (this.state.scale == 3) {
+      scaleName = "matrixScale3";
+      scaleNameH = "matrixScale3H";
+
+    }
 
     let gridString: string = "repeat(" + scale + ", minmax(90px, 1fr))"
     let contents;
     contents = (
       <div className="container">
+        <div>
+          <h2>Priorita = Dopad * Pravděpodobnost</h2>
+        </div>
         <div className="matrixTop">
           <div className="dopad">
-            <div>Dopad</div>
+            <div>
+              <div >Dopad</div>
+              <div className={scaleNameH}>
+                <div>1</div>
+                <div>{this.state.scale}</div>
+              </div>
+            </div>
           </div>
           <div>
-            <div className="matrixCells" style={{ gridTemplateColumns: gridString } }>
+            <div className="matrixCells" style={{ gridTemplateColumns: gridString }}>
               {cells}
             </div>
             <div className="pravdepodobnost">
-              <div>Pravděpodobnost</div>
+              <div>
+                <div className={scaleName }>
+                  <div>1</div>
+                  <div>{this.state.scale}</div>
+                </div>
+                <div>Pravděpodobnost</div>
+              </div>
             </div>
           </div>
         </div>
       </div>);
 
-    
+
 
     return (
       <div>
