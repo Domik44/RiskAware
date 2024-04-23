@@ -44,7 +44,7 @@ namespace RiskAware.Server.Seeds
             if (await userManager.FindByIdAsync(baseId) == null)
             {
                 const string baseEmail = "pb@google.com";
-                var adminUser = new User()
+                var baseUser = new User()
                 {
                     Id = baseId,
                     UserName = baseEmail,
@@ -55,14 +55,14 @@ namespace RiskAware.Server.Seeds
                     SystemRole = systemRoleBase
                 };
 
-                await userManager.CreateAsync(adminUser, "Basic123");
+                await userManager.CreateAsync(baseUser, "Basic123");
             }
 
             const string baseId2 = "e81e8eab-2dd2-45ee-8d74-54822c8e69f2";
             if (await userManager.FindByIdAsync(baseId2) == null)
             {
                 const string baseEmail = "zb@google.com";
-                var adminUser = new User()
+                var baseUser = new User()
                 {
                     Id = baseId2,
                     UserName = baseEmail,
@@ -73,14 +73,14 @@ namespace RiskAware.Server.Seeds
                     SystemRole = systemRoleBase
                 };
 
-                await userManager.CreateAsync(adminUser, "Basic123");
+                await userManager.CreateAsync(baseUser, "Basic123");
             }
 
             const string baseId3 = "84c8b270-14e5-4158-bcde-a76c6edc4cf7";
             if (await userManager.FindByIdAsync(baseId3) == null)
             {
                 const string baseEmail = "ds@google.com";
-                var adminUser = new User()
+                var baseUser = new User()
                 {
                     Id = baseId3,
                     UserName = baseEmail,
@@ -91,14 +91,14 @@ namespace RiskAware.Server.Seeds
                     SystemRole = systemRoleBase
                 };
 
-                await userManager.CreateAsync(adminUser, "Basic123");
+                await userManager.CreateAsync(baseUser, "Basic123");
             }
 
             const string baseId4 = "5862be25-6467-450e-81fa-1cac9578650b";
             if (await userManager.FindByIdAsync(baseId4) == null)
             {
                 const string baseEmail = "jk@google.com";
-                var adminUser = new User()
+                var baseUser = new User()
                 {
                     Id = baseId4,
                     UserName = baseEmail,
@@ -109,7 +109,43 @@ namespace RiskAware.Server.Seeds
                     SystemRole = systemRoleBase
                 };
 
-                await userManager.CreateAsync(adminUser, "Basic123");
+                await userManager.CreateAsync(baseUser, "Basic123");
+            }
+
+            const string baseId5 = "31ab7787-60dc-4309-a069-4c30fc837ef0";
+            if (await userManager.FindByIdAsync(baseId5) == null)
+            {
+                const string baseEmail = "jp@google.com";
+                var baseUser = new User()
+                {
+                    Id = baseId5,
+                    UserName = baseEmail,
+                    Email = baseEmail,
+                    EmailConfirmed = true,
+                    FirstName = "Jana",
+                    LastName = "Pálková",
+                    SystemRole = systemRoleBase
+                };
+
+                await userManager.CreateAsync(baseUser, "Basic123");
+            }
+
+            const string baseId6 = "12749a7a-100b-4e69-a234-7d059e508d5b";
+            if (await userManager.FindByIdAsync(baseId6) == null)
+            {
+                const string baseEmail = "bm@google.com";
+                var baseUser = new User()
+                {
+                    Id = baseId6,
+                    UserName = baseEmail,
+                    Email = baseEmail,
+                    EmailConfirmed = true,
+                    FirstName = "Béďa",
+                    LastName = "Medvídek",
+                    SystemRole = systemRoleBase
+                };
+
+                await userManager.CreateAsync(baseUser, "Basic123");
             }
         }
     }

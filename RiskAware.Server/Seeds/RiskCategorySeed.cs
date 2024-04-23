@@ -9,7 +9,7 @@ namespace RiskAware.Server.Seeds
         public static void Seed(AppDbContext context)
         {
             ICollection<string> names = ["Finanční rizika", "Lidská rizika", "Operační rizika", "Legislativní rizika", "Technická rizika"];
-            for (int i = 1; i < 5; i++)
+            for (int i = 1; i < 4+1; i++)
             {
                 foreach (var name in names)
                 {

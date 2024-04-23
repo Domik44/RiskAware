@@ -38,16 +38,33 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "5862be25-6467-450e-81fa-1cac9578650b",
                     RiskProjectId = 1,
-                    Name = "Analytik",
+                    Name = "Návrhář",
                     RoleType = RoleType.TeamMember,
                     IsReqApproved = true,
                     ProjectPhaseId = 2
                 },
                 new()
                 {
+                    UserId = "31ab7787-60dc-4309-a069-4c30fc837ef0",
+                    RiskProjectId = 1,
+                    Name = "Externí člen",
+                    RoleType = RoleType.ExternalMember,
+                    IsReqApproved = true
+                },
+                new()
+                {
+                    UserId = "12749a7a-100b-4e69-a234-7d059e508d5b",
+                    RiskProjectId = 1,
+                    Name = "Programátor",
+                    RoleType = RoleType.TeamMember,
+                    IsReqApproved = true,
+                    ProjectPhaseId = 5
+                },
+                new()
+                {
                     UserId = "39123a3c-3ce3-4bcc-8887-eb7d8e975ea8",
                     RiskProjectId = 2,
-                    Name = RoleType.ProjectManager.ToString(),
+                    Name = "Projektový manažer",
                     RoleType = RoleType.ProjectManager,
                     IsReqApproved = true
                 },
@@ -55,10 +72,9 @@ namespace RiskAware.Server.Seeds
                 {
                     UserId = "84c8b270-14e5-4158-bcde-a76c6edc4cf7",
                     RiskProjectId = 3,
-                    Name = RoleType.ProjectManager.ToString(),
+                    Name = "Projektový manažer",
                     RoleType = RoleType.ProjectManager,
-                    IsReqApproved = true,
-                    ProjectPhaseId = 1
+                    IsReqApproved = true
                 },
                 new()
                 {
@@ -68,6 +84,14 @@ namespace RiskAware.Server.Seeds
                     RoleType = RoleType.TeamMember,
                     IsReqApproved = true,
                     ProjectPhaseId = 5
+                },
+                new()
+                {
+                    UserId = "84c8b270-14e5-4158-bcde-a76c6edc4cf7",
+                    RiskProjectId = 4,
+                    Name = "Projektový manažer",
+                    RoleType = RoleType.ProjectManager,
+                    IsReqApproved = true
                 },
             };
 
