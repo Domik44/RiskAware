@@ -1,25 +1,20 @@
-﻿using RiskAware.Server.DTOs.UserDTOs;
-using RiskAware.Server.Models;
-using RiskAware.Server.Tests.Seeds;
+﻿using RiskAware.Server.Tests.Seeds;
 using System.Net;
-using System.Net.Http.Json;
 using System.Text;
 using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class AccountTests : ServerTestsBase
     {
+        private const string Endpoint = "api/Account";
         private readonly ITestOutputHelper _testOutputHelper;
 
-        public AccountTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        public AccountTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
             _testOutputHelper = testOutputHelper;
         }
-
-        private const string Endpoint = "api/Account";
 
         [Fact]
         public async Task Login_Basic_User_is_OK()

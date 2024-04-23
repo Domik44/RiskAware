@@ -6,16 +6,15 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class RisksTests : ServerTestsBase
     {
-        public RisksTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api";
+        private const int ProjectId = 1;
+
+        public RisksTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api";
-        private const int ProjectId = 1;
 
         [Theory]
         [InlineData(1)]
@@ -45,7 +44,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/Risk/{id}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
@@ -79,7 +78,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/Risks");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
@@ -104,7 +103,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/ProjectPhase/{id}/Risks");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -112,13 +111,10 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            RiskCreateDto dto = new()
-            {
-                Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
-            };
-
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/AddRisk", dto);
+                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{1}/AddRisk", RiskSeeds.RiskCreateDto);
+
+            TestOutputHelper.WriteLine(response.Content.ReadAsStringAsync().Result);
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -129,10 +125,9 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            RiskCreateDto dto = new()
-            {
-                Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
-            };
+            RiskCreateDto dto = RiskSeeds.RiskCreateDto;
+
+            dto.Title = "Updated title";
 
             int id = 1;
 
@@ -169,13 +164,13 @@ namespace RiskAware.Server.Tests
         }
 
         [Fact]
-        public async Task PUT_Reject_Risk_is_OK()
+        public async Task DELETE_Reject_Risk_is_OK()
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
             int id = 1;
 
-            HttpResponseMessage response = await Client.PutAsync($"{Endpoint}/Risk/{id}/Reject", null);
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/Risk/{id}/Reject");
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

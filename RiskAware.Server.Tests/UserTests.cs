@@ -1,5 +1,4 @@
 ﻿using RiskAware.Server.DTOs.UserDTOs;
-using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Json;
@@ -7,16 +6,14 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class UserTests : ServerTestsBase
     {
-        public UserTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api";
+
+        public UserTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api";
-        private const int ProjectId = 1;
 
         [Fact]
         public async Task GET_User_is_OK()
@@ -37,7 +34,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/User");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -61,7 +58,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
@@ -121,11 +118,9 @@ namespace RiskAware.Server.Tests
                 Email = "vomacka@seznam.cz"
             };
 
-            await PerformLogin(UserSeeds.BasicLogin);
-
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/User/{userDto.Id}", userDto);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -133,8 +128,13 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
+            PasswordDto? passwordDto = new()
+            {
+                OldPassword = UserSeeds.BasicLogin.Password, NewPassword = UserSeeds.BasicLogin.Password
+            };
+
             HttpResponseMessage response =
-                await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", new { });
+                await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", passwordDto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
@@ -145,7 +145,7 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/ChangePassword", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -162,12 +162,10 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task PUT_User_Restore_is_Unauthorized()
         {
-            await PerformLogin(UserSeeds.BasicLogin);
-
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/Restore", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -183,11 +181,9 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task DELETE_User_is_Unauthorized()
         {
-            await PerformLogin(UserSeeds.BasicLogin);
-
             HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
     }
 }

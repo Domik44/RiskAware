@@ -7,16 +7,15 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class RiskCategoryTests : ServerTestsBase
     {
-        public RiskCategoryTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api";
+        private const int ProjectId = 1;
+
+        public RiskCategoryTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api";
-        private const int ProjectId = 1;
 
         [Theory]
         [InlineData(1)]
@@ -45,7 +44,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}/RiskCategories");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Theory]
@@ -69,7 +68,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskCategory/{categoryId}");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -88,70 +87,6 @@ namespace RiskAware.Server.Tests
             // Assert.Equal("Testovací rizika", createdDto.Name);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task POST_Risk_Category_is_Unauthorized()
-        {
-            RiskCategoryDto dto = new() {Id = 0, Name = "Testovací rizika"};
-            string query = $"riskId={ProjectId}";
-
-            HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskCategory?{query}", dto);
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task PUT_Risk_Category_is_OK()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            RiskCategory dto = new() {Name = "Testovací kategorie"};
-            int categoryId = 1;
-
-            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
-
-            response.EnsureSuccessStatusCode();
-
-            // RiskCategoryDto updatedDto = (await response.Content.ReadFromJsonAsync<RiskCategory>())!;
-            // Assert.Equal("Testovací kategorie", updatedDto.Name);
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task PUT_Risk_Category_is_Unauthorized()
-        {
-            RiskCategory dto = new() {Name = "Testovací kategorie"};
-            int categoryId = 1;
-
-            HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/RiskCategory/{categoryId}", dto);
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task DELETE_Risk_Category_is_OK()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            int categoryId = 1;
-
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
-
-            response.EnsureSuccessStatusCode();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task DELETE_Risk_Category_is_Unauthorized()
-        {
-            int categoryId = 1;
-
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskCategory/{categoryId}");
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
     }
 }

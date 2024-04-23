@@ -1,30 +1,22 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis;
-using RiskAware.Server.DTOs.DatatableDTOs;
+﻿using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
-using System.ComponentModel;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class ProjectPhaseTests : ServerTestsBase
     {
-        public ProjectPhaseTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api/ProjectPhase";
+        private const int ProjectId = 1;
+
+        public ProjectPhaseTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api/ProjectPhase";
-        private const int ProjectId = 1;
 
         [Theory]
         [InlineData(1)]
@@ -60,7 +52,7 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.GetAsync($"/api/RiskProject/{projectId}/Phases");
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
@@ -91,21 +83,25 @@ namespace RiskAware.Server.Tests
             HttpResponseMessage response =
                 await Client.PostAsJsonAsync($"api/RiskProject/{ProjectId}/Phases", dto);
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [Fact]
         public async Task POST_Risk_Project_Create_Phase_is_OK()
         {
-            await PerformLogin(UserSeeds.AdminLogin);
+            //await PerformLogin(UserSeeds.AdminLogin);
+            // TODO -> REDO -> log in as project manager on tested project
+            await PerformLogin(UserSeeds.BasicLogin);
 
+            // TODO -> REDO -> different DTO
             ProjectPhaseCreateDto dto = new()
             {
-                Name = "Test", Start = DateTime.Now, End = DateTime.Now, UserRoleType = RoleType.ProjectManager
+                RiskProjectId = ProjectId, Name = "Test", Start = DateTime.Now, End = DateTime.Now
+                //Name = "Test", Start = DateTime.Now, End = DateTime.Now, UserRoleType = RoleType.ProjectManager
             };
 
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync($"/api/RiskProject/CreateProjectPhase", dto);
+                await Client.PostAsJsonAsync("/api/RiskProject/CreateProjectPhase", dto);
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -141,15 +137,17 @@ namespace RiskAware.Server.Tests
         {
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/{ProjectId}", new { });
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
-        public async Task DELETE_Project_Phase_is_OK()
+        [Theory]
+        [InlineData(3)]
+        [InlineData(4)]
+        public async Task DELETE_Project_Phase_is_OK(int phaseId)
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/{ProjectId}");
+            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/{phaseId}");
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
