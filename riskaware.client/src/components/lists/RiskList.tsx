@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
-import {
+import ColumnFilter, {
   MaterialReactTable, useMaterialReactTable,
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState,
@@ -24,6 +24,8 @@ import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 import IRiskCategory from '../interfaces/IRiskCategory';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import RiskEditModal from '../modals/RiskEditModal';
+import IRiskDetail from '../interfaces/IRiskDetail';
+import { DatePicker } from '@mui/x-date-pickers';
 import IRiskEdit from '../interfaces/IRiskEdit';
 //import IRiskDetail from '../interfaces/IRiskDetail';
 
@@ -57,6 +59,8 @@ export const RiskList: React.FC<{
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editData, setEditData] = useState<IRiskEdit>();
+
+  const [riskHistoryDate, setRiskHistoryDate] = useState<Date | null>(new Date());
 
   const openDeleteModal = (riskId: number) => {
     setSelectedRiskId(riskId);
@@ -123,13 +127,24 @@ export const RiskList: React.FC<{
       setIsRefetching(true);
     }
 
+    const riskHistoryDateValue = (document.querySelector('input[name="RiskHistoryDate"]') as HTMLInputElement).value;
+    if (riskHistoryDateValue === "DD.MM.YYYY") {
+      setRiskHistoryDate(new Date());   // Set to now
+    }
     const startOffset = pagination.pageIndex * pagination.pageSize;
+    const filters = columnFilters ?? [];
+    const updatedFilters = [...filters, {
+      id: "RiskHistoryDate",
+      value: riskHistoryDate,
+    }];
+
     let searchParams: IDtParams = {
       start: startOffset,
       size: pagination.pageSize,
-      filters: columnFilters ?? [],
+      filters: updatedFilters,
       sorting: sorting ?? [],
     };
+
     try {
       const response = await fetch(`/api/RiskProject/${projectId}/Risks`, {
         method: 'POST',
@@ -162,6 +177,7 @@ export const RiskList: React.FC<{
     pagination.pageIndex,
     pagination.pageSize,
     sorting,
+    riskHistoryDate,
   ]);
 
   const columns = useMemo<MRT_ColumnDef<IRisks>[]>(() => {
@@ -299,14 +315,12 @@ export const RiskList: React.FC<{
         <Button
           disabled={table.getPrePaginationRowModel().rows.length === 0}
           onClick={() => exportToPDF(table.getPrePaginationRowModel().rows)}
-          startIcon={<FileDownloadIcon />}
-        >
+          startIcon={<FileDownloadIcon />}>
           Exportovat do PDF
         </Button>
         <Button
           onClick={exportToCSV}
-          startIcon={<FileDownloadIcon />}
-        >
+          startIcon={<FileDownloadIcon />}>
           Exportovat do CSV
         </Button>
       </Box>
@@ -315,6 +329,19 @@ export const RiskList: React.FC<{
 
   return (
     <>
+      <div id="RiskHistoryDateRow" className="input-group">
+        <div className="input-group-prepend">
+          <span className="input-group-text">Zobrazit rizika k datu:</span>
+        </div>
+        <DatePicker
+          className="form-control"
+          name="RiskHistoryDate"
+          value={riskHistoryDate}
+          onChange={(date) => setRiskHistoryDate(date)}
+          minDate={new Date(projectDetail.detail.start)}
+          disableFuture
+          slotProps={{ field: { clearable: true } }} />
+      </div>
       <MaterialReactTable table={tableInstance} />
       <RiskDeleteModal riskId={selectedRiskId ?? 0} isOpen={deleteModalOpen} toggle={toggleDeleteModal} reRender={reRender} fetchDataRef={fetchDataRef} />
       <RiskEditModal riskId={selectedRiskId ?? 0} isOpen={editModalOpen} toggle={toggleEditModal} data={editData} reRender={reRender} fetchDataRef={fetchDataRef} projectDetail={projectDetail} categories={categoriesM} />

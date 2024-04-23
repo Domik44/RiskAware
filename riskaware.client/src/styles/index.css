@@ -144,3 +144,7 @@ nav a {
     padding-top: var(--padding) !important;
     padding-bottom: var(--padding) !important;
 }
+
+#RiskHistoryDateRow {
+    width: 400px;
+}

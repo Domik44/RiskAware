@@ -19,8 +19,6 @@ import AuthContext from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import DeleteProjectModal from '../modals/DeleteProjectModal';
 
-
-
 export const ProjectsList: React.FC<{
   fetchUrl: string,
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>,

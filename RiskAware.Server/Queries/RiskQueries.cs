@@ -151,32 +151,47 @@ namespace RiskAware.Server.Queries
         /// <returns> Return collection of DTOs containing basic info about risk. </returns>
         public IQueryable<RiskDto> QueryProjectRisks(int projectId, DtParamsDto dtParams)
         {
+            var filterHistoryDate = dtParams.Filters
+                .Where(f => f.PropertyName == "RiskHistoryDate")
+                .First();
+            var historyDate = DtParamsDto.ParseClientDate(filterHistoryDate.Value, DateTime.Now);
+
             var query = _context.Risks
                 .AsNoTracking()
                 //.Where(r => r.RiskProjectId == projectId) // Original
-                .Where(r => r.RiskProjectId == projectId && r.RiskHistory.OrderByDescending(h => h.LastModif).FirstOrDefault().IsValid)
+                .Where(r => r.RiskProjectId == projectId
+                    && r.Created <= historyDate
+                    && r.RiskHistory
+                        .OrderByDescending(h => h.LastModif)
+                        .FirstOrDefault()
+                        .IsValid)
                 //.Include(r => r.RiskCategory)
                 .Select(r => new RiskDto
                 {
                     Id = r.Id,
                     Title = r.RiskHistory
+                        .Where(h => h.LastModif <= historyDate)
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Title)
                         .FirstOrDefault(),
                     CategoryName = r.RiskCategory.Name,
                     Severity = r.RiskHistory
+                        .Where(h => h.LastModif <= historyDate)
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability * h.Impact)
                         .FirstOrDefault(),
                     Probability = r.RiskHistory
+                        .Where(h => h.LastModif <= historyDate)
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Probability)
                         .FirstOrDefault(),
                     Impact = r.RiskHistory
+                        .Where(h => h.LastModif <= historyDate)
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Impact)
                         .FirstOrDefault(),
                     State = r.RiskHistory
+                        .Where(h => h.LastModif <= historyDate)
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
                         .FirstOrDefault(),

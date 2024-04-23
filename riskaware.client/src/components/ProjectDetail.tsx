@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { formatDate } from "../common/DateFormatter";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col, Label, FormGroup } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
 import AddPhaseModal from './modals/PhaseAddModal';
@@ -16,6 +16,7 @@ import RiskList from './lists/RiskList';
 import UsersOnProjectList from './lists/UsersOnProjectList';
 import IDtFetchData from './interfaces/IDtFetchData';
 import EditProjectModal from './modals/EditProjectModal';
+import { DatePicker } from '@mui/x-date-pickers';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -136,7 +137,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                   <PhaseList projectId={projectDetail.detail.id} fetchDataRef={this.phaseFetchDataRef} reRender={this.reRender} projectDetail={projectDetail} />
                 </TabPane>
                 <TabPane tabId="risks">
-                  <Row className="mb-3">
+                  <Row>
                     <Col>
                       <h5>Registr rizik</h5>
                     </Col>
@@ -146,7 +147,12 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       )}
                     </Col>
                   </Row>
-                  <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} fetchDataRef={this.riskFetchDataRef} reRender={this.reRender} projectDetail={projectDetail} />
+                  <RiskList
+                    projectId={projectDetail.detail.id}
+                    chooseRisk={this.chooseRisk}
+                    fetchDataRef={this.riskFetchDataRef}
+                    reRender={this.reRender}
+                    projectDetail={projectDetail} />
                 </TabPane>
                 <TabPane tabId="members">
                   <Row className="mb-3">

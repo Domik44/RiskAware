@@ -301,8 +301,6 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
               <DatePicker
                 className="form-control"
                 name="RiskAddEnd"
-                minDate={new Date("2024-04-10")}
-                maxDate={new Date("2024-05-05")}
                 slotProps={{
                   textField: {
 /*                    required: true,*/
