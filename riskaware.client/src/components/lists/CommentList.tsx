@@ -4,6 +4,7 @@ import { Form, Button, ButtonGroup, Row, Col } from 'reactstrap';
 import CommentCard from '../CommentCard';
 import IComments from '../interfaces/IComments';
 import SendIcon from '@mui/icons-material/Send';
+import { Tooltip, IconButton } from '@mui/material';
 
 interface ICommentList {
   projId: number;
@@ -101,7 +102,7 @@ export class CommentList extends Component<ICommentList, ICommentListState> {
     }
   };
 
-  loadMore = (event: React.MouseEvent<HTMLButtonElement>)=> {
+  loadMore = (event: React.MouseEvent<HTMLButtonElement>) => {
     console.log(event)
     const newThreshold = this.state.maxDisplayCnt + 5;
     this.setState({
@@ -125,37 +126,35 @@ export class CommentList extends Component<ICommentList, ICommentListState> {
       <div className="container p-0">
         <h5>Komentáře:</h5>
         <Form id="addCommentForm" onSubmit={this.handleCommentSubmit} className="mb-3">
-            <Row>
-              <Col className="col-10">
-                <div className="addComment">
-                      <textarea
-                        id="commentTextArea"  
-                        className="form-control"
-                        placeholder="Přidejte komentář..."
+          <Row>
+            <Col className="col-11">
+              <div className="addComment">
+                <textarea
+                  id="commentTextArea"
+                  className="form-control"
+                  placeholder="Přidejte komentář..."
 
-                      onChange={this.handleCommentChange}></textarea>
-                </div>
-              </Col>
-              <Col className="col-2 commentButtonContainer">
-                <div >
-                    <Button
-                      id="submitCommentB"
-                      type="submit"
-                      color="primary"
-                      disabled={this.state.submitButtonDisabled}>
-                      <SendIcon></SendIcon>
-                    </Button>
-                </div>
-              </Col>
-            </Row>
+                  onChange={this.handleCommentChange}></textarea>
+              </div>
+            </Col>
+            <Col className="col-1 commentButtonContainer">
+              <div >
+                <Tooltip title="Odeslat">
+                  <IconButton id="submitCommentB" type="submit" disabled={this.state.submitButtonDisabled} color="primary" size="large">
+                    <SendIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </div>
+            </Col>
+          </Row>
         </Form>
         {displayComments.map((comment) => (
           <CommentCard
-          key={comment.id}
-          username={comment.author}
-          date={formatDate(comment.created)}
-          text={comment.text}>
-        </CommentCard>
+            key={comment.id}
+            username={comment.author}
+            date={formatDate(comment.created)}
+            text={comment.text}>
+          </CommentCard>
         ))}
         <div className="commentButtonContainer" hidden={hideLoadButtons}>
           <ButtonGroup>

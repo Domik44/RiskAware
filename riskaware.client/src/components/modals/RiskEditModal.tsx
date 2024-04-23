@@ -17,12 +17,11 @@ interface RiskEditModalProps {
   fetchDataRef: React.MutableRefObject<IDtFetchData | null>;
   data: IRiskEdit | undefined;
   //data: IRiskDetail | undefined;
-  projectId: number;
   projectDetail: IProjectDetail;
   categories: IRiskCategory[];
 }
 
-const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, reRender, fetchDataRef, data, projectId, projectDetail, categories }) => {
+const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, reRender, fetchDataRef, data, projectDetail, categories }) => {
   const scale = projectDetail.detail.scale;
   const userRole = projectDetail.userRole;
   const assignedPhase = projectDetail.assignedPhase;
@@ -31,6 +30,9 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
   const editRisk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
+      const preventionDone = (document.querySelector('input[name="RiskEditPreventionDone"]') as HTMLInputElement).value;
+      const riskOccured = (document.querySelector('input[name="RiskEditRiskOccured"]') as HTMLInputElement).value;
+      const end = (document.querySelector('input[name="RiskEditEnd"]') as HTMLInputElement).value;
       const response = await fetch(`/api/Risk/${riskId}`, {
         method: 'PUT',
         headers: {
@@ -45,9 +47,9 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
           indicators: (document.getElementById("RiskEditIndicators") as HTMLInputElement).value,
           prevention: (document.getElementById("RiskEditPrevention") as HTMLInputElement).value,
           status: (document.getElementById("RiskEditStatus") as HTMLInputElement).value,
-          preventionDone: (document.getElementById("RiskEditPreventionDone") as HTMLInputElement).value,
-          riskEventOccured: (document.getElementById("RiskEditRiskOccured") as HTMLInputElement).value,
-          end: (document.getElementById("RiskEditEnd") as HTMLInputElement).value,
+          preventionDone: preventionDone === "" ? "0001-01-01" : preventionDone,
+          riskEventOccured: riskOccured === "" ? "0001-01-01" : riskOccured,
+          end: end === "" ? "0001-01-01" : end,
           riskCategory: {
             id: parseInt((document.getElementById("RiskEditCategory") as HTMLInputElement).value),
             name: (document.getElementById("newCategoryName") as HTMLInputElement).value
@@ -122,8 +124,10 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
                 <Label> Fáze:</Label>
                 {userRole === RoleType.TeamMember ?
                   (
-                    <Input id="RiskEditPhase" name="RiskEditPhase" type="text" value={assignedPhase.name} readOnly />
-                  ) :
+                    <div>
+                      <Input id="RiskEditPhaseName" name="RiskEditPhaseName" type="text" value={assignedPhase?.name} readOnly />
+                      <Input id="RiskEditPhase" name="RiskEditPhase" type="number" value={assignedPhase?.id} readOnly className="hidden" />
+                    </div>                  ) :
                   (
                     <Input id="RiskEditPhase" name="RiskEditPhase" type="select" defaultValue={data?.projectPhaseId}>
                       {projectDetail.phases.map((phase) => (
@@ -287,7 +291,7 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
             </Row>
             <FormGroup>
               <Label>Platnost rizika:</Label>
-              <Input required id="RiskEditEnd" name="RiskEditEnd" type="date" defaultValue={handleDateInput(data?.end)} />
+              <Input id="RiskEditEnd" name="RiskEditEnd" type="date" defaultValue={handleDateInput(data?.end)} />
             </FormGroup>
             <Row>
             </Row>

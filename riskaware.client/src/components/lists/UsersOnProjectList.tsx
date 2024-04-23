@@ -1,18 +1,18 @@
 ﻿import { useEffect, useMemo, useState } from 'react';
 import {
   MaterialReactTable, useMaterialReactTable,
-  type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
+  type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState
 } from 'material-react-table';
 import MUITableCommonOptions from '../../common/MUITableCommonOptions';
 import { Box, Tooltip, IconButton } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IDtParams from '../interfaces/IDtParams';
 import IDtResult from '../interfaces/IDtResult';
 import IMembersList from '../interfaces/IMembersList';
 import IDtFetchData from '../interfaces/IDtFetchData';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
+import ProjectRoleDeleteModal from '../modals/ProjectRoleDeleteModal';
 
 
 export const UsersOnProjectList: React.FC<{
@@ -122,10 +122,16 @@ export const UsersOnProjectList: React.FC<{
   );
 
   // todo copy delete confirm modal from ITU
-  const openDeleteConfirmModal = (row: MRT_Row<IMembersList>) => {
-    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.fullName}?`)) {
-      console.log(`Delete:${row.original.id}`); // todo post delete
-    }
+  const [selectedProjectRole, setSelectedProjectRole] = useState<number | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const openDeleteModal = (projectRoleId: number) => {
+    setSelectedProjectRole(projectRoleId);
+    setDeleteModalOpen(true);
+  };
+
+  const toggleDeleteModal = () => {
+    setDeleteModalOpen(!deleteModalOpen);
   };
 
   const table = useMaterialReactTable({
@@ -149,18 +155,8 @@ export const UsersOnProjectList: React.FC<{
     enableRowActions: projectDetail.userRole === RoleType.ProjectManager,        // Display row actions
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>
-        {/*<Tooltip title="Zobrazit detail">*/}
-        {/*  <IconButton href={`/xxx`}>*/}
-        {/*    <DetailIcon />*/}
-        {/*  </IconButton>*/}
-        {/*</Tooltip>*/}
-        <Tooltip title="Upravit">
-          <IconButton onClick={() => openDeleteConfirmModal(row)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
         <Tooltip title="Vymazat">
-          <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+          <IconButton color="error" onClick={() => openDeleteModal(row.original.id)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
@@ -168,7 +164,12 @@ export const UsersOnProjectList: React.FC<{
     ),
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <MaterialReactTable table={table} />
+      <ProjectRoleDeleteModal toggle={toggleDeleteModal} isOpen={deleteModalOpen} fetchDataRef={fetchDataRef} projectRoleId={selectedProjectRole ?? 0} />
+    </>
+  );
 };
 
 export default UsersOnProjectList;

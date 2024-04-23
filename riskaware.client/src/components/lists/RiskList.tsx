@@ -22,7 +22,7 @@ import { jsPDF } from 'jspdf';
 import autoTable, { CellInput } from 'jspdf-autotable';
 import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 import IRiskCategory from '../interfaces/IRiskCategory';
-import IProjectDetail from '../interfaces/IProjectDetail';
+import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import RiskEditModal from '../modals/RiskEditModal';
 import IRiskEdit from '../interfaces/IRiskEdit';
 //import IRiskDetail from '../interfaces/IRiskDetail';
@@ -40,6 +40,8 @@ export const RiskList: React.FC<{
   const [isLoading, setIsLoading] = useState(false);
   const [isRefetching, setIsRefetching] = useState(false);
   const [rowCount, setRowCount] = useState(0);
+  const canEditWithoutPhase = projectDetail?.userRole === RoleType.ProjectManager || projectDetail?.userRole === RoleType.RiskManager;
+  //const canEditWithPhase = projectDetail?.userRole === RoleType.TeamMember && projectDetail?.assignedPhase !== null;
 
   // Table state
   const [columnFilters, setColumnFilters] = useState<MRT_ColumnFiltersState>([]);
@@ -270,16 +272,20 @@ export const RiskList: React.FC<{
             <DetailIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Upravit">
-          <IconButton onClick={() => openEditModal(row.original.id)}>
-            <EditIcon />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Vymazat">
-          <IconButton color="error" onClick={() => openDeleteModal(row.original.id)}>
-            <DeleteIcon />
-          </IconButton>
-        </Tooltip>
+        {(row.original.projectPhase.id === projectDetail.assignedPhase?.id ||canEditWithoutPhase) && (
+          <div>
+            <Tooltip title="Upravit">
+              <IconButton onClick={() => openEditModal(row.original.id)}>
+                <EditIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Vymazat">
+              <IconButton color="error" onClick={() => openDeleteModal(row.original.id)}>
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+        )}
       </Box>
     ),
     muiToolbarAlertBannerProps: isError
@@ -311,7 +317,7 @@ export const RiskList: React.FC<{
     <>
       <MaterialReactTable table={tableInstance} />
       <RiskDeleteModal riskId={selectedRiskId ?? 0} isOpen={deleteModalOpen} toggle={toggleDeleteModal} reRender={reRender} fetchDataRef={fetchDataRef} />
-      <RiskEditModal riskId={selectedRiskId ?? 0} isOpen={editModalOpen} toggle={toggleEditModal} data={editData} reRender={reRender} fetchDataRef={fetchDataRef} projectId={projectId} projectDetail={projectDetail} categories={categoriesM} />
+      <RiskEditModal riskId={selectedRiskId ?? 0} isOpen={editModalOpen} toggle={toggleEditModal} data={editData} reRender={reRender} fetchDataRef={fetchDataRef} projectDetail={projectDetail} categories={categoriesM} />
     </>
   );
 };

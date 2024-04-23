@@ -19,7 +19,7 @@ interface IProjectDetail {
   phases: IPhases[];
   chosenRisk: IRiskDetail;
   userRole: RoleType;
-  assignedPhase: IPhases;
+  assignedPhase: IPhases | null;
 }
 
 export default IProjectDetail;

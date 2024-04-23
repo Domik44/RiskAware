@@ -13,11 +13,11 @@ import IDtParams from '../interfaces/IDtParams';
 import IDtResult from '../interfaces/IDtResult';
 import IProject from '../interfaces/IProject';
 import DetailIcon from '@mui/icons-material/VisibilityOutlined';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import RestoreIcon from '@mui/icons-material/Restore';
 import AuthContext from '../../auth/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import DeleteProjectModal from '../modals/DeleteProjectModal';
 
 
 
@@ -132,15 +132,23 @@ export const ProjectsList: React.FC<{
     []
   );
 
-  // todo copy delete confirm modal from ITU
-  const openDeleteConfirmModal = (row: MRT_Row<IProject>) => {
-    if (window.confirm(`Opravdu chcete vymazat projekt č. ${row.original.id} - ${row.original.title}?`)) {
-      console.log(`Delete:${row.original.id}`); // todo post delete
-    }
+  // Modals
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+
+  const openDeleteModal = (riskProjectId: number) => {
+    setSelectedProjectId(riskProjectId);
+    setDeleteModalOpen(true);
+  };
+
+  const toggleDeleteModal = () => {
+    setDeleteModalOpen(!deleteModalOpen);
   };
 
   const restoreProject = async (row: MRT_Row<IProject>) => {
-    const response = await fetch(`/api/RiskProject/${row.original.id}/Restore`);
+    const response = await fetch(`/api/RiskProject/${row.original.id}/RestoreProject`, {
+      method: 'PUT',
+    });
     if (!response.ok) {
       throw new Error(`Restore failed for projectId: ${row.original.id}`);
     }
@@ -150,8 +158,6 @@ export const ProjectsList: React.FC<{
   const goTo = (projectId: number) => {
     navigate(`/project/${projectId}`);
   }
-
-  console.log(authContext);
 
   const table = useMaterialReactTable({
     ...MUITableCommonOptions<IProject>(), // Add common and basic options
@@ -180,10 +186,9 @@ export const ProjectsList: React.FC<{
               <DetailIcon />
             </IconButton>
           </Tooltip>
-          {/*TODO USE AUTHCONTEXT HERE*/}
           {authContext?.isAdmin && ( 
             <Tooltip title="Vymazat projekt">
-              <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
+              <IconButton color="error" onClick={() => openDeleteModal(row.original.id)}>
                 <DeleteIcon />
               </IconButton>
             </Tooltip>
@@ -203,7 +208,12 @@ export const ProjectsList: React.FC<{
     }),
   });
 
-  return <MaterialReactTable table={table} />;
+  return (
+    <>
+      <DeleteProjectModal riskProjectId={selectedProjectId ?? 0} toggle={toggleDeleteModal} fetchDataRef={fetchDataRef} isOpen={deleteModalOpen} />
+      <MaterialReactTable table={table} />
+    </>
+  );
 };
 
 export default ProjectsList;

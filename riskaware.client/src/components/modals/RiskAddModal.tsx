@@ -54,7 +54,6 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
     }
     try {
       const preventionDone = (document.querySelector('input[name="RiskAddPreventionDone"]') as HTMLInputElement).value;
-      console.log(preventionDone);
       const riskOccured = (document.querySelector('input[name="RiskAddRiskOccured"]') as HTMLInputElement).value;
       const end = (document.querySelector('input[name="RiskAddEnd"]') as HTMLInputElement).value;
       const response = await fetch(apiUrl, {
@@ -73,7 +72,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
           status: (document.getElementById("RiskAddStatus") as HTMLInputElement).value,
           preventionDone: preventionDone === "" ? "0001-01-01" : parseCzechDate(preventionDone),
           riskEventOccured: riskOccured === "" ? "0001-01-01" : parseCzechDate(riskOccured),
-          end: parseCzechDate(end),
+          end: end === "" ? "0001-01-01" : parseCzechDate(end),
           projectPhaseId: parseInt((document.getElementById("RiskAddPhase") as HTMLInputElement).value),
           riskCategory: category,
           userRoleType: userRole
@@ -130,7 +129,10 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
                 <Label> Fáze:</Label>
                 {userRole === RoleType.TeamMember ?
                   (
-                    <Input id="RiskAddPhase" name="RiskAddPhase" type="text" value={assignedPhase.name} readOnly />
+                    <div>
+                      <Input id="RiskAddPhaseName" name="RiskAddPhaseName" type="text" value={assignedPhase?.name } readOnly />
+                      <Input id="RiskAddPhase" name="RiskAddPhase" type="number" value={assignedPhase?.id} readOnly className="hidden" />
+                    </div>
                   ) :
                   (
                     <Input id="RiskAddPhase" name="RiskAddPhase" type="select">
@@ -267,7 +269,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
                   <Label>Prevence:</Label>
                   <Input id="RiskAddPrevention" name="RiskAddPrevention" type="select">
                     <option value={Prevention.Neglect}>
-                      Zanedbání
+                      Bez reakce
                     </option>
                     <option value={Prevention.Insurance}>
                       Pojištění
@@ -303,7 +305,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
                 maxDate={new Date("2024-05-05")}
                 slotProps={{
                   textField: {
-                    required: true,
+/*                    required: true,*/
                   },
                 }} />
             </FormGroup>

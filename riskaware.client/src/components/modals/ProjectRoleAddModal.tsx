@@ -96,15 +96,17 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
               <FormGroup>
                 <Label>Typ role:</Label>
                 <Input required id="ProjectRoleAddRoleType" name="ProjectRoleAddRoleType" type="select" onChange={handleSelectChange}>
-                  <option value={RoleType.RiskManager}>
-                    Rizikový manažer
+                  <option value={RoleType.ExternalMember}>
+                    Externí člen
                   </option>
                   <option value={RoleType.TeamMember}>
                     Člen týmu
                   </option>
-                  <option value={RoleType.ExternalMember}>
-                    Externí člen
-                  </option>
+                  {projectDetail.userRole === RoleType.ProjectManager && (
+                    <option value={RoleType.RiskManager}>
+                      Rizikový manažer
+                    </option>
+                  )}
                 </Input>
               </FormGroup>
             </Row>

@@ -1,7 +1,7 @@
 ﻿import { createContext, useState, useEffect, ReactNode } from 'react';
 import { useNavigate } from "react-router-dom";
 
-interface AuthContextType {
+export interface AuthContextType {
   isLoggedIn: boolean;
   isLoading: boolean;
   email: string;

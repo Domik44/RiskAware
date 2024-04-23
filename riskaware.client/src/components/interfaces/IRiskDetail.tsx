@@ -20,6 +20,7 @@
   isValid: boolean;
   isApproved: boolean;
   userFullName: string;
+  editedBy: string;
 }
 
 export default IRiskDetail;

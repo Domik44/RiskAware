@@ -15,6 +15,7 @@ import PhaseList from './lists/PhaseList';
 import RiskList from './lists/RiskList';
 import UsersOnProjectList from './lists/UsersOnProjectList';
 import IDtFetchData from './interfaces/IDtFetchData';
+import EditProjectModal from './modals/EditProjectModal';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -39,8 +40,11 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
     this.populateProjectDetail();
   }
 
+
   render() {
     const { projectDetail, activeTab } = this.state;
+    const canAddWithoutPhase = projectDetail?.userRole === RoleType.ProjectManager || projectDetail?.userRole === RoleType.RiskManager;
+    const canAddWithPhase = projectDetail?.userRole === RoleType.TeamMember && projectDetail?.assignedPhase !== null;
 
     const contents = !projectDetail
       ?
@@ -104,7 +108,13 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                         <dt>Do</dt>
                         <dd>{formatDate(projectDetail.detail.end)}</dd>
                       </Col>
+                      <Col className="col-1">
+                        {projectDetail.userRole === RoleType.ProjectManager && (
+                          <EditProjectModal projectId={projectDetail.detail.id} reRender={this.reRender} />
+                        )}
+                      </Col>
                     </Row>
+                    <hr className="mt-5"></hr>
                     {projectDetail.userRole !== RoleType.CommonUser && (
                       <Row className="mt-5">
                         <CommentList projId={projectDetail.detail.id} comments={projectDetail.detail.comments}></CommentList>
@@ -131,7 +141,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <h5>Registr rizik</h5>
                     </Col>
                     <Col className="d-flex justify-content-end">
-                      <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.riskFetchDataRef} />
+                      {(canAddWithoutPhase || canAddWithPhase) && (
+                        <AddRiskModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.riskFetchDataRef} />
+                      )}
                     </Col>
                   </Row>
                   <RiskList projectId={projectDetail.detail.id} chooseRisk={this.chooseRisk} fetchDataRef={this.riskFetchDataRef} reRender={this.reRender} projectDetail={projectDetail} />
@@ -142,7 +154,7 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
                       <h5>Členové projektu</h5>
                     </Col>
                     <Col className="d-flex justify-content-end">
-                      {projectDetail.userRole === RoleType.ProjectManager && (
+                      {(projectDetail.userRole === RoleType.ProjectManager || projectDetail.userRole === RoleType.RiskManager) && (
                         <AddProjectRoleModal projectDetail={projectDetail} reRender={this.reRender} fetchDataRef={this.memberFetchDataRef} />
                       )}
                     </Col>

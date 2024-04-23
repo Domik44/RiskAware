@@ -95,7 +95,7 @@ function RiskDetail(props: IRiskDetailProps) {
             </Col>
             <Col>
               <dt>
-                Status:
+                Stav:
               </dt>
               <dd>
                 {projectDetail.chosenRisk.status}
@@ -144,7 +144,7 @@ function RiskDetail(props: IRiskDetailProps) {
                 Konec:
               </dt>
               <dd>
-                {formatDate(projectDetail.chosenRisk.end)}
+                {projectDetail.chosenRisk.end === new Date("0001-01-01") ? formatDate(projectDetail.chosenRisk.end) : "Nevyplněno"}
               </dd>
             </Col>
             <Col>
@@ -157,12 +157,22 @@ function RiskDetail(props: IRiskDetailProps) {
             </Col>
           </Row>
           <Row>
-            <dt>
-              Vytvořil:
-            </dt>
-            <dd>
-              {projectDetail.chosenRisk.userFullName}
-            </dd>
+            <Col>
+              <dt>
+                Vytvořil:
+              </dt>
+              <dd>
+                {projectDetail.chosenRisk.userFullName}
+              </dd>
+            </Col>
+            <Col>
+              <dt>
+                Upravil:
+              </dt>
+              <dd>
+                {projectDetail.chosenRisk.editedBy}
+              </dd>
+            </Col>
           </Row>
         </dl>
       ) : (
