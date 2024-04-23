@@ -79,7 +79,8 @@ namespace RiskAware.Server.Tests
             RiskCategoryDto dto = new() {Id = 0, Name = "Testovací rizika"};
             string query = $"riskId={ProjectId}";
 
-            HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskCategory?{query}", dto);
+            HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskCategory/{ProjectId}", dto); // Was using wrong endpoint
+            //HttpResponseMessage response = await Client.PostAsJsonAsync($"{Endpoint}/RiskCategory?{query}", dto);
 
             response.EnsureSuccessStatusCode();
 

@@ -251,9 +251,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task PUT_Risk_Project_Initial_Project_Setup_is_OK()
         {
-            // TODO REDO -> login as admin -> create project and choose project manager
-            // -> logout -> login as user that was chosen as project manager
-            // -> try to do initial setup on new project
             await PerformLogin(UserSeeds.AdminLogin);
 
             RiskProjectCreateDto createDto = new()
@@ -274,7 +271,7 @@ namespace RiskAware.Server.Tests
 
             HttpResponseMessage projectDetail =
                 await Client.GetAsync(
-                    $"{Endpoint}/RiskProject/{projects.First(p => p.Title == createDto.Title).Id}/Detail");
+                    $"{Endpoint}/RiskProject/{projects.Last(p => p.Title == createDto.Title).Id}/Detail"); // Was taking first instead of last, which is the new project
             projectDetail.EnsureSuccessStatusCode();
 
             RiskProjectDetailDto projectDetailDto =
@@ -282,9 +279,10 @@ namespace RiskAware.Server.Tests
 
             projectDetailDto.Title = "New title";
 
+            await PerformLogin(UserSeeds.BasicLogin); // Missed login to PM
 
             HttpResponseMessage response =
-                await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/InitialProjectSetup",
+                await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{projectDetailDto.Id}/InitialRiskProjectSetup", // Wrong id was sent here, Also was using wrong endpoint
                     projectDetailDto);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -294,7 +292,7 @@ namespace RiskAware.Server.Tests
         public async Task PUT_Risk_Project_Initial_Project_Setup_is_Unauthorized()
         {
             HttpResponseMessage response =
-                await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/InitialProjectSetup",
+                await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/InitialRiskProjectSetup", // Was using wrong ednpoint
                     new { });
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
