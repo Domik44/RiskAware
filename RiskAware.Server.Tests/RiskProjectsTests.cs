@@ -1,8 +1,6 @@
-﻿using NuGet.Protocol;
-using RiskAware.Server.DTOs;
+﻿using RiskAware.Server.DTOs;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.RiskProjectDTOs;
-using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Json;
@@ -47,7 +45,6 @@ namespace RiskAware.Server.Tests
         public async Task GET_Risk_Project_by_Id_is_Unauthorized(int projectId)
         {
             HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/{projectId}");
-            response.EnsureSuccessStatusCode();
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
@@ -186,8 +183,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task POST_Risk_Project_is_Unauthorized()
         {
-            await PerformLogin(UserSeeds.BasicLogin);
-
             RiskProjectCreateDto dto = new()
             {
                 Title = "Test project",

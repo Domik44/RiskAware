@@ -111,14 +111,8 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            // TODO REDO -> wrong DTO format
-            RiskCreateDto dto = new()
-            {
-                Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
-            };
-
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{1}/AddRisk", dto);
+                await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{1}/AddRisk", RiskSeeds.RiskCreateDto);
 
             TestOutputHelper.WriteLine(response.Content.ReadAsStringAsync().Result);
 
@@ -131,11 +125,9 @@ namespace RiskAware.Server.Tests
         {
             await PerformLogin(UserSeeds.BasicLogin);
 
-            // TODO REDO -> wrong DTO format
-            RiskCreateDto dto = new()
-            {
-                Title = "Testovací riziko", Probability = 1, Impact = 1, Threat = "Testovací riziko"
-            };
+            RiskCreateDto dto = RiskSeeds.RiskCreateDto;
+
+            dto.Title = "Updated title";
 
             int id = 1;
 

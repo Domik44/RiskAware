@@ -13,7 +13,7 @@ namespace RiskAware.Server.Tests
         private const string Endpoint = "/api";
         private const int ProjectId = 1;
 
-        public ProjectRoleTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        public ProjectRoleTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }

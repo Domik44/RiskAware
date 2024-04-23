@@ -1,5 +1,4 @@
 ﻿using RiskAware.Server.DTOs.UserDTOs;
-using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Json;
@@ -118,8 +117,6 @@ namespace RiskAware.Server.Tests
                 LastName = "Vomáčka",
                 Email = "vomacka@seznam.cz"
             };
-
-            await PerformLogin(UserSeeds.BasicLogin);
 
             HttpResponseMessage response = await Client.PutAsJsonAsync($"{Endpoint}/User/{userDto.Id}", userDto);
 
