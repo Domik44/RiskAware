@@ -93,6 +93,14 @@ namespace RiskAware.Server.Seeds
                     RoleType = RoleType.ProjectManager,
                     IsReqApproved = true
                 },
+                new()
+                {
+                    UserId = "84c8b270-14e5-4158-bcde-a76c6edc4cf7",
+                    RiskProjectId = 5,
+                    Name = "Projektový manažer",
+                    RoleType = RoleType.ProjectManager,
+                    IsReqApproved = true
+                },
             };
 
             foreach (var role in rolesToSeed)

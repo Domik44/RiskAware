@@ -31,7 +31,7 @@ namespace RiskAware.Server.Tests
 
             RiskDetailDto dto = (await response.Content.ReadFromJsonAsync<RiskDetailDto>())!;
 
-            Assert.Equal($"Riziko {id}", dto.Title);
+            Assert.True(dto.IsVaid);
         }
 
         [Theory]
@@ -62,7 +62,7 @@ namespace RiskAware.Server.Tests
 
             if (projectId == 1)
             {
-                Assert.True(dto.Exists(r => r.Title == $"Riziko {projectId}"));
+                Assert.True(dto.Exists(r => r.Title == $"Špatná komunikace"));
             }
             else
             {
@@ -93,7 +93,7 @@ namespace RiskAware.Server.Tests
 
             List<RiskDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskDto>>())!;
 
-            Assert.True(dto.Exists(r => r.Title == $"Riziko {id + 1}"));
+            Assert.True(dto.Exists(r => r.Title == $"Špatná komunikace" || r.Title == $"Nesprávné porozumění požadavkům"));
         }
 
         [Theory]

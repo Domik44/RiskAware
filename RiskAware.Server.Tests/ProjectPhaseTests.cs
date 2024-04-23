@@ -141,8 +141,8 @@ namespace RiskAware.Server.Tests
         }
 
         [Theory]
-        [InlineData(3)]
-        [InlineData(4)]
+        [InlineData(7)]
+        [InlineData(8)]
         public async Task DELETE_Project_Phase_is_OK(int phaseId)
         {
             await PerformLogin(UserSeeds.BasicLogin);

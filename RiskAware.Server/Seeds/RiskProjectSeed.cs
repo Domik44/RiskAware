@@ -51,6 +51,16 @@ namespace RiskAware.Server.Seeds
                     IsValid = true,
                     Scale = 5,
                     UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
+                },
+                new RiskProject()
+                {
+                    Title = "Proj5",
+                    Description = "Popis5",
+                    Start = DateTime.Parse("2024-03-15"),
+                    End = DateTime.Parse("2024-08-31"),
+                    IsValid = true,
+                    Scale = 5,
+                    UserId = "d6f46418-2c21-43f8-b167-162fb5e3a999"
                 }
             };
 
