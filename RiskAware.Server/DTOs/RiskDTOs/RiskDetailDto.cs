@@ -29,6 +29,7 @@
         public bool IsVaid { get; set; }
         public bool IsApproved { get; set; }
         public string UserFullName { get; set; }
+        public string EditedBy { get; set; }
 
     }
 }

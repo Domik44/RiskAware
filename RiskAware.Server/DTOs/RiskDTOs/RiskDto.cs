@@ -1,4 +1,6 @@
-﻿namespace RiskAware.Server.DTOs.RiskDTOs
+﻿using RiskAware.Server.DTOs.ProjectPhaseDTOs;
+
+namespace RiskAware.Server.DTOs.RiskDTOs
 {
     /// <summary>
     /// DTO used for transferring risk data between the server and the client.
@@ -14,5 +16,6 @@
         public int Probability { get; set; }
         public int Impact { get; set; }
         public string State { get; set; }
+        public ProjectPhaseSimpleDto ProjectPhase { get; set; }
     }
 }
