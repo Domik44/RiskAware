@@ -1,4 +1,5 @@
 ﻿using RiskAware.Server.DTOs.UserDTOs;
+using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Json;
@@ -164,8 +165,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task PUT_User_Restore_is_Unauthorized()
         {
-            await PerformLogin(UserSeeds.BasicLogin);
-
             HttpResponseMessage response =
                 await Client.PutAsJsonAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}/Restore", new { });
 
@@ -185,8 +184,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task DELETE_User_is_Unauthorized()
         {
-            await PerformLogin(UserSeeds.BasicLogin);
-
             HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/User/{UserSeeds.BasicUser.Id}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

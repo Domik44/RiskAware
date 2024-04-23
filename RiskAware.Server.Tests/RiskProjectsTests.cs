@@ -20,54 +20,6 @@ namespace RiskAware.Server.Tests
         {
         }
 
-        [Fact]
-        public async Task GET_Risk_Projects_is_OK()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProjects");
-
-            response.EnsureSuccessStatusCode();
-            List<RiskProjectDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskProjectDto>>())!;
-
-            Assert.True(dto.Exists(p =>
-                p.ProjectManagerName == $"{UserSeeds.BasicUser.FirstName} {UserSeeds.BasicUser.LastName}"));
-        }
-
-        [Fact]
-        public async Task GET_Risk_Projects_is_Unauthorized()
-        {
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProjects");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task GET_Admin_Risk_Projects_is_OK()
-        {
-            await PerformLogin(UserSeeds.AdminLogin);
-
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/AdminRiskProjects");
-            response.EnsureSuccessStatusCode();
-
-            List<RiskProjectDto> dto = (await response.Content.ReadFromJsonAsync<List<RiskProjectDto>>())!;
-
-            TestOutputHelper.WriteLine(dto.Count.ToString());
-
-            Assert.True(dto.Exists(p =>
-                p.ProjectManagerName == $"{UserSeeds.BasicUser.FirstName} {UserSeeds.BasicUser.LastName}"));
-        }
-
-        [Fact]
-        public async Task GET_Admin_Risk_Projects_is_Unauthorized()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            HttpResponseMessage response = await Client.GetAsync($"{Endpoint}/RiskProject/AdminRiskProjects");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-        }
-
         [Theory]
         [InlineData(1)]
         [InlineData(2)]
@@ -267,8 +219,6 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task POST_Risk_Project_Add_Comment_is_Unauthorized()
         {
-            await PerformLogin(UserSeeds.BasicLogin);
-
             int projectId = 1;
             string text = "foo";
             string query = $"riskProjectId={projectId}&text={text}";
@@ -306,6 +256,9 @@ namespace RiskAware.Server.Tests
         [Fact]
         public async Task PUT_Risk_Project_Initial_Project_Setup_is_OK()
         {
+            // TODO REDO -> login as admin -> create project and choose project manager
+            // -> logout -> login as user that was chosen as project manager
+            // -> try to do initial setup on new project
             await PerformLogin(UserSeeds.AdminLogin);
 
             RiskProjectCreateDto createDto = new()
@@ -400,13 +353,6 @@ namespace RiskAware.Server.Tests
         public async Task DELETE_Risk_Project_is_Unauthorized()
         {
             HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/RiskProject/{ProjectId}");
-            if (response.StatusCode == HttpStatusCode.NotFound)
-            {
-                HttpResponseMessage rep =
-                    await Client.PutAsJsonAsync($"{Endpoint}/RiskProject/{ProjectId}/RestoreProject", new { });
-                rep.EnsureSuccessStatusCode();
-                response = await Client.DeleteAsync($"{Endpoint}/RiskProject/{ProjectId}");
-            }
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }

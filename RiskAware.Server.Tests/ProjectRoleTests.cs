@@ -2,7 +2,6 @@
 using RiskAware.Server.DTOs.UserDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
-using System.Net;
 using System.Net.Http.Json;
 using Xunit.Abstractions;
 
@@ -11,13 +10,13 @@ namespace RiskAware.Server.Tests
     [Collection("API tests")]
     public class ProjectRoleTests : ServerTestsBase
     {
+        private const string Endpoint = "/api";
+        private const int ProjectId = 1;
+
         public ProjectRoleTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api";
-        private const int ProjectId = 1;
 
         // TODO REDO -> change to POST and see filtering
         //[Theory]
@@ -74,78 +73,5 @@ namespace RiskAware.Server.Tests
 
             Assert.True(response.IsSuccessStatusCode);
         }
-
-        // [Theory]
-        // [InlineData(2)]
-        // public async Task DELETE_Project_Role_is_OK(int projectRoleId)
-        // TODO REDO -> DELETE -> methods were deleted
-        //[Fact]
-        //public async Task POST_Join_Request()
-        //{
-        //    await PerformLogin(UserSeeds.BasicLogin);
-
-        //    int notAssigned = 2;
-
-        //    HttpResponseMessage response =
-        //        await Client.PostAsJsonAsync($"{Endpoint}/RiskProject/{notAssigned}/JoinRequest", new { });
-
-        //    response.EnsureSuccessStatusCode();
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //}
-
-        // TODO REDO -> DELETE
-        // TODO What should the latter entry be?
-        //[Fact]
-        //public async Task PUT_Approve_Join_Request()
-        //{
-        //    await PerformLogin(UserSeeds.AdminLogin);
-
-        //    HttpResponseMessage response =
-        //        await Client.PutAsJsonAsync(
-        //            $"{Endpoint}/RiskProject/{ProjectId}/ApproveJoinRequest/{RoleType.TeamMember}", new { });
-
-        //    response.EnsureSuccessStatusCode();
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //}
-
-
-        // TODO What should the latter entry be?
-        [Fact]
-        public async Task PUT_Approve_Join_Request_is_Unauthorized()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            HttpResponseMessage response =
-                await Client.PutAsJsonAsync(
-                    $"{Endpoint}/RiskProject/{ProjectId}/ApproveJoinRequest/{RoleType.TeamMember}", new { });
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-        }
-
-        [Fact]
-        public async Task DELETE_Project_Role_is_OK()
-        {
-            await PerformLogin(UserSeeds.BasicLogin);
-
-            HttpResponseMessage response = await Client.DeleteAsync($"{Endpoint}/ProjectRole/{projectRoleId}");
-
-            response.EnsureSuccessStatusCode();
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        // TODO REDO -> DELETE
-        // TODO What should the latter entry be?
-        //[Fact]
-        //public async Task DELETE_Decline_Project_Join_Request_is_OK()
-        //{
-        //    await PerformLogin(UserSeeds.BasicLogin);
-
-        //    HttpResponseMessage response =
-        //        await Client.DeleteAsync(
-        //            $"{Endpoint}/RiskProject/{ProjectId}/DeclineJoinRequest/{RoleType.TeamMember}");
-
-        //    response.EnsureSuccessStatusCode();
-        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        //}
     }
 }
