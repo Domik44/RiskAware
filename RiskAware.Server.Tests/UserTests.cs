@@ -1,5 +1,4 @@
 ﻿using RiskAware.Server.DTOs.UserDTOs;
-using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
 using System.Net;
 using System.Net.Http.Json;
@@ -7,15 +6,14 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class UserTests : ServerTestsBase
     {
-        public UserTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api";
+
+        public UserTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api";
 
         [Fact]
         public async Task GET_User_is_OK()

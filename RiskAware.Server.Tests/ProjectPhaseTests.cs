@@ -1,30 +1,22 @@
-﻿using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.CodeAnalysis;
-using RiskAware.Server.DTOs.DatatableDTOs;
+﻿using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectPhaseDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Tests.Seeds;
-using System.ComponentModel;
 using System.Net;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
-using System.Text.Json;
 using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class ProjectPhaseTests : ServerTestsBase
     {
-        public ProjectPhaseTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api/ProjectPhase";
+        private const int ProjectId = 1;
+
+        public ProjectPhaseTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api/ProjectPhase";
-        private const int ProjectId = 1;
 
         [Theory]
         [InlineData(1)]
@@ -105,7 +97,7 @@ namespace RiskAware.Server.Tests
             };
 
             HttpResponseMessage response =
-                await Client.PostAsJsonAsync($"/api/RiskProject/CreateProjectPhase", dto);
+                await Client.PostAsJsonAsync("/api/RiskProject/CreateProjectPhase", dto);
 
             response.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);

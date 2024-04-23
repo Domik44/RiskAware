@@ -7,16 +7,15 @@ using Xunit.Abstractions;
 
 namespace RiskAware.Server.Tests
 {
-    [Collection("API tests")]
     public class RiskCategoryTests : ServerTestsBase
     {
-        public RiskCategoryTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory? fixture) : base(
+        private const string Endpoint = "/api";
+        private const int ProjectId = 1;
+
+        public RiskCategoryTests(ITestOutputHelper testOutputHelper, ApiWebApplicationFactory<Program>? fixture) : base(
             testOutputHelper, fixture)
         {
         }
-
-        private const string Endpoint = "/api";
-        private const int ProjectId = 1;
 
         [Theory]
         [InlineData(1)]
