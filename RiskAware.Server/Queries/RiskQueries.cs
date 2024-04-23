@@ -42,6 +42,7 @@ namespace RiskAware.Server.Queries
                 .AsNoTracking()
                 .Where(h => h.RiskId == id)
                 .OrderByDescending(h => h.LastModif)
+                .Include(h => h.User)
                 .FirstOrDefaultAsync();
 
             var riskDto = await _context.Risks
@@ -69,7 +70,8 @@ namespace RiskAware.Server.Queries
                     RiskCategoryName = r.RiskCategory.Name,
                     IsVaid = recentRiskHistory.IsValid,
                     IsApproved = recentRiskHistory.IsApproved,
-                    UserFullName = r.User.FirstName + " " + r.User.LastName
+                    UserFullName = r.User.FirstName + " " + r.User.LastName,
+                    EditedBy = recentRiskHistory.User.FirstName + " " + recentRiskHistory.User.LastName
                 })
                 .FirstOrDefaultAsync();
 
@@ -177,7 +179,12 @@ namespace RiskAware.Server.Queries
                     State = r.RiskHistory
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+                    ProjectPhase = new ProjectPhaseSimpleDto
+                    {
+                        Id = r.ProjectPhase.Id,
+                        Name = r.ProjectPhase.Name
+                    }
                 });
 
             foreach (var filter in dtParams.Filters)
@@ -245,7 +252,12 @@ namespace RiskAware.Server.Queries
                     State = r.RiskHistory
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+                    ProjectPhase = new ProjectPhaseSimpleDto
+                    {
+                        Id = r.ProjectPhase.Id,
+                        Name = r.ProjectPhase.Name
+                    }
                 })
                 .ToListAsync();
 
@@ -277,7 +289,12 @@ namespace RiskAware.Server.Queries
                     State = r.RiskHistory
                         .OrderByDescending(h => h.LastModif)
                         .Select(h => h.Status)
-                        .FirstOrDefault()
+                        .FirstOrDefault(),
+                    ProjectPhase = new ProjectPhaseSimpleDto
+                    {
+                        Id = r.ProjectPhase.Id,
+                        Name = r.ProjectPhase.Name
+                    }
                 })
                 .ToListAsync();
 
