@@ -113,7 +113,7 @@ const AddProjectRoleModal: React.FC<AddProjectRoleModalProps> = ({ projectDetail
             <Row>
               <FormGroup>
                 <Label>Pojmenování role:</Label>
-                <Input required id="ProjectRoleAddName" name="ProjectRoleAddName" type="text" defaultValue="Rizikový manažer" />
+                <Input required id="ProjectRoleAddName" name="ProjectRoleAddName" type="text" defaultValue="Externí člen" />
               </FormGroup>
             </Row>
             <Row>

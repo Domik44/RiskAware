@@ -1,6 +1,6 @@
 ﻿import React, { Component } from 'react';
 import { formatDate } from "../common/DateFormatter";
-import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col, Label, FormGroup } from 'reactstrap';
+import { TabContent, TabPane, Nav, NavItem, NavLink, Alert, Row, Col } from 'reactstrap';
 import PhaseAccordion from './PhaseAccordion';
 import IProjectDetail, { RoleType } from './interfaces/IProjectDetail';
 import AddPhaseModal from './modals/PhaseAddModal';
@@ -16,7 +16,6 @@ import RiskList from './lists/RiskList';
 import UsersOnProjectList from './lists/UsersOnProjectList';
 import IDtFetchData from './interfaces/IDtFetchData';
 import EditProjectModal from './modals/EditProjectModal';
-import { DatePicker } from '@mui/x-date-pickers';
 
 interface IProjectDetailState {
   projectDetail: IProjectDetail | null;
@@ -196,13 +195,6 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
     } catch (error) {
       console.error('Error fetching project detail:', error);
     }
-
-    //if (urlSplitted.length === 5) {
-    //  const riskId = urlSplitted[4];
-    //  // TODO -> mby delete -> would have to check if id in url is of risk from this project otherwise it would load risk from other projects as well
-    //  // TODO -> would have to manually change url when clicking on other nav tabs
-    //  this.chooseRisk(parseInt(riskId));
-    //}
   }
 
   toggleTab = (tab: string) => {
@@ -228,11 +220,9 @@ export class ProjectDetail extends Component<object, IProjectDetailState> {
     }
   };
 
-  reRender = async () => { // TODO -> now it rerenders the whole page, should be changed to rerender only specific parts
+  reRender = async () => {
     await this.populateProjectDetail();
   }
-
-  // TODO -> add functions to re render specific parts for example reRenderPhases...
 }
 
 export default ProjectDetail;

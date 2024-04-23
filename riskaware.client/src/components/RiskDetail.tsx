@@ -8,8 +8,31 @@ interface IRiskDetailProps {
   projectDetail: IProjectDetail;
 }
 
+
 function RiskDetail(props: IRiskDetailProps) {
   const { activeTab, projectDetail } = props;
+
+  const handleDateInput = (date: Date | string | undefined) => {
+    if (date) {
+      // Check if date is a string
+      if (typeof date === "string") {
+        // Parse the string to a Date object
+        date = new Date(date);
+      }
+
+      // Check if date is a valid Date object
+      if (date instanceof Date && !isNaN(date.getTime())) {
+        const zeroDate = new Date("0001-01-01T00:00:00");
+
+        if (date.getTime() === zeroDate.getTime()) {
+          return "Nevyplněno";
+        }
+      }
+      return formatDate(date);
+    }
+
+    return "Nevyplněno";
+  };
 
   return (
     <TabPane tabId="riskDetail" className={activeTab === 'riskDetail' ? 'active' : ''}>
@@ -108,7 +131,7 @@ function RiskDetail(props: IRiskDetailProps) {
                 Prevence dokončena:
               </dt>
               <dd>
-                {projectDetail.chosenRisk.preventionDone === new Date("0001-01-01") ?  formatDate(projectDetail.chosenRisk.preventionDone) : "Nevyplněno"}
+                {handleDateInput(projectDetail.chosenRisk.preventionDone)}
               </dd>
             </Col>
             <Col>
@@ -144,7 +167,7 @@ function RiskDetail(props: IRiskDetailProps) {
                 Konec:
               </dt>
               <dd>
-                {projectDetail.chosenRisk.end === new Date("0001-01-01") ? formatDate(projectDetail.chosenRisk.end) : "Nevyplněno"}
+                {handleDateInput(projectDetail.chosenRisk.end)}
               </dd>
             </Col>
             <Col>
@@ -152,7 +175,7 @@ function RiskDetail(props: IRiskDetailProps) {
                 Riziko nastalo:
               </dt>
               <dd>
-                {projectDetail.chosenRisk.riskEventOccured === new Date("0001-01-01") ? formatDate(projectDetail.chosenRisk.riskEventOccured) : "Nevyplněno"}
+                {handleDateInput(projectDetail.chosenRisk.riskEventOccured)}
                </dd>
             </Col>
           </Row>

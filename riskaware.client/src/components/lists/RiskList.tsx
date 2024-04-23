@@ -1,5 +1,5 @@
 ﻿import React, { useEffect, useMemo, useState } from 'react';
-import ColumnFilter, {
+import {
   MaterialReactTable, useMaterialReactTable,
   type MRT_Row, type MRT_ColumnDef, type MRT_ColumnFiltersState,
   type MRT_PaginationState, type MRT_SortingState,
@@ -24,7 +24,6 @@ import { mkConfig, generateCsv, download, ColumnHeader } from 'export-to-csv';
 import IRiskCategory from '../interfaces/IRiskCategory';
 import IProjectDetail, { RoleType } from '../interfaces/IProjectDetail';
 import RiskEditModal from '../modals/RiskEditModal';
-import IRiskDetail from '../interfaces/IRiskDetail';
 import { DatePicker } from '@mui/x-date-pickers';
 import IRiskEdit from '../interfaces/IRiskEdit';
 //import IRiskDetail from '../interfaces/IRiskDetail';
