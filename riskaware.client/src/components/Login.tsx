@@ -19,12 +19,19 @@ const Login = () => {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     try {
+      setLoginError(false);
       await auth.login(email, password, rememberMe);
     }
     catch (error) {
       setLoginError(true); // Set login error state
     }
   };
+
+  const removeError = () => {
+    if (loginError) {
+      setLoginError(false);
+    }
+  }
 
   return (
     <div className="container mt-5">
@@ -41,7 +48,7 @@ const Login = () => {
                   </div>
                 </div>
               )}
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} onChange={removeError}>
                 <div className="form-group my-3">
                   <label htmlFor="email" className="form-label">E-mail:</label>
                   {loginError && (
