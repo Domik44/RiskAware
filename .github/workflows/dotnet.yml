@@ -7,45 +7,17 @@ on:
     branches: [ "master" ]
 
 jobs:
-  setup:
+  Test:
     runs-on: ubuntu-latest
-    services:
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        env:
-          SA_PASSWORD: "VUTFITez2024"
-          ACCEPT_EULA: "Y"
-        ports:
-          - 1433:1433
-        options: --health-cmd="sqlcmd -U sa -P VUTFITez2024 -Q 'SELECT 1'" --health-interval=10s --health-timeout=5s --health-retries=10
     steps:
     - uses: actions/checkout@v4
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Install SQLCMD
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y mssql-tools unixodbc-dev
-        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bash_profile
-        echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-        source ~/.bashrc
-    - name: Create Database
-      run: |
-        sqlcmd -S localhost,1433 -U sa -P VUTFITez2024 -Q "CREATE DATABASE RiskAware;"
-    - name: Run sqlcmd
-      run: sqlcmd -S localhost,1433 -U sa -P VUTFITez2024 -d tempdb -Q "SELECT @@version;"
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Run Server Project Commands
-      run: |
-        cd Server
-        dotnet run delete-db
-        dotnet ef database update
-        dotnet run seed
-        cd ..
     - name: Test
       run: dotnet test --no-build --verbosity normal
