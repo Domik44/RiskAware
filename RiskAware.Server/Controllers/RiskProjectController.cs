@@ -246,11 +246,6 @@ namespace RiskAware.Server.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRiskProject(int id, RiskProjectDetailDto riskProjectDto)
         {
-            if (id != riskProjectDto.Id)
-            {
-                return BadRequest("Risk project ids dont match!");
-            }
-
             var user = await _userManager.GetUserAsync(User);
             var riskProject = await _context.RiskProjects.FindAsync(id);
             var isProjectManager = await _projectRoleQueries.IsProjectManager(riskProject.Id, user.Id);
@@ -319,6 +314,12 @@ namespace RiskAware.Server.Controllers
         [HttpPut("{id}/RestoreProject")]
         public async Task<IActionResult> RestoreProject(int id)
         {
+            var activeUser = await _userManager.GetUserAsync(User);
+            if (!activeUser.SystemRole.IsAdministrator)
+            {
+                return Unauthorized("User is not admin!");
+            }
+
             var riskProject = await _context.RiskProjects.FindAsync(id);
             if (riskProject == null || riskProject.IsValid == true)
             {

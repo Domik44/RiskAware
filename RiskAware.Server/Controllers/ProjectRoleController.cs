@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using RiskAware.Server.Data;
 using RiskAware.Server.DTOs.DatatableDTOs;
 using RiskAware.Server.DTOs.ProjectRoleDTOs;
-using RiskAware.Server.DTOs.RiskDTOs;
 using RiskAware.Server.Models;
 using RiskAware.Server.Queries;
 
@@ -74,9 +73,10 @@ namespace RiskAware.Server.Controllers
             }
 
             var isProjectManager = await _projectRoleQueries.IsProjectManager(riskProject.Id, activeUser.Id);
-            if (!isProjectManager)
+            var isRiskManager = await _projectRoleQueries.IsRiskManager(riskProject.Id, activeUser.Id);
+            if (!isProjectManager && !isRiskManager)
             {
-                return Unauthorized("User is not project manager!");
+                return Unauthorized("User is not authorized for this action!");
             }
 
             var userToBeAdded = await _context.Users.Where(u => u.Email == projectRoleDto.Email).FirstOrDefaultAsync();
@@ -156,12 +156,11 @@ namespace RiskAware.Server.Controllers
 
         /// <summary>
         /// Method for removing user from the project.
-        /// Right now just removes users who are not active in the project (not PM, no added risks, ...)
         /// </summary>
         /// <param name="projectRoleId"> Id of project role. </param>
         /// <returns> Returns if action was successful or not. </returns>
         [HttpDelete("{projectRoleId}")]
-        public async Task<IActionResult> RemoveUserFromRiskProject(int projectRoleId) // rn just simple delete
+        public async Task<IActionResult> RemoveUserFromRiskProject(int projectRoleId)
         {
             var role = await _context.ProjectRoles.FindAsync(projectRoleId);
             if (role == null)
@@ -178,13 +177,7 @@ namespace RiskAware.Server.Controllers
 
             if(activeUser.Id == role.UserId)
             {
-                return BadRequest("You cant remove yourself from project!");
-            }
-
-            var hasRisks = await _context.Risks.Where(r => r.UserId == role.UserId && r.RiskProjectId == role.RiskProjectId).AnyAsync();
-            if (hasRisks)
-            {
-                return BadRequest("User has risks assigned to him!");
+                return BadRequest("Nemůžete odstranit sebe sama z projektu!"); // msg used in frontend
             }
 
             _context.ProjectRoles.Remove(role);
