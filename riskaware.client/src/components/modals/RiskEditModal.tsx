@@ -25,7 +25,6 @@ const RiskEditModal: React.FC<RiskEditModalProps> = ({ riskId, isOpen, toggle, r
   const scale = projectDetail.detail.scale;
   const userRole = projectDetail.userRole;
   const assignedPhase = projectDetail.assignedPhase;
-  //const [categories, setCategories] = useState<IRiskCategory[]>([]);
 
   const editRisk = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
