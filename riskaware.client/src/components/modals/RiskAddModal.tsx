@@ -53,6 +53,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
     try {
       const preventionDone = (document.getElementById("RiskAddPreventionDone") as HTMLInputElement).value;
       const riskOccured = (document.getElementById("RiskAddRiskOccured") as HTMLInputElement).value;
+      const end = (document.querySelector('input[name="RiskAddEnd"]') as HTMLInputElement).value;
       const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
@@ -69,7 +70,7 @@ const AddRiskModal: React.FC<AddRiskModalProps> = ({ projectDetail, reRender, fe
           status: (document.getElementById("RiskAddStatus") as HTMLInputElement).value,
           preventionDone: preventionDone === "" ? "0001-01-01" : preventionDone,
           riskEventOccured: riskOccured === "" ? "0001-01-01" : riskOccured,
-          end: (document.getElementById("RiskAddEnd") as HTMLInputElement).value,
+          end: end === "" ? "0001-01-01" : end,
           projectPhaseId: parseInt((document.getElementById("RiskAddPhase") as HTMLInputElement).value),
           riskCategory: category,
           userRoleType: userRole
