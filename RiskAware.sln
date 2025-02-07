@@ -10,11 +10,21 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AAC21DBB-8904-4B59-9513-101D68188944}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{3506EF36-9286-4680-A518-FAF4608072BE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RiskAware.Server.Tests", "RiskAware.Server.Tests\RiskAware.Server.Tests.csproj", "{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D98DD045-D4F8-49C5-AD5B-22EA9CBD2273}"
+	ProjectSection(SolutionItems) = preProject
+		doc\2024-02-28_uvodni_studie.pdf = doc\2024-02-28_uvodni_studie.pdf
+		doc\2024-03-04_navrh.pdf = doc\2024-03-04_navrh.pdf
+		doc\2024-03-08_konfiguracni_rizeni.pdf = doc\2024-03-08_konfiguracni_rizeni.pdf
+		doc\2024-04-29_uzivatelska_prirucka.pdf = doc\2024-04-29_uzivatelska_prirucka.pdf
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +50,11 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {F522E4AF-C009-429E-8EBF-69E4EB69BE9B}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C2F2CC4B-5B4A-4305-AC0D-D3F8B815D6D9} = {3506EF36-9286-4680-A518-FAF4608072BE}
+		{D98DD045-D4F8-49C5-AD5B-22EA9CBD2273} = {AAC21DBB-8904-4B59-9513-101D68188944}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F522E4AF-C009-429E-8EBF-69E4EB69BE9B}
 	EndGlobalSection
 EndGlobal
